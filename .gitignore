@@ -1,4 +1,4 @@
 data/*
+!data/requiredDataFiles.json
 lib/*
-scripts/custom/*
 !/lib/lua

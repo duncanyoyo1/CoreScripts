@@ -2,6 +2,7 @@ require("config")
 tableHelper = require("tableHelper")
 local BaseWorld = require("world.base")
 
+---@class JsonWorld : BaseWorld
 local World = class("World", BaseWorld)
 
 function World:__init()

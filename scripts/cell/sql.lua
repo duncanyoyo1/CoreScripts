@@ -1,6 +1,7 @@
 Database = require("database")
 local BaseCell = require("cell.base")
 
+---@class SqlCell : BaseCell
 local Cell = class("Cell", BaseCell)
 
 function Cell:__init(cellDescription)

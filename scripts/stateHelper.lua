@@ -1,4 +1,5 @@
-StateHelper = class("StateHelper")
+---@class StateHelper
+local StateHelper = class("StateHelper")
 
 function StateHelper:LoadJournal(pid, stateObject)
 

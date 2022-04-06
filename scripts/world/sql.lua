@@ -1,6 +1,7 @@
 Database = require("database")
 local BaseWorld = require("world.base")
 
+---@class SqlWorld : BaseWorld
 local World = class("World", BaseWorld)
 
 function World:__init()

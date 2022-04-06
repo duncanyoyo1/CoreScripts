@@ -1,0 +1,669 @@
+-------------------------------------------------------------------------------
+--- TES3MP types
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+--- tes3mp
+-------------------------------------------------------------------------------
+
+---@type TES3MP
+tes3mp = tes3mp
+
+---@class TES3MP
+---@field ReadReceivedActorList fun()
+---@field ReadCellActorList fun(cellDescription: string)
+---@field ClearActorList fun()
+---@field SetActorListPid fun(pid: number)
+---@field CopyReceivedActorListToStore fun()
+---@field GetActorListSize fun(): number
+---@field GetActorListAction fun(): number
+---@field GetActorCell fun(index: number): string
+---@field GetActorRefId fun(index: number): string
+---@field GetActorRefNum fun(index: number): number
+---@field GetActorMpNum fun(index: number): number
+---@field GetActorPosX fun(index: number): number
+---@field GetActorPosY fun(index: number): number
+---@field GetActorPosZ fun(index: number): number
+---@field GetActorRotX fun(index: number): number
+---@field GetActorRotY fun(index: number): number
+---@field GetActorRotZ fun(index: number): number
+---@field GetActorHealthBase fun(index: number): number
+---@field GetActorHealthCurrent fun(index: number): number
+---@field GetActorHealthModified fun(index: number): number
+---@field GetActorMagickaBase fun(index: number): number
+---@field GetActorMagickaCurrent fun(index: number): number
+---@field GetActorMagickaModified fun(index: number): number
+---@field GetActorFatigueBase fun(index: number): number
+---@field GetActorFatigueCurrent fun(index: number): number
+---@field GetActorFatigueModified fun(index: number): number
+---@field GetActorEquipmentItemRefId fun(index: number, slot: number): string
+---@field GetActorEquipmentItemCount fun(index: number, slot: number): number
+---@field GetActorEquipmentItemCharge fun(index: number, slot: number): number
+---@field GetActorEquipmentItemEnchantmentCharge fun(index: number, slot: number): number
+---@field DoesActorHavePlayerKiller fun(index: number): boolean
+---@field GetActorKillerPid fun(index: number): number
+---@field GetActorKillerRefId fun(index: number): string
+---@field GetActorKillerRefNum fun(index: number): number
+---@field GetActorKillerMpNum fun(index: number): number
+---@field GetActorKillerName fun(index: number): string
+---@field DoesActorHavePosition fun(index: number): boolean
+---@field DoesActorHaveStatsDynamic fun(index: number): boolean
+---@field SetActorListCell fun(cellDescription: string)
+---@field SetActorListAction fun(action: number)
+---@field SetActorCell fun(cellDescription: string)
+---@field SetActorRefId fun(refId: string)
+---@field SetActorRefNum fun(refNum: number)
+---@field SetActorMpNum fun(mpNum: number)
+---@field SetActorPosition fun(x: number, y: number, z: number)
+---@field SetActorRotation fun(x: number, y: number, z: number)
+---@field SetActorHealthBase fun(value: number)
+---@field SetActorHealthCurrent fun(value: number)
+---@field SetActorHealthModified fun(value: number)
+---@field SetActorMagickaBase fun(value: number)
+---@field SetActorMagickaCurrent fun(value: number)
+---@field SetActorMagickaModified fun(value: number)
+---@field SetActorFatigueBase fun(value: number)
+---@field SetActorFatigueCurrent fun(value: number)
+---@field SetActorFatigueModified fun(value: number)
+---@field SetActorSound fun(sound: string)
+---@field SetActorAIAction fun(action: number)
+---@field SetActorAITargetToPlayer fun(pid: number)
+---@field SetActorAITargetToObject fun(refNum: number, mpNum: number)
+---@field SetActorAICoordinates fun(x: number, y: number, z: number)
+---@field SetActorAIDistance fun(distance: number)
+---@field SetActorAIDuration fun(duration: number)
+---@field SetActorAIRepetition fun(shouldRepeat: boolean)
+---@field EquipActorItem fun(slot: number, refId: string, count: number, charge: number, enchantmentCharge : number)
+---@field UnequipActorItem fun(slot: number)
+---@field AddActor fun()
+---@field SendActorList fun()
+---@field SendActorAuthority fun()
+---@field SendActorPosition fun(sendToOtherVisitors: boolean, skipAttachedPlayer: boolean)
+---@field SendActorStatsDynamic fun(sendToOtherVisitors: boolean, skipAttachedPlayer: boolean)
+---@field SendActorEquipment fun(sendToOtherVisitors: boolean, skipAttachedPlayer: boolean)
+---@field SendActorSpeech fun(sendToOtherVisitors: boolean, skipAttachedPlayer: boolean)
+---@field SendActorAI fun(sendToOtherVisitors: boolean, skipAttachedPlayer: boolean)
+---@field SendActorCellChange fun(sendToOtherVisitors: boolean, skipAttachedPlayer: boolean)
+
+---@class TES3MP
+---@field ClearBookChanges fun(pid: number)
+---@field GetBookChangesSize fun(pid: number): number
+---@field AddBook fun(pid: number, bookId: string)
+---@field GetBookId fun(pid: number, index: number): string
+---@field SendBookChanges fun(pid: number, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+
+---@class TES3MP
+---@field GetCellStateChangesSize fun(pid: number): number
+---@field GetCellStateType fun(pid: number, index: number): number
+---@field GetCellStateDescription fun(pid: number, index: number): string
+---@field GetCell fun(pid: number): string
+---@field GetExteriorX fun(pid: number): number
+---@field GetExteriorY fun(pid: number): number
+---@field IsInExterior fun(pid: number): boolean
+---@field GetRegion fun(pid: number): string
+---@field IsChangingRegion fun(pid: number): boolean
+---@field SetCell fun(pid: number, cellDescription: string)
+---@field SetExteriorCell fun(pid: number, x: number, y: number)
+---@field SendCell fun(pid: number)
+
+---@class TES3MP
+---@field GetDefaultClass fun(pid: number): string
+---@field GetClassName fun(pid: number): string
+---@field GetClassDesc fun(pid: number): string
+---@field GetClassMajorAttribute fun(pid: number, slot: number): number
+---@field GetClassSpecialization fun(pid: number): number
+---@field GetClassMajorSkill fun(pid: number, slot: number): number
+---@field GetClassMinorSkill fun(pid: number, slot: number): number
+---@field IsClassDefault fun(pid: number): number
+---@field SetDefaultClass fun(pid: number, id: string)
+---@field SetClassName fun(pid: number, name: string)
+---@field SetClassDesc fun(pid: number, desc: string)
+---@field SetClassMajorAttribute fun(pid: number, slot: number, attrId: number)
+---@field SetClassSpecialization fun(pid: number, spec: number)
+---@field SetClassMajorSkill fun(pid: number, slot: number, skillId: number)
+---@field SetClassMinorSkill fun(pid: number, slot: number, skillId: number)
+---@field SendClass fun(pid: number)
+
+---@class TES3MP
+---@field SendMessage fun(pid: number, message: string, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field CleanChatForPid fun(pid: number)
+---@field CleanChat fun()
+
+---@class TES3MP
+---@field ClearTopicChanges fun(pid: number)
+---@field GetTopicChangesSize fun(pid: number): number
+---@field AddTopic fun(pid: number, topicId: string)
+---@field GetTopicId fun(pid: number, index: number): string
+---@field SendTopicChanges fun(pid: number, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field PlayAnimation fun(pid: number, groupname: string, mode: number, count: number, persist: boolean)
+---@field PlaySpeech fun(pid: number, sound: string)
+
+---@class TES3MP
+---@field ClearFactionChanges fun(pid: number)
+---@field GetFactionChangesSize fun(pid: number): number
+---@field GetFactionChangesAction fun(pid: number): number
+---@field GetFactionId fun(pid: number, index: number): string
+---@field GetFactionRank fun(pid: number, index: number): number
+---@field GetFactionExpulsionState fun(pid: number, index: number): boolean
+---@field GetFactionReputation fun(pid: number, index: number): number
+---@field SetFactionChangesAction fun(pid: number, action: number)
+---@field SetFactionId fun(factionId: string)
+---@field SetFactionRank fun(rank: number)
+---@field SetFactionExpulsionState fun(expulsionState: boolean)
+---@field SetFactionReputation fun(reputation: number)
+---@field AddFaction fun(pid: number)
+---@field SendFactionChanges fun(pid: number, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+
+---@class TES3MP
+---@field _MessageBox fun(pid: number, id: number, label: string)
+---@field CustomMessageBox fun(pid: number, id: number, label: string, buttons: string)
+---@field InputDialog fun(pid: number, id: number, label: string, note: string)
+---@field PasswordDialog fun(pid: number, id: number, label: string, note: string)
+---@field ListBox fun(pid: number, id: number, label: string, items: string)
+---@field ClearQuickKeyChanges fun(pid: number)
+---@field GetQuickKeyChangesSize fun(pid: number): number
+---@field AddQuickKey fun(pid: number, slot: number, type: number, itemId: string)
+---@field GetQuickKeySlot fun(pid: number, index: number): number
+---@field GetQuickKeyType fun(pid: number, index: number): number
+---@field GetQuickKeyItemId fun(pid: number, index: number): string
+---@field SendQuickKeyChanges fun(pid: number)
+---@field SetMapVisibility fun(targetPid: number, affectedPid: number, state: number)
+---@field SetMapVisibilityAll fun(targetPid: number, state: number)
+
+---@class TES3MP
+---@field ClearInventoryChanges fun(pid: number)
+---@field GetEquipmentSize fun(): number
+---@field GetInventoryChangesSize fun(pid: number): number
+---@field GetInventoryChangesAction fun(pid: number): number
+---@field SetInventoryChangesAction fun(pid: number, action: number)
+---@field EquipItem fun(pid: number, slot: number, refId: string, count: number, charge: number, enchantmentCharge: number)
+---@field UnequipItem fun(pid: number, slot: number)
+---@field AddItemChange fun(pid: number, refId: string, count: number, charge: number, enchantmentCharge: number, soul: string)
+---@field HasItemEquipped fun(pid: number, refId: string): boolean
+---@field GetEquipmentItemRefId fun(pid: number, slot: number): string
+---@field GetEquipmentItemCount fun(pid: number, slot: number): number
+---@field GetEquipmentItemCharge fun(pid: number, slot: number): number
+---@field GetEquipmentItemEnchantmentCharge fun(pid: number, slot: number): number
+---@field GetInventoryItemRefId fun(pid: number, index: number): string
+---@field GetInventoryItemCount fun(pid: number, index: number): number
+---@field GetInventoryItemCharge fun(pid: number, index: number): number
+---@field GetInventoryItemEnchantmentCharge fun(pid: number, index: number): number
+---@field GetInventoryItemSoul fun(pid: number, index: number): string
+---@field GetUsedItemRefId fun(pid: number): string
+---@field GetUsedItemCount fun(pid: number): number
+---@field GetUsedItemCharge fun(pid: number): number
+---@field GetUsedItemEnchantmentCharge fun(pid: number): number
+---@field GetUsedItemSoul fun(pid: number): string
+---@field SendEquipment fun(pid: number)
+---@field SendInventoryChanges fun(pid: number, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendItemUse fun(pid: number)
+
+---@class TES3MP
+---@field GetMiscellaneousChangeType fun(pid: number): number
+---@field GetMarkCell fun(pid: number): string
+---@field GetMarkPosX fun(pid: number): number
+---@field GetMarkPosY fun(pid: number): number
+---@field GetMarkPosZ fun(pid: number): number
+---@field GetMarkRotX fun(pid: number): number
+---@field GetMarkRotZ fun(pid: number): number
+---@field GetSelectedSpellId fun(pid: number): string
+---@field DoesPlayerHavePlayerKiller fun(pid: number): boolean
+---@field GetPlayerKillerPid fun(pid: number): number
+---@field GetPlayerKillerRefId fun(pid: number): string
+---@field GetPlayerKillerRefNum fun(pid: number): number
+---@field GetPlayerKillerMpNum fun(pid: number): number
+---@field GetPlayerKillerName fun(pid: number): string
+---@field GetDrawState fun(pid: number): number
+---@field GetSneakState fun(pid: number): boolean
+---@field SetMarkCell fun(pid: number, cellDescription: string)
+---@field SetMarkPos fun(pid: number, x: number, y: number, z: number)
+---@field SetMarkRot fun(pid: number, x: number, z: number)
+---@field SetSelectedSpellId fun(pid: number, spellId: string)
+---@field SendMarkLocation fun(pid: number)
+---@field SendSelectedSpell fun(pid: number)
+---@field Jail fun(pid: number, jailDays: number, ignoreJailTeleportation: boolean, ignoreJailSkillIncreases: boolean, jailProgressText: string, jailEndText: string)
+---@field Resurrect fun(pid: number, type: number)
+
+---@class TES3MP
+---@field DoesFileExist fun(filePath: string): boolean
+---@field GetCaseInsensitiveFilename fun(folderPath: string, filename: string): string
+---@field GetLastPlayerId fun(): number
+---@field GetCurrentMpNum fun(): number
+---@field SetCurrentMpNum fun(mpNum: number)
+---@field LogMessage fun(level: number, message: string)
+---@field LogAppend fun(level: number, message: string)
+
+---@class TES3MP
+---@field ReadReceivedObjectList fun()
+---@field ClearObjectList fun()
+---@field SetObjectListPid fun(pid: number)
+---@field CopyReceivedObjectListToStore fun()
+---@field GetObjectListSize fun(): number
+---@field GetObjectListOrigin fun(): number
+---@field GetObjectListClientScript fun(): string
+---@field GetObjectListAction fun(): number
+---@field GetObjectListContainerSubAction fun(): number
+---@field IsObjectPlayer fun(index: number): boolean
+---@field GetObjectPid fun(index: number): number
+---@field GetObjectRefId fun(index: number): string
+---@field GetObjectRefNum fun(index: number): number
+---@field GetObjectMpNum fun(index: number): number
+---@field GetObjectCount fun(index: number): number
+---@field GetObjectCharge fun(index: number): number
+---@field GetObjectEnchantmentCharge fun(index: number): number
+---@field GetObjectSoul fun(index: number): string
+---@field GetObjectGoldValue fun(index: number): number
+---@field GetObjectScale fun(index: number): number
+---@field GetObjectState fun(index: number): boolean
+---@field GetObjectDoorState fun(index: number): number
+---@field GetObjectLockLevel fun(index: number): number
+---@field DoesObjectHavePlayerActivating fun(index: number): boolean
+---@field GetObjectActivatingPid fun(index: number): number
+---@field GetObjectActivatingRefId fun(index: number): string
+---@field GetObjectActivatingRefNum fun(index: number): number
+---@field GetObjectActivatingMpNum fun(index: number): number
+---@field GetObjectActivatingName fun(index: number): string
+---@field GetObjectSummonState fun(index: number): boolean
+---@field GetObjectSummonDuration fun(index: number): number
+---@field DoesObjectHavePlayerSummoner fun(index: number): boolean
+---@field GetObjectSummonerPid fun(index: number): number
+---@field GetObjectSummonerRefId fun(index: number): string
+---@field GetObjectSummonerRefNum fun(index: number): number
+---@field GetObjectSummonerMpNum fun(index: number): number
+---@field GetObjectPosX fun(index: number): number
+---@field GetObjectPosY fun(index: number): number
+---@field GetObjectPosZ fun(index: number): number
+---@field GetObjectRotX fun(index: number): number
+---@field GetObjectRotY fun(index: number): number
+---@field GetObjectRotZ fun(index: number): number
+---@field GetVideoFilename fun(index: number): string
+---@field GetContainerChangesSize fun(objectIndex: number): number
+---@field GetContainerItemRefId fun(objectIndex: number, itemIndex: number): string
+---@field GetContainerItemCount fun(objectIndex: number, itemIndex: number): number
+---@field GetContainerItemCharge fun(objectIndex: number, itemIndex: number): number
+---@field GetContainerItemEnchantmentCharge fun(objectIndex: number, itemIndex: number): number
+---@field GetContainerItemSoul fun(objectIndex: number, itemIndex: number): string
+---@field GetContainerItemActionCount fun(objectIndex: number, itemIndex: number): number
+---@field DoesObjectHaveContainer fun(index: number): boolean
+---@field SetObjectListCell fun(cellDescription: string)
+---@field SetObjectListAction fun(action: number)
+---@field SetObjectListConsoleCommand fun(consoleCommand: string)
+---@field SetObjectRefId fun(refId: string)
+---@field SetObjectRefNum fun(refNum: number)
+---@field SetObjectMpNum fun(mpNum: number)
+---@field SetObjectCount fun(count: number)
+---@field SetObjectCharge fun(charge: number)
+---@field SetObjectEnchantmentCharge fun(enchantmentCharge: number)
+---@field SetObjectSoul fun(soul: string)
+---@field SetObjectGoldValue fun(goldValue: number)
+---@field SetObjectScale fun(scale: number)
+---@field SetObjectState fun(objectState: boolean)
+---@field SetObjectLockLevel fun(lockLevel: number)
+---@field SetObjectSummonDuration fun(summonDuration: number)
+---@field SetObjectDisarmState fun(disarmState: boolean)
+---@field SetObjectSummonState fun(summonState: boolean)
+---@field SetObjectPosition fun(x: number, y: number, z: number)
+---@field SetObjectRotation fun(x: number, y: number, z: number)
+---@field SetObjectActivatingPid fun(pid: number)
+---@field SetObjectDoorState fun(doorState: number)
+---@field SetObjectDoorTeleportState fun(teleportState: boolean)
+---@field SetObjectDoorDestinationCell fun(cellDescription: string)
+---@field SetObjectDoorDestinationPosition fun(x: number, y: number, z: number)
+---@field SetObjectDoorDestinationRotation fun(x: number, z: number)
+---@field SetPlayerAsObject fun(pid: number)
+---@field SetContainerItemRefId fun(refId: string)
+---@field SetContainerItemCount fun(count: number)
+---@field SetContainerItemCharge fun(charge: number)
+---@field SetContainerItemEnchantmentCharge fun(enchantmentCharge: number)
+---@field SetContainerItemSoul fun(soul: string)
+---@field SetContainerItemActionCountByIndex fun(objectIndex: number, itemIndex: number, actionCount: number)
+---@field AddObject fun()
+---@field AddContainerItem fun()
+---@field SendObjectActivate fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendObjectPlace fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendObjectSpawn fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendObjectDelete fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendObjectLock fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendObjectTrap fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendObjectScale fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendObjectState fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendDoorState fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendDoorDestination fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendContainer fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendVideoPlay fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendConsoleCommand fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+
+---@class TES3MP
+---@field GetPosX fun(pid: number): number
+---@field GetPosY fun(pid: number): number
+---@field GetPosZ fun(pid: number): number
+---@field GetPreviousCellPosX fun(pid: number): number
+---@field GetPreviousCellPosY fun(pid: number): number
+---@field GetPreviousCellPosZ fun(pid: number): number
+---@field GetRotX fun(pid: number): number
+---@field GetRotZ fun(pid: number): number
+---@field SetPos fun(pid: number, x: number, y: number, z: number)
+---@field SetRot fun(pid: number, x: number, z: number)
+---@field SetMomentum fun(pid: number, x: number, y: number, z: number)
+---@field SendPos fun(pid: number)
+---@field SendMomentum fun(pid: number)
+
+---@class TES3MP
+---@field ClearJournalChanges fun(pid: number)
+---@field ClearKillChanges fun(pid: number)
+---@field GetJournalChangesSize fun(pid: number): number
+---@field GetKillChangesSize fun(pid: number): number
+---@field AddJournalEntry fun(pid: number, quest: string, index: number, actorRefId: string)
+---@field AddJournalEntryWithTimestamp fun(pid: number, quest: string, index: number, actorRefId: string, daysPassed: number, month: number, day: number)
+---@field AddJournalIndex fun(pid: number, quest: string, index: number)
+---@field AddKill fun(pid: number, refId: string, number: number)
+---@field SetReputation fun(pid: number, value: number)
+---@field GetJournalItemQuest fun(pid: number, index: number): string
+---@field GetJournalItemIndex fun(pid: number, index: number): number
+---@field GetJournalItemType fun(pid: number, index: number): number
+---@field GetJournalItemActorRefId fun(pid: number, index: number): string
+---@field GetKillRefId fun(pid: number, index: number): string
+---@field GetKillNumber fun(pid: number, index: number): number
+---@field GetReputation fun(pid: number): number
+---@field SendJournalChanges fun(pid: number, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendKillChanges fun(pid: number, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendReputation fun(pid: number, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+
+---@class TES3MP
+---@field ClearRecords fun()
+---@field GetRecordType fun(): number
+---@field GetRecordCount fun(): number
+---@field GetRecordEffectCount fun(recordIndex: number): number
+---@field GetRecordId fun(index: number): string
+---@field GetRecordBaseId fun(index: number): string
+---@field GetRecordSubtype fun(index: number): number
+---@field GetRecordName fun(index: number): string
+---@field GetRecordModel fun(index: number): string
+---@field GetRecordIcon fun(index: number): string
+---@field GetRecordScript fun(index: number): string
+---@field GetRecordEnchantmentId fun(index: number): string
+---@field GetRecordEnchantmentCharge fun(index: number): number
+---@field GetRecordAutoCalc fun(index: number): number
+---@field GetRecordCharge fun(index: number): number
+---@field GetRecordCost fun(index: number): number
+---@field GetRecordFlags fun(index: number): number
+---@field GetRecordValue fun(index: number): number
+---@field GetRecordWeight fun(index: number): number
+---@field GetRecordEffectId fun(recordIndex: number, effectIndex: number): number
+---@field GetRecordEffectAttribute fun(recordIndex: number, effectIndex: number): number
+---@field GetRecordEffectSkill fun(recordIndex: number, effectIndex: number): number
+---@field GetRecordEffectRangeType fun(recordIndex: number, effectIndex: number): number
+---@field GetRecordEffectArea fun(recordIndex: number, effectIndex: number): number
+---@field GetRecordEffectDuration fun(recordIndex: number, effectIndex: number): number
+---@field GetRecordEffectMagnitudeMax fun(recordIndex: number, effectIndex: number): number
+---@field GetRecordEffectMagnitudeMin fun(recordIndex: number, effectIndex: number): number
+---@field SetRecordType fun(type: number)
+---@field SetRecordId fun(id: string)
+---@field SetRecordBaseId fun(baseId: string)
+---@field SetRecordInventoryBaseId fun(inventoryBaseId: string)
+---@field SetRecordSubtype fun(subtype: number)
+---@field SetRecordName fun(name: string)
+---@field SetRecordModel fun(model: string)
+---@field SetRecordIcon fun(icon: string)
+---@field SetRecordScript fun(script: string)
+---@field SetRecordEnchantmentId fun(enchantmentId: string)
+---@field SetRecordEnchantmentCharge fun(enchantmentCharge: number)
+---@field SetRecordAutoCalc fun(autoCalc: number)
+---@field SetRecordCharge fun(charge: number)
+---@field SetRecordCost fun(cost: number)
+---@field SetRecordFlags fun(flags: number)
+---@field SetRecordValue fun(value: number)
+---@field SetRecordWeight fun(weight: number)
+---@field SetRecordArmorRating fun(armorRating: number)
+---@field SetRecordHealth fun(health: number)
+---@field SetRecordDamageChop fun(minDamage: number, maxDamage: number)
+---@field SetRecordDamageSlash fun(minDamage: number, maxDamage: number)
+---@field SetRecordDamageThrust fun(minDamage: number, maxDamage: number)
+---@field SetRecordReach fun(reach: number)
+---@field SetRecordSpeed fun(speed: number)
+---@field SetRecordKeyState fun(keyState: boolean)
+---@field SetRecordScrollState fun(scrollState: boolean)
+---@field SetRecordSkillId fun(skillId: number)
+---@field SetRecordText fun(text: string)
+---@field SetRecordHair fun(hair: string)
+---@field SetRecordHead fun(head: string)
+---@field SetRecordGender fun(gender: number)
+---@field SetRecordRace fun(race: string)
+---@field SetRecordClass fun(charClass: string)
+---@field SetRecordFaction fun(faction: string)
+---@field SetRecordLevel fun(level: number)
+---@field SetRecordMagicka fun(magicka: number)
+---@field SetRecordFatigue fun(fatigue: number)
+---@field SetRecordAIFight fun(aiFight: number)
+---@field SetRecordIdByIndex fun(index: number, id: string)
+---@field SetRecordEnchantmentIdByIndex fun(index: number, enchantmentId: string)
+---@field SetRecordEffectId fun(effectId: number)
+---@field SetRecordEffectAttribute fun(attributeId: number)
+---@field SetRecordEffectSkill fun(skillId: number)
+---@field SetRecordEffectRangeType fun(rangeType: number)
+---@field SetRecordEffectArea fun(area: number)
+---@field SetRecordEffectDuration fun(duration: number)
+---@field SetRecordEffectMagnitudeMax fun(magnitudeMax: number)
+---@field SetRecordEffectMagnitudeMin fun(magnitudeMin: number)
+---@field SetRecordBodyPartType fun(partType: number)
+---@field SetRecordBodyPartIdForMale fun(partId: string)
+---@field SetRecordBodyPartIdForFemale fun(partId: string)
+---@field SetRecordInventoryItemId fun(itemId: string)
+---@field SetRecordInventoryItemCount fun(count: number)
+---@field AddRecord fun()
+---@field AddRecordEffect fun()
+---@field AddRecordBodyPart fun()
+---@field AddRecordInventoryItem fun()
+---@field SendRecordDynamic fun(pid: number, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+
+---@class TES3MP
+---@field StopServer fun(code: number)
+---@field Kick fun(pid: number)
+---@field BanAddress fun(ipAddress: string)
+---@field UnbanAddress fun(ipAddress: string)
+---@field GetOperatingSystemType fun(): string
+---@field GetArchitectureType fun(): string
+---@field GetServerVersion fun(): string
+---@field GetProtocolVersion fun(): string
+---@field GetAvgPing fun(pid: number): number
+---@field GetIP fun(pid: number): string
+---@field GetPort fun(): number
+---@field GetMaxPlayers fun(): number
+---@field HasPassword fun(): boolean
+---@field GetPluginEnforcementState fun(): boolean
+---@field GetScriptErrorIgnoringState fun(): boolean
+---@field SetGameMode fun(gameMode: string)
+---@field SetHostname fun(name: string)
+---@field SetServerPassword fun(password: string)
+---@field SetPluginEnforcementState fun(state: boolean)
+---@field SetScriptErrorIgnoringState fun(state: boolean)
+---@field SetRuleString fun(key: string, value: string)
+---@field SetRuleValue fun(key: string, value: number)
+---@field AddPluginHash fun(pluginName: string, hash: string)
+
+---@class TES3MP
+---@field SetDifficulty fun(pid: number, difficulty: number)
+---@field SetEnforcedLogLevel fun(pid: number, enforcedLogLevel: number)
+---@field SetPhysicsFramerate fun(pid: number, physicsFramerate: number)
+---@field SetConsoleAllowed fun(pid: number, state: boolean)
+---@field SetBedRestAllowed fun(pid: number, state: boolean)
+---@field SetWildernessRestAllowed fun(pid: number, state: boolean)
+---@field SetWaitAllowed fun(pid: number, state: boolean)
+---@field SendSettings fun(pid: number)
+
+---@class TES3MP
+---@field GetScale fun(pid: number): number
+---@field IsWerewolf fun(pid: number): boolean
+---@field GetCreatureRefId fun(pid: number): string
+---@field GetCreatureNameDisplayState fun(pid: number): boolean
+---@field SetScale fun(pid: number, scale: number)
+---@field SetWerewolfState fun(pid: number, isWerewolf: boolean)
+---@field SetCreatureRefId fun(pid: number, refId: string)
+---@field SetCreatureNameDisplayState fun(pid: number, displayState: boolean)
+---@field SendShapeshift fun(pid: number)
+
+---@class TES3MP
+---@field ClearSpellbookChanges fun(pid: number)
+---@field GetSpellbookChangesSize fun(pid: number): number
+---@field GetSpellbookChangesAction fun(pid: number): number
+---@field SetSpellbookChangesAction fun(pid: number, action: number)
+---@field AddSpell fun(pid: number, spellId: string)
+---@field GetSpellId fun(pid: number, index: number): string
+---@field SendSpellbookChanges fun(pid: number, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+
+---@class TES3MP
+---@field GetAttributeCount fun(): number
+---@field GetSkillCount fun(): number
+---@field GetAttributeId fun(name: string): number
+---@field GetSkillId fun(name: string): number
+---@field GetAttributeName fun(attributeId: number): string
+---@field GetSkillName fun(skillId: number): string
+---@field GetName fun(pid: number): string
+---@field GetRace fun(pid: number): string
+---@field GetHead fun(pid: number): string
+---@field GetHair fun(pid: number): string
+---@field GetIsMale fun(pid: number): number
+---@field GetModel fun(pid: number): string
+---@field GetBirthsign fun(pid: number): string
+---@field GetLevel fun(pid: number): number
+---@field GetLevelProgress fun(pid: number): number
+---@field GetHealthBase fun(pid: number): number
+---@field GetHealthCurrent fun(pid: number): number
+---@field GetMagickaBase fun(pid: number): number
+---@field GetMagickaCurrent fun(pid: number): number
+---@field GetFatigueBase fun(pid: number): number
+---@field GetFatigueCurrent fun(pid: number): number
+---@field GetAttributeBase fun(pid: number, attributeId: number): number
+---@field GetAttributeDamage fun(pid: number, attributeId: number): number
+---@field GetAttributeModifier fun(pid: number, attributeId: number): number
+---@field GetSkillBase fun(pid: number, skillId: number): number
+---@field GetSkillDamage fun(pid: number, skillId: number): number
+---@field GetSkillModifier fun(pid: number, skillId: number): number
+---@field GetSkillProgress fun(pid: number, skillId: number): number
+---@field GetSkillIncrease fun(pid: number, attributeId: number): number
+---@field GetBounty fun(pid: number): number
+---@field SetName fun(pid: number, name: string)
+---@field SetRace fun(pid: number, race: string)
+---@field SetHead fun(pid: number, head: string)
+---@field SetHair fun(pid: number, hairstyle: string)
+---@field SetIsMale fun(pid: number, state: number)
+---@field SetModel fun(pid: number, model: string)
+---@field SetBirthsign fun(pid: number, name: string)
+---@field SetResetStats fun(pid: number, resetStats: boolean)
+---@field SetLevel fun(pid: number, value: number)
+---@field SetLevelProgress fun(pid: number, value: number)
+---@field SetHealthBase fun(pid: number, value: number)
+---@field SetHealthCurrent fun(pid: number, value: number)
+---@field SetMagickaBase fun(pid: number, value: number)
+---@field SetMagickaCurrent fun(pid: number, value: number)
+---@field SetFatigueBase fun(pid: number, value: number)
+---@field SetFatigueCurrent fun(pid: number, value: number)
+---@field SetAttributeBase fun(pid: number, attributeId: number, value: number)
+---@field SetAttributeDamage fun(pid: number, attributeId: number, value: number)
+---@field ClearAttributeModifier fun(pid: number, attributeId: number)
+---@field SetSkillBase fun(pid: number, skillId: number, value: number)
+---@field SetSkillDamage fun(pid: number, skillId: number, value: number)
+---@field ClearSkillModifier fun(pid: number, skillId: number)
+---@field SetSkillProgress fun(pid: number, skillId: number, value: number)
+---@field SetSkillIncrease fun(pid: number, attributeId: number, value: number)
+---@field SetBounty fun(pid: number, value: number)
+---@field SetCharGenStage fun(pid: number, currentStage: number, endStage: number)
+---@field SendBaseInfo fun(pid: number)
+---@field SendStatsDynamic fun(pid: number)
+---@field SendAttributes fun(pid: number)
+---@field SendSkills fun(pid: number)
+---@field SendLevel fun(pid: number)
+---@field SendBounty fun(pid: number)
+
+---@class TES3MP
+---@field ReadReceivedWorldstate fun()
+---@field CopyReceivedWorldstateToStore fun()
+---@field ClearMapChanges fun()
+---@field GetMapChangesSize fun(): number
+---@field GetWeatherRegion fun(): string
+---@field GetWeatherCurrent fun(): number
+---@field GetWeatherNext fun(): number
+---@field GetWeatherQueued fun(): number
+---@field GetWeatherTransitionFactor fun(): number
+---@field GetMapTileCellX fun(index: number): number
+---@field GetMapTileCellY fun(index: number): number
+---@field SetAuthorityRegion fun(authorityRegion: string)
+---@field SetWeatherRegion fun(region: string)
+---@field SetWeatherForceState fun(forceState: boolean)
+---@field SetWeatherCurrent fun(currentWeather: number)
+---@field SetWeatherNext fun(nextWeather: number)
+---@field SetWeatherQueued fun(queuedWeather: number)
+---@field SetWeatherTransitionFactor fun(transitionFactor: number)
+---@field SetHour fun(hour: number)
+---@field SetDay fun(day: number)
+---@field SetMonth fun(month: number)
+---@field SetYear fun(year: number)
+---@field SetDaysPassed fun(daysPassed: number)
+---@field SetTimeScale fun(timeScale: number)
+---@field SetPlayerCollisionState fun(state: boolean)
+---@field SetActorCollisionState fun(state: boolean)
+---@field SetPlacedObjectCollisionState fun(state: boolean)
+---@field UseActorCollisionForPlacedObjects fun(useActorCollision: boolean)
+---@field AddEnforcedCollisionRefId fun(refId: string)
+---@field ClearEnforcedCollisionRefIds fun()
+---@field SaveMapTileImageFile fun(index: number, filePath: string)
+---@field LoadMapTileImageFile fun(cellX: number, cellY: number, filePath: string)
+---@field SendWorldRegionAuthority fun(pid: number)
+---@field SendWorldMap fun(pid: number, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendWorldTime fun(pid: number, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendWorldWeather fun(pid: number, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendWorldCollisionOverride fun(pid: number, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+
+--- The following declaration was NOT extracted from teh docs website, this is
+--- only used internal to the server tools that are here
+
+---@class TES3MP
+---@field GenerateRandomString fun(length: number): string
+---@field GetSHA256Hash fun(input: string): string
+---@field CreateTimer fun(functionName: string, seconds: number): number
+---@field CreateTimerEx fun(functionName: string, seconds: number, argTypes: string, ...: any)
+---@field StartTimer fun(timerId: number)
+---@field StopTimer fun(timerId: number)
+---@field RestartTimer fun(timerId: number, time: number)
+---@field SendSpellsActiveChanges fun(pid: number, UNKNOWN: boolean)
+---@field ClearCooldownChanges fun(pid: number)
+---@field AddCooldownSpell fun(pid: number, UNKNOWN: unknown, UNKNOWN: unknown, UNKNOWN: unknown)
+---@field SendCooldownChanges fun(pid: number)
+---@field ClearAlliedPlayersForPlayer fun(pid: number)
+---@field AddAlliedPlayerForPlayer fun(pid: number, otherPid: number)
+---@field SendAlliedPlayers fun(pid: number, UNKNOWN: boolean)
+---@field ClearGameSettingValues fun(pid: number)
+---@field SetGameSettingValue fun(pid: number, settingName: string, settingValue: string)
+---@field MessageBox fun(pid: number, UNKNOWN: number, message: string)
+---@field ClearSynchronizedClientScriptIds fun()
+---@field AddSynchronizedClientScriptId fun(scriptId: string)
+---@field ClearSynchronizedClientGlobalIds fun()
+---@field AddSynchronizedClientGlobalId fun(globalId: string)
+---@field SendClientScriptSettings fun()
+---@field ClearCellsToReset fun()
+---@field AddCellToReset fun(cellDescription: string)
+---@field SendCellReset fun(pid: number, sendToOtherPlayers: boolean) Discovered send to other players
+---@field SetDataFileEnforcementState fun(value: boolean)
+---@field AddDataFileRequirement fun(name: string, checksum: string)
+---@field ClearClientGlobals fun()
+---@field AddClientGlobalInteger fun(variableId: number, variableBroadType: unknown, variableType: number)
+---@field AddClientGlobalFloat fun(variableId: number, variableBoradType: unknown)
+---@field SendClientScriptGlobal fun(pid: number)
+---@field ClearDestinationOverrides fun()
+---@field AddDestinationOverride fun(oldCellDescription: string, newCellDesctiption: string)
+---@field SendWorldDestinationOverride fun(pid: number)
+---@field DoesFilePathExist fun(path: string): boolean
+---@field SendWorldKillCount fun(pid: number, UNKNOWN: boolean)
+---@field SendObjectSound fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendObjectRestock fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendObjectDialogueChoice fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field GetDataPath fun(): string
+---@field GetObjectListConsoleCommand fun()
+---@field SendObjectMiscellaneous fun(forEveryone: boolean)
+---@field SendClientScriptLocal fun(forEveryone: boolean)
+---@field SendActorSpellsActiveChanges fun()
+---@field SetActorDeathState fun(deathstate: unknown)
+---@field SetActorDeathInstant fun(UNKNOWN: boolean)
+---@field SendActorDeath fun()
+---@field SetObjectListContainerSubAction fun(actionType: number)
+---@field SetExterior fun(pid: number, xCoord: integer, yCoord: integer)

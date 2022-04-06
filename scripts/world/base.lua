@@ -1,4 +1,6 @@
-stateHelper = require("stateHelper")
+local stateHelper = require("stateHelper")
+
+---@class BaseWorld
 local BaseWorld = class("BaseWorld")
 
 -- Keep this here because it's required in mathematical operations
@@ -33,7 +35,24 @@ function BaseWorld:__init()
         destinationOverrides = {},
         customVariables = {}
     }
+
+    ---ABSTRACT members
+    self.hasEntry = nil
 end
+
+-------------------------------------------------------------------------------
+--- ABSTRACT
+-------------------------------------------------------------------------------
+
+function BaseWorld:QuicksaveToDrive()
+    error('UNIMPLEMENTED')
+end
+
+function BaseWorld:QuicksaveCoreVariablesToDrive()
+    error('UNIMPLEMENTED')
+end
+
+-------------------------------------------------------------------------------
 
 function BaseWorld:HasEntry()
     return self.hasEntry

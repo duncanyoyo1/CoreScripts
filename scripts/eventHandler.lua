@@ -417,7 +417,7 @@ eventHandler.OnPlayerConnect = function(pid, playerName)
 
         -- Send instanced spawn cell record now so it has time to arrive
         if config.useInstancedSpawn == true and config.instancedSpawn ~= nil then
-            spawnUsed = tableHelper.shallowCopy(config.instancedSpawn)
+            local spawnUsed = tableHelper.shallowCopy(config.instancedSpawn)
             local originalCellDescription = spawnUsed.cellDescription
             spawnUsed.cellDescription = originalCellDescription .. " - Instance for " .. playerName
 
@@ -683,7 +683,7 @@ eventHandler.OnGUIAction = function(pid, idGui, data)
                     if Players[pid]:HasAccount() then
                         tes3mp.LogMessage(enumerations.log.ERROR, "Warning! " .. logicHandler.GetChatName(pid) ..
                             " replied to login for existing account with registration attempt and has been banned")
-                        table.insert(banList.ipAddresses, ipAddress)
+                        table.insert(banList.ipAddresses, tes3mp.GetIP(pid))
                         SaveBanList()
                         tes3mp.BanAddress(tes3mp.GetIP(pid))
                         return

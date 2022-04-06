@@ -53,7 +53,7 @@ function contentFixer.UnequipDeadlyItems(pid)
 
     for arrayIndex, itemRefId in pairs(deadlyItems) do
         if tableHelper.containsKeyValue(Players[pid].data.equipment, "refId", itemRefId, true) then
-            local itemSlot = tableHelper.getIndexByNestedKeyValue(Players[pid].data.equipment, "refId", itemRefId, true)
+            local itemSlot = tableHelper.getIndexByNestedKeyValue(Players[pid].data.equipment, "refId", itemRefId)
             Players[pid].data.equipment[itemSlot] = nil
             itemsFound = itemsFound + 1
         end

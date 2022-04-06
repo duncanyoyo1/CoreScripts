@@ -1,6 +1,7 @@
 Database = require("database")
 local BasePlayer = require("player.base")
 
+---@class SqlPlayer : BasePlayer
 local Player = class("Player", BasePlayer)
 
 function Player:__init(pid, playerName)

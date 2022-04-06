@@ -1,6 +1,7 @@
 Database = require("database")
 local BaseRecordStore = require("recordstore.base")
 
+---@class SqlRecordStore : BaseRecordStore
 local RecordStore = class("RecordStore", BaseRecordStore)
 
 function RecordStore:__init()

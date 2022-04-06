@@ -1,8 +1,14 @@
+---@class EventStatus
+---@field validDefaultHandler boolean
+---@field validCustomHandlers boolean
+
+---@class CustomEventHooks
 local customEventHooks = {}
 
 customEventHooks.validators = {}
 customEventHooks.handlers = {}
 
+---@return EventStatus
 function customEventHooks.makeEventStatus(validDefaultHandler, validCustomHandlers)
     return {
         validDefaultHandler = validDefaultHandler,
@@ -10,6 +16,7 @@ function customEventHooks.makeEventStatus(validDefaultHandler, validCustomHandle
     }
 end
 
+---@return EventStatus
 function customEventHooks.updateEventStatus(oldStatus, newStatus)
     if newStatus == nil then
         return oldStatus
@@ -30,6 +37,8 @@ function customEventHooks.updateEventStatus(oldStatus, newStatus)
     return result
 end
 
+---@param event string
+---@param callback fun(event: EventStatus, ...): EventStatus
 function customEventHooks.registerValidator(event, callback)
     if customEventHooks.validators[event] == nil then
         customEventHooks.validators[event] = {}
@@ -37,6 +46,8 @@ function customEventHooks.registerValidator(event, callback)
     table.insert(customEventHooks.validators[event], callback)
 end
 
+---@param event string
+---@param callback fun(event: EventStatus, ...): EventStatus
 function customEventHooks.registerHandler(event, callback)
     if customEventHooks.handlers[event] == nil then
         customEventHooks.handlers[event] = {}
@@ -44,6 +55,7 @@ function customEventHooks.registerHandler(event, callback)
     table.insert(customEventHooks.handlers[event], callback)
 end
 
+---@return EventStatus
 function customEventHooks.triggerValidators(event, args)
     local eventStatus = customEventHooks.makeEventStatus(true, true)
     if customEventHooks.validators[event] ~= nil then

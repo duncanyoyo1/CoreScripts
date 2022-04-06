@@ -9,9 +9,15 @@ packetReader = require("packetReader")
 
 local logicHandler = {}
 
+---@alias Player JsonPlayer|SqlPlayer
+---@type Player[]
 Players = {}
+---@alias Cell JsonCell|SqlCell
+---@type Cell[]
 LoadedCells = {}
+---@type JsonRecordStore|SqlRecordStore
 RecordStores = {}
+---@type JsonWorld|SqlWorld
 WorldInstance = nil
 ObjectLoops = {}
 Menus = {}
@@ -968,6 +974,7 @@ logicHandler.ResetCell = function(pid, cellDescription)
     tes3mp.SendMessage(pid, "Resetting cell " .. cellDescription .. "\n")
 
     -- If the desired cell is not loaded, load it temporarily
+    local unloadCellAtEnd = false
     if LoadedCells[cellDescription] == nil then
         logicHandler.LoadCell(cellDescription)
         unloadCellAtEnd = true

@@ -546,7 +546,7 @@ packetReader.GetWorldMapTileArray = function()
     local mapTileCount = tes3mp.GetMapChangesSize()
 
     for index = 0, mapTileCount - 1 do
-        mapTile = {
+        local mapTile = {
             cellX = tes3mp.GetMapTileCellX(index),
             cellY = tes3mp.GetMapTileCellY(index),
         }

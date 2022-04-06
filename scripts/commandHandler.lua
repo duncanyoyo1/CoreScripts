@@ -944,12 +944,7 @@ function commandHandler.ProcessCommand(pid, cmd)
                     local distance, duration = tonumber(cmd[4]), tonumber(cmd[5])
 
                     if type(distance) == "number" and type(duration) == "number" then
-
-                        if cmd[6] == "true" then
-                            shouldRepeat = true
-                        else
-                            shouldRepeat = false
-                        end
+                        local shouldRepeat = cmd[6] == 'true'
 
                         logicHandler.SetAIForActor(cell, uniqueIndex, actionNumericalId, nil, nil, nil, nil, nil,
                             distance, duration, shouldRepeat)

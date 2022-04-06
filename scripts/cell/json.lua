@@ -3,6 +3,7 @@ fileHelper = require("fileHelper")
 tableHelper = require("tableHelper")
 local BaseCell = require("cell.base")
 
+---@class JsonCell : BaseCell
 local Cell = class("Cell", BaseCell)
 
 function Cell:__init(cellDescription)

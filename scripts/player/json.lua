@@ -3,6 +3,7 @@ fileHelper = require("fileHelper")
 tableHelper = require("tableHelper")
 local BasePlayer = require("player.base")
 
+---@class JsonPlayer : BasePlayer
 local Player = class("Player", BasePlayer)
 
 function Player:__init(pid, playerName)

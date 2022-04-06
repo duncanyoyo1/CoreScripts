@@ -1,13 +1,105 @@
-// This file lets you enforce a certain plugin list and order for all clients
-// attempting to join this server
-//
-// By default, only the English and Russian editions of Morrowind are allowed,
-// because the German and French editions have hardcoded translations, whereas
-// the Russian edition has localization files that make it compatible with the
-// English edition
-
 [
-    {"Morrowind.esm": ["0x7B6AF5B9", "0x34282D67"]},
-    {"Tribunal.esm": ["0xF481F334", "0x211329EF"]},
-    {"Bloodmoon.esm": ["0x43DD2132", "0x9EB62F26"]}
+    {
+        "Morrowind.esm": [
+            "0x7B6AF5B9",
+            "0x34282D67"
+        ]
+    },
+    {
+        "Tribunal.esm": [
+            "0xF481F334",
+            "0x211329EF"
+        ]
+    },
+    {
+        "Bloodmoon.esm": [
+            "0x43DD2132",
+            "0x9EB62F26"
+        ]
+    },
+    {
+        "Tamriel_Data.esm": [
+            "0x8F9CE167"
+        ]
+    },
+    {
+        "TOTSP TD Content Integration.esp": [
+            "0xFF2598E3"
+        ]
+    },
+    {
+        "TOTSP TD Content Integration - Spiders.esp": [
+            "0x1D1D3ED6"
+        ]
+    },
+    {
+        "TR_Mainland.esm": [
+            "0x33277D5B"
+        ]
+    },
+    {
+        "TR_Preview.esp": [
+            "0x01E8B77A"
+        ]
+    },
+    {
+        "TOTSP_TR_Preview.esp": [
+            "0xA116B257"
+        ]
+    },
+    {
+        "TR_Travels_(Preview_and_Mainland).esp": [
+            "0x2E02D66E"
+        ]
+    },
+    {
+        "TR_Factions.esp": [
+            "0x9879092A"
+        ]
+    },
+    {
+        "Sky_Main.esm": [
+            "0xDD134F29"
+        ]
+    },
+    {
+        "Solstheim Tomb of The Snow Prince.esm": [
+            "0x71933E2E"
+        ]
+    },
+    {
+        "Patch for Purists.esm": [
+            "0x81362B3F"
+        ]
+    },
+    {
+        "Expansion Delay.ESP": [
+            "0xC8424096"
+        ]
+    },
+    {
+        "Patch for Purists - Semi-Purist Fixes.ESP": [
+            "0x7AC1FB23"
+        ]
+    },
+    {
+        "TOTSP_Patch_for_Purists_4.0.2.esp": [
+            "0xA32E49BF"
+        ]
+    },
+    {
+        "Morrowind Rebirth - Races [Addon].esp": [
+            "0x94C5B4E5"
+        ]
+    },
+    {
+        "Morrowind Rebirth - Birthsigns [Addon].ESP": [
+            "0x9E1E9A8"
+        ]
+    },
+    {
+        "Missing snow armor.esp": [
+            "0xBE36209B"
+        ]
+    }
 ]

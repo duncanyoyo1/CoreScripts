@@ -1,7 +1,9 @@
 require("config")
 require("patterns")
-stateHelper = require("stateHelper")
+local stateHelper = require("stateHelper")
 tableHelper = require("tableHelper")
+
+---@class BasePlayer
 local BasePlayer = class("BasePlayer")
 
 function BasePlayer:__init(pid, playerName)
@@ -134,7 +136,21 @@ function BasePlayer:__init(pid, playerName)
     self.previousEquipment = {}
 
     self.hasFinishedInitialTeleportation = false
+
+    self.name = nil -- set weirdly in the event handler...
+    ---ABSTRACT members
+    self.hasEntry = nil
 end
+
+-------------------------------------------------------------------------------
+--- ABSTRACT
+-------------------------------------------------------------------------------
+
+function BasePlayer:QuicksaveToDrive()
+    error('UNIMPLEMENTED')
+end
+
+-------------------------------------------------------------------------------
 
 function BasePlayer:Destroy()
     if self.loginTimerId ~= nil then

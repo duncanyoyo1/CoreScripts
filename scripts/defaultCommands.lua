@@ -23,7 +23,7 @@ local invalidCommand = function(pid)
     tes3mp.SendMessage(pid, color.Error .. message .. color.Default, false)
 end
 
-defaultCommands = {}
+local defaultCommands = {}
 
 -- Commands
 defaultCommands.msg = function(pid, cmd)
@@ -33,7 +33,7 @@ defaultCommands.msg = function(pid, cmd)
         tes3mp.SendMessage(pid, "You cannot send a blank message.\n")
     elseif logicHandler.CheckPlayerValidity(pid, cmd[2]) then
         local targetPid = tonumber(cmd[2])
-        message = logicHandler.GetChatName(pid) .. " to " .. logicHandler.GetChatName(targetPid) .. ": "
+        local message = logicHandler.GetChatName(pid) .. " to " .. logicHandler.GetChatName(targetPid) .. ": "
         message = message .. tableHelper.concatenateFromIndex(cmd, 3) .. "\n"
         tes3mp.SendMessage(pid, message, false)
         tes3mp.SendMessage(targetPid, message, false)

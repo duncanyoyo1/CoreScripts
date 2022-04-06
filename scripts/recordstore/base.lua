@@ -1,3 +1,4 @@
+---@class BaseRecordStore
 local BaseRecordStore = class("BaseRecordStore")
 
 BaseRecordStore.defaultData = 
@@ -15,7 +16,24 @@ function BaseRecordStore:__init(storeType)
 
     self.data = tableHelper.deepCopy(self.defaultData)
     self.storeType = storeType
+
+    ---ABSTRACT members
+    self.hasEntry = nil
 end
+
+-------------------------------------------------------------------------------
+--- ABSTRACT
+-------------------------------------------------------------------------------
+
+function BaseRecordStore:QuicksaveToDrive()
+    error('UNIMPLEMENTED')
+end
+
+function BaseRecordStore:QuicksaveCoreVariablesToDrive()
+    error('UNIMPLEMENTED')
+end
+
+-------------------------------------------------------------------------------
 
 function BaseRecordStore:HasEntry()
     return self.hasEntry

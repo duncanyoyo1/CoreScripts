@@ -5,10 +5,10 @@ tableHelper = require("tableHelper")
 inventoryHelper = require("inventoryHelper")
 packetBuilder = require("packetBuilder")
 
+---@class BaseCell
 local BaseCell = class("BaseCell")
 
 function BaseCell:__init(cellDescription)
-
     self.data =
     {
         entry = {
@@ -51,7 +51,20 @@ function BaseCell:__init(cellDescription)
         self.gridX = tonumber(gridX)
         self.gridY = tonumber(gridY)
     end
+
+    ---ABSTRACT members
+    self.hasEntry = nil
 end
+
+-------------------------------------------------------------------------------
+--- ABSTRACT
+-------------------------------------------------------------------------------
+
+function BaseCell:QuicksaveToDrive()
+    error('UNIMPLEMENTED')
+end
+
+-------------------------------------------------------------------------------
 
 function BaseCell:ContainsPosition(posX, posY)
 

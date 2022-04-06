@@ -3,6 +3,7 @@ fileHelper = require("fileHelper")
 tableHelper = require("tableHelper")
 local BaseRecordStore = require("recordstore.base")
 
+---@class JsonRecordStore : BaseRecordStore
 local RecordStore = class("RecordStore", BaseRecordStore)
 
 function RecordStore:__init(storeType)
