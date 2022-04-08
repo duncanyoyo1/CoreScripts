@@ -13,8 +13,10 @@
 --   players based on the value of config.shareJournal
 -- * "kills" is where you place variables that should be handled the same as kill counts
 --   and should be cleared whenever the regular kill counts are
--- * "faction" is where you place variables that should be synchronized and shared across
+-- * "factionRanks" is where you place variables that should be synchronized and shared across
 --   players based on the value of config.shareFactionRanks
+-- * "factionExpulsion" is where you place variables that should be synchronized and shared across
+--   players based on the value of config.shareFactionExpulsion
 -- * "worldwide" is where you place variables that are always shared across all players
 --   because they affect the physical world in a way that should be visible to everyone,
 --   i.e. they affect structures, mechanism states, water levels, and so on
@@ -40,9 +42,6 @@ if tableHelper.containsCaseInsensitiveString(clientDataFiles, "Morrowind.esm") t
                 "pchasturnin",
                 -- player equipment
                 "wearinglegionuni", "wearingordinatoruni", "wearinghelmhhda", "wraithguardequipped", "tgglove",
-                -- faction expulsion
-                "expredoran", "expmagesguild", "expfightersguild", "exptemple", "expmoragtong", "expimperialcult",
-                "expimperiallegion", "expthievesguild",
                 -- quest variables that are already set correctly without being synced
                 "fargothwalk",
                 -- not actually used at all
@@ -79,8 +78,14 @@ if tableHelper.containsCaseInsensitiveString(clientDataFiles, "Morrowind.esm") t
                 -- side quests
                 "ratskilled", "vampkills"
             },
-            faction = {
+            factionRanks = {
+                -- membership in mini-factions
                 "vampclan"
+            },
+            factionExpulsion = {
+                -- faction expulsion forgiveness and timers
+                "expredoran", "expmagesguild", "expfightersguild", "exptemple", "expmoragtong", "expimperialcult",
+                "expimperiallegion", "expthievesguild"
             },
             worldwide = {
                 -- mechanisms
@@ -219,7 +224,10 @@ if tableHelper.containsCaseInsensitiveString(clientDataFiles, "Tamriel_Data.ESM"
             kills = {
             
             },
-            faction = {
+            factionRanks = {
+                
+            },
+            factionExpulsion = {
                 
             },
             worldwide = {
@@ -299,7 +307,10 @@ if tableHelper.containsCaseInsensitiveString(clientDataFiles, "TR_Mainland.ESM")
             kills = {
 
             },
-            faction = {
+            factionRanks = {
+                
+            },
+            factionExpulsion = {
                 
             },
             worldwide = {
@@ -348,8 +359,11 @@ if tableHelper.containsCaseInsensitiveString(clientDataFiles, "Cyrodiil_Main.esm
             kills = {
 
             },
-            faction = {
+            factionRanks = {
                 
+            },
+            factionExpulsion = {
+
             },
             worldwide = {
                 -- mechanisms
