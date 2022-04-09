@@ -60,6 +60,18 @@ end
 --- ABSTRACT
 -------------------------------------------------------------------------------
 
+function BaseCell:CreateEntry()
+    error('UNIMPLEMENTED')
+end
+
+function BaseCell:SaveToDrive()
+    error('UNIMPLEMENTED')
+end
+
+function BaseCell:LoadFromDrive()
+    error('UNIMPLEMENTED')
+end
+
 function BaseCell:QuicksaveToDrive()
     error('UNIMPLEMENTED')
 end

@@ -452,7 +452,7 @@ function SaintRevive:OnServerPostInit()
 		
 		RecordStores[self.config.objectType].data.permanentRecords[self.config.recordRefId] = data
 		
-		RecordStores[self.config.objectType]:Save()
+		RecordStores[self.config.objectType]:SaveToDrive()
         logger:Info("Created record for custom marker")
     else
         logger:Info("Custom record already exists, skipping")

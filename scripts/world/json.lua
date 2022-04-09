@@ -63,14 +63,4 @@ function World:LoadFromDrive()
     end
 end
 
-
--- Deprecated functions with confusing names, kept around for backwards compatibility
-function World:Save()
-    self:SaveToDrive()
-end
-
-function World:Load()
-    self:LoadFromDrive()
-end
-
 return World

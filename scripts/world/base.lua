@@ -44,6 +44,14 @@ end
 --- ABSTRACT
 -------------------------------------------------------------------------------
 
+function BaseWorld:CreateEntry()
+    error('UNIMPLEMENTED')
+end
+
+function BaseWorld:LoadFromDrive()
+    error('UNIMPLEMENTED')
+end
+
 function BaseWorld:QuicksaveToDrive()
     error('UNIMPLEMENTED')
 end

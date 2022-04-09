@@ -64,13 +64,4 @@ function Player:LoadFromDrive()
     end
 end
 
--- Deprecated functions with confusing names, kept around for backwards compatibility
-function Player:Save()
-    self:SaveToDrive()
-end
-
-function Player:Load()
-    self:LoadFromDrive()
-end
-
 return Player

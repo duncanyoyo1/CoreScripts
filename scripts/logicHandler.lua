@@ -9,15 +9,15 @@ packetReader = require("packetReader")
 
 local logicHandler = {}
 
----@alias Player JsonPlayer|SqlPlayer
+---@alias Player BasePlayer
 ---@type Player[]
 Players = {}
----@alias Cell JsonCell|SqlCell
+---@alias Cell BaseCell
 ---@type Cell[]
 LoadedCells = {}
----@type JsonRecordStore|SqlRecordStore
+---@type table<string, BaseRecordStore>
 RecordStores = {}
----@type JsonWorld|SqlWorld
+---@type BaseWorld
 WorldInstance = nil
 ObjectLoops = {}
 Menus = {}
@@ -558,7 +558,7 @@ logicHandler.CreateObjects = function(cellDescription, objectsToCreate, packetTy
         end
     end
 
-    cell:Save()
+    cell:SaveToDrive()
 
     if unloadCellAtEnd then
         logicHandler.UnloadCell(cellDescription)
@@ -607,6 +607,7 @@ logicHandler.DeleteObject = function(pid, cellDescription, uniqueIndex, forEvery
 
     if forEveryone then
         -- If the desired cell is not loaded, load it temporarily
+        local unloadCellAtEnd = false
         if LoadedCells[cellDescription] == nil then
             logicHandler.LoadCell(cellDescription)
             unloadCellAtEnd = true

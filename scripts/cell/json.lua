@@ -29,7 +29,7 @@ function Cell:CreateEntry()
         tes3mp.LogMessage(enumerations.log.INFO, "Successfully created JSON file for cell " .. self.entryName)
     else
         local message = "Failed to create JSON file for " .. self.entryName
-        tes3mp.SendMessage(self.pid, message, true)
+        tes3mp.LogMessage(enumerations.log.WARN, message, true)
     end
 end
 
@@ -57,15 +57,6 @@ function Cell:LoadFromDrive()
         -- all string number keys into numerical keys
         tableHelper.fixNumericalKeys(self.data)
     end
-end
-
--- Deprecated function with confusing name, kept around for backwards compatibility
-function Cell:Save()
-    self:SaveToDrive()
-end
-
-function Cell:Load()
-    self:LoadFromDrive()
 end
 
 return Cell

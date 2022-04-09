@@ -54,13 +54,4 @@ function RecordStore:LoadFromDrive()
     end
 end
 
--- Deprecated functions with confusing names, kept around for backwards compatibility
-function RecordStore:Save()
-    self:SaveToDrive()
-end
-
-function RecordStore:Load()
-    self:LoadFromDrive()
-end
-
 return RecordStore

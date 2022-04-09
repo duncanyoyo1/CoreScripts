@@ -95,9 +95,9 @@ defaultCommands.joinTeam = function(pid, cmd)
 
             table.insert(Players[pid].data.alliedPlayers, Players[targetPid].accountName)
             table.insert(Players[targetPid].data.alliedPlayers, Players[pid].accountName)
-            Players[pid]:Save()
+            Players[pid]:SaveToDrive()
             Players[pid]:LoadAllies()
-            Players[targetPid]:Save()
+            Players[targetPid]:SaveToDrive()
             Players[targetPid]:LoadAllies()
         else
             senderMessage = "You have not yet been invited to become an ally of " .. logicHandler.GetChatName(targetPid) .. "\n"
@@ -126,9 +126,9 @@ defaultCommands.leaveTeam = function(pid, cmd)
             tableHelper.cleanNils(Players[pid].data.alliedPlayers)
             tableHelper.removeValue(Players[targetPid].data.alliedPlayers, Players[pid].accountName)
             tableHelper.cleanNils(Players[targetPid].data.alliedPlayers)
-            Players[pid]:Save()
+            Players[pid]:SaveToDrive()
             Players[pid]:LoadAllies()
-            Players[targetPid]:Save()
+            Players[targetPid]:SaveToDrive()
             Players[targetPid]:LoadAllies()
         else
             senderMessage = "You are not an ally of " .. logicHandler.GetChatName(targetPid) .. "\n"
@@ -381,6 +381,7 @@ defaultCommands.overrideDestination = function(pid, cmd)
         return
     end
 
+    ---@type BaseWorld|BasePlayer
     local stateObject
     local targetPid
 
@@ -397,7 +398,7 @@ defaultCommands.overrideDestination = function(pid, cmd)
     end
 
     stateObject.data.destinationOverrides[cellDescriptions[1]] = cellDescriptions[2]
-    stateObject:Save()
+    stateObject:SaveToDrive()
 
     if cmd[2] == "all" then
         for onlinePid, player in pairs(Players) do

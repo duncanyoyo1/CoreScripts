@@ -25,6 +25,18 @@ end
 --- ABSTRACT
 -------------------------------------------------------------------------------
 
+function BaseRecordStore:CreateEntry()
+    error('UNIMPLEMENTED')
+end
+
+function BaseRecordStore:LoadFromDrive()
+    error('UNIMPLEMENTED')
+end
+
+function BaseRecordStore:SaveToDrive()
+    error('UNIMPLEMENTED')
+end
+
 function BaseRecordStore:QuicksaveToDrive()
     error('UNIMPLEMENTED')
 end
