@@ -1,6 +1,6 @@
-require("config")
-fileHelper = require("fileHelper")
-tableHelper = require("tableHelper")
+local config = require("config")
+local fileHelper = require("fileHelper")
+local tableHelper = require("tableHelper")
 local BasePlayer = require("player.base")
 
 ---@class JsonPlayer : BasePlayer

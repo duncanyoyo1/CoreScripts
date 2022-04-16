@@ -9,11 +9,9 @@ packetReader = require("packetReader")
 
 local logicHandler = {}
 
----@alias Player BasePlayer
----@type Player[]
+---@type BasePlayer[]
 Players = {}
----@alias Cell BaseCell
----@type Cell[]
+---@type BaseCell[]
 LoadedCells = {}
 ---@type table<string, BaseRecordStore>
 RecordStores = {}

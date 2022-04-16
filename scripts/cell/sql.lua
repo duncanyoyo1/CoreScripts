@@ -4,6 +4,7 @@ local BaseCell = require("cell.base")
 ---@class SqlCell : BaseCell
 local Cell = class("Cell", BaseCell)
 
+---@param cellDescription string
 function Cell:__init(cellDescription)
     BaseCell.__init(self, cellDescription)
 

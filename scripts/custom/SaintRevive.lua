@@ -1,3 +1,19 @@
+-------------------------------------------------------------------------------
+--- SaintRevive
+--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+--- A stripped down adpatation of Atkana's Revive. Works well enough but I'd
+--- like to tailor it to be more direct. Kana's allowed for a lot of
+--- customization that I don't need or have a desire to complexify this.
+-------------------------------------------------------------------------------
+local classy = require('classy')
+local tableHelper = require('tableHelper')
+
+local config = require('config')
+local contentFixer = require('contentFixer')
+local customEventHooks = require('customEventHooks')
+local customCommandHooks = require('customCommandHooks')
+local logicHandler = require('logicHandler')
+
 ---@class SaintReviveScriptConfig
 ---@field health number
 ---@field fatigue number|'preserve'
@@ -15,7 +31,7 @@ local ScriptConfig = {
 local SaintUtilities = require('custom.SaintUtilities')
 local SaintLogger = require('custom.SaintLogger')
 
-local logger = SaintLogger:CreateLogger('SaintRevive - V2')
+local logger = SaintLogger:CreateLogger('SaintRevive')
 local lang = {
 	["awaitingReviveMessage"] = "You are awaiting revival.",
 	["awaitingReviveOtherMessage"] = "%name has been downed! Activate them to revive them.",
@@ -36,11 +52,9 @@ local lang = {
 ---@field config SaintReviveScriptConfig
 ---@field pidMarkerLookup table<number, string>
 ---@field reviveMarkers table<string, MarkerData>
-local SaintRevive = {
-    config = {},
-    reviveMarkers = {},
-    pidMarkerLookup = {},
-}
+local SaintRevive = classy('SaintRevive')
+
+---- Intermediate Types -------------------------
 
 ---@class MarkerData
 ---@field playerName string
@@ -51,15 +65,13 @@ local SaintRevive = {
 ---@field uniqueIndex string
 ---@field refId string
 
----Constructor
----@param o any
+-------------------------------------------------
+
 ---@param config SaintReviveScriptConfig
----@return SaintRevive
-function SaintRevive:new(o, config)
-    o = o or {}
-    setmetatable(o, SaintRevive)
+function SaintRevive:__init(config)
+    self.reviveMarkers = {}
+    self.pidMarkerLookup = {}
     self.config = tableHelper.deepCopy(config)
-    return o
 end
 
 -------------------------------------------------------------------------------
@@ -98,7 +110,7 @@ function SaintRevive:CreateReviveMarker(pidForMarker)
         }
         self.pidMarkerLookup[pidForMarker] = uniqueIndex
 
-        --SAINT NOTE: These next few lines may need to be brought into another function
+        --Saint Note: These next few lines may need to be brought into another function
 
         -- Delete the marker for the downed player, and anyone who was in the cell
         for _, pid in cell.visitors do
@@ -118,7 +130,7 @@ function SaintRevive:RemoveReviveMarker(uniqueIndex, cellDescription)
 		-- The OnObjectActivate call for this function provides a cell description in case the revive marker is from an old session
 		-- Use that if provided, otherwise it's safe to get it from looking up its information
 
-        ---SAINT NOTE: I don't like the above or this logic, but whatever
+        --Saint Note: I don't like the above or this logic, but whatever
         local reviveMarker = self.reviveMarkers[uniqueIndex]
         cellDescription = cellDescription or reviveMarker.cellDescription
 
@@ -357,7 +369,7 @@ end
 
 -------------------------------------------------------------------------------
 --- Language Functions
---- SAINT NOTE: I don't like this atm
+---Saint Note: I don't like this atm
 -------------------------------------------
 function SaintRevive:GetLangText(key, data)
 	local function replacer(wildcard)
@@ -481,7 +493,7 @@ function SaintRevive:OnPlayerDeath(pid)
 	
 	tes3mp.SendMessage(pid, message .. "\n", true)
 	
-    --SAINT NOTE: 
+    ---Saint Note: This seems unnecessary? Or something, idk, dont like
 	if config.playersRespawn then
 		self:TrySetPlayerDowned(pid)
 	else
@@ -494,7 +506,7 @@ end
 
 -------------------------------------------------------------------------------
 
----Global Bleedout Tick for SaintReviveV2
+---Global Bleedout Tick for SaintRevive
 ---@param pid number
 function BleedoutTick(pid, bleedoutTime)
     local player = Players[pid]
@@ -536,7 +548,9 @@ function SaintRevive:Init()
     customCommandHooks.registerCommand("die", function(pid)
         self:OnDieCommand(pid)
     end)
-    return self
 end
 
-return SaintRevive:new(nil, ScriptConfig):Init()
+---@type SaintRevive
+local sr_instance = SaintRevive(ScriptConfig)
+sr_instance:Init()
+return sr_instance

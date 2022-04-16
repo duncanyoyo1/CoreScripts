@@ -1,7 +1,7 @@
-require("config")
-require("patterns")
+local config = require("config")
+local patterns = require("patterns")
 local stateHelper = require("stateHelper")
-tableHelper = require("tableHelper")
+local tableHelper = require("tableHelper")
 
 ---@class BasePlayer
 local BasePlayer = class("BasePlayer")

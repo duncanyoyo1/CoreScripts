@@ -1,8 +1,23 @@
+-------------------------------------------------------------------------------
+--- SaintCellReset
+--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+--- API for resetting of cells. Not a smart API, and does not contain
+--- validation logic for resetting. This is not meant to be used DIRECTLY for
+--- the resetting of cells. Users of this script should implement their own
+--- validation logic to determine if a cell can and should be reset.
+-------------------------------------------------------------------------------
+
+---Saint Note: Convert to classes later
+local customEventHooks = require('customEventHooks')
+local customCommandHooks = require('customCommandHooks')
+local tableHelper = require('tableHelper')
 local SaintUtilities = require('custom.SaintUtilities')
 local SaintLogger = require('custom.SaintLogger')
 
 local logger = SaintLogger:CreateLogger('SaintCellReset')
-local Methods = {}
+---@class SaintCellReset
+local SaintCellReset = {}
+---@class Internal
 local Internal = {}
 
 --- THIS IS A COPY PASTE OF "logicHandler.ResetCell" MINUS SOME LOGGING
@@ -27,7 +42,7 @@ Internal._SendCellReset = function(pid, cellDescription)
     tes3mp.SendCellReset(pid, false) --- all players are already getting sent the reset where this is called
 end
 
----@param cellDescription string sell name
+---@param cellDescription string cell name
 ---@return table result A partial of cell.data
 Internal.CaptureCellChanges = function(cellDescription)
     return SaintUtilities.TempLoadCellCallback(cellDescription, function(cell)
@@ -68,7 +83,7 @@ end
 
 --- Reset cell, no checks
 ---@param cellDescription string cell name for cell to be affected
-Methods.ResetCell = function(cellDescription)
+SaintCellReset.ResetCell = function(cellDescription)
     SaintUtilities.TempLoadCellCallback(cellDescription, function() -- optimization, so we don't constantly load/unload
         local cellChanges = Internal.CaptureCellChanges(cellDescription)
         Internal._ResetCellReImpl(cellDescription)
@@ -83,24 +98,12 @@ end
 
 --- Reset multiple cells Note: This is somewhat of a reimpl of logicHandler.ResetCell
 ---@param cellDescriptions string[] list of cell names
-Methods.ResetCells = function(cellDescriptions)
+SaintCellReset.ResetCells = function(cellDescriptions)
     local cellChanges = {}
     tes3mp.ClearCellsToReset()
     for _, cellDescription in ipairs(cellDescriptions) do
-        SaintUtilities.TempLoadCellCallback(cellDescription, function(cell)
-            cellChanges[cellDescription] = Internal.CaptureCellChanges(cellDescription)
-            --- Copy Paste from Logic Handler
-            cell.isResetting = true
-            cell.data.objectData = {}
-            cell.data.packets = {}
-            cell:EnsurePacketTables()
-            cell.data.loadState.hasFullActorList = false
-            cell.data.loadState.hasFullContainerData = false
-            cell:ClearRecordLinks()
-
-            -- addition
-            cell.data.entry.creationTime = os.time()
-        end)
+        cellChanges[cellDescription] = Internal.CaptureCellChanges(cellDescription)
+        Internal._ResetCellReImpl(cellDescription)
         tes3mp.AddCellToReset(cellDescription)
         logger:Info("Resetting cell '" .. cellDescription .. "'")
     end
@@ -117,7 +120,7 @@ end
 
 --- Reset cell, no checks
 ---@param cellDescription string cell name for cell to be affected
-Methods.MarkCellForReset = function(cellDescription)
+SaintCellReset.MarkCellForReset = function(cellDescription)
     SaintUtilities.TempLoadCellCallback(cellDescription, function(cell)
         cell.data.entry.creationTime = 0
     end)
@@ -126,7 +129,7 @@ end
 ---Command for marking a cell for reset
 ---@param pid number player id
 Internal.MarkCurrentCellForResetCommand = function(pid)
-    Methods.MarkCellForReset(Players[pid].data.location.cell)
+    SaintCellReset.MarkCellForReset(Players[pid].data.location.cell)
     Players[pid]:Message("Marking '"..Players[pid].data.location.cell.."' for reset\n")
 end
 
@@ -134,18 +137,18 @@ end
 ---@param pid number player id
 Internal.MarkAllCellsForResetCommand = function(pid)
     for _, cellDescription in ipairs(Players[pid].cellsLoaded) do
-        Methods.MarkCellForReset(cellDescription)
+        SaintCellReset.MarkCellForReset(cellDescription)
         Players[pid]:Message("Marking '"..cellDescription.."' for reset\n")
     end
 end
 
 ---Forcibly reset the current cell
 ---WARNING: players in cell get forcibly transferred to the '$Transitional Void'
----         and don't get beought back. This requires something like SaintPatch
----         to rememdy
+---         and don't get beought back (consistently). This requires something
+---         like SaintPatch to rememdy
 ---@param pid number player id
 Internal.ResetCurrentCellCommand = function(pid)
-    Methods.ResetCell(Players[pid].data.location.cell)
+    SaintCellReset.ResetCell(Players[pid].data.location.cell)
     Players[pid]:Message("Resetting cell '"..Players[pid].data.location.cell.."'\n")
 end
 
@@ -158,4 +161,4 @@ customEventHooks.registerHandler("OnServerPostInit", function(eventStatus)
     return eventStatus
 end)
 
-return Methods
+return SaintCellReset

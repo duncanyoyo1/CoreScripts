@@ -1,7 +1,14 @@
+-------------------------------------------------------------------------------
+--- SaintPatch
+--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+--- A hacky solution for if a player gets dragged to the '$Transitional Void'
+--- and they shouldn't be there.
+-------------------------------------------------------------------------------
+local customEventHooks = require('customEventHooks')
 local SaintLogger = require('custom.SaintLogger')
 
 local logger = SaintLogger:CreateLogger('SaintPatch')
-local Methods = {}
+local SaintPatch = {}
 
 local scriptConfig = {
     ImproperMoveMessage = "Something went wrong as you moved locations. We have placed you back at the previous location you were.",
@@ -13,7 +20,7 @@ local PreviousPlayerPositions = {}
 ---@param eventStatus EventStatus
 ---@param pid number
 ---@return EventStatus
-Methods.OnPlayerCellChangeValidator = function(eventStatus, pid)
+SaintPatch.OnPlayerCellChangeValidator = function(eventStatus, pid)
     if not eventStatus.validCustomHandlers then return eventStatus end
     logger:Verbose("Player location before moving: " .. Players[pid].data.location.cell)
     if Players[pid].data.location.cell == "$Transitional Void" then
@@ -31,14 +38,13 @@ Methods.OnPlayerCellChangeValidator = function(eventStatus, pid)
     return eventStatus
 end
 
--- TODO: This seems to still have bugs?
 ---NOTE: I think this is due to the asynchronous of the server and client
----      It looked like the client failed to load some anims and just sorta spun out?
----      Might need to add a fix me command or something
+---NOTE: It looked like the client failed to load some anims and just sorta spun out?
+---NOTE: Might need to add a fix me command or something
 ---@param eventStatus EventStatus
 ---@param pid number
 ---@return EventStatus
-Methods.OnPlayerCellChangeHandler = function(eventStatus, pid)
+SaintPatch.OnPlayerCellChangeHandler = function(eventStatus, pid)
     if not eventStatus.validCustomHandlers then return eventStatus end
     logger:Verbose("Player location after moving: " .. Players[pid].data.location.cell)
     if Players[pid].data.location.cell == "$Transitional Void" then
@@ -66,11 +72,11 @@ Methods.OnPlayerCellChangeHandler = function(eventStatus, pid)
     return eventStatus
 end
 
-customEventHooks.registerValidator("OnPlayerCellChange", Methods.OnPlayerCellChangeValidator)
-customEventHooks.registerHandler("OnPlayerCellChange", Methods.OnPlayerCellChangeHandler)
+customEventHooks.registerValidator("OnPlayerCellChange", SaintPatch.OnPlayerCellChangeValidator)
+customEventHooks.registerHandler("OnPlayerCellChange", SaintPatch.OnPlayerCellChangeHandler)
 customEventHooks.registerHandler("OnServerPostInit", function(eventStatus) 
     logger:Info("Starting SaintPatch...")
     return eventStatus
 end)
 
-return Methods
+return SaintPatch

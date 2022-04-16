@@ -1,4 +1,4 @@
-Database = require("database")
+local Database = require("database")
 local BaseRecordStore = require("recordstore.base")
 
 ---@class SqlRecordStore : BaseRecordStore

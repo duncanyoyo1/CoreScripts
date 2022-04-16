@@ -1,4 +1,4 @@
-Database = require("database")
+local Database = require("database")
 local BasePlayer = require("player.base")
 
 ---@class SqlPlayer : BasePlayer

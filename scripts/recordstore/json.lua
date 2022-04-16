@@ -1,6 +1,5 @@
-require("config")
-fileHelper = require("fileHelper")
-tableHelper = require("tableHelper")
+local config = require("config")
+local tableHelper = require("tableHelper")
 local BaseRecordStore = require("recordstore.base")
 
 ---@class JsonRecordStore : BaseRecordStore

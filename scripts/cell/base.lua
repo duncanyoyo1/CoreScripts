@@ -8,6 +8,7 @@ packetBuilder = require("packetBuilder")
 ---@class BaseCell
 local BaseCell = class("BaseCell")
 
+---@param cellDescription string
 function BaseCell:__init(cellDescription)
     self.data =
     {

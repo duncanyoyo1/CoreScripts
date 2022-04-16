@@ -1,16 +1,17 @@
+-------------------------------------------------------------------------------
+--- SaintLogger
+--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+--- Logging client to wrap tes3mp logging api.
+-------------------------------------------------------------------------------
+local classy = require('classy')
+
 ---@class Logger
-local Logger = {
-    name = '',
-    previousLogLevel = -1
-}
+local Logger = classy('Logger')
 
 ---@param loggerName string
----@return Logger
-function Logger:new(o, loggerName)
-    o = o or {}
-    setmetatable(o, Logger)
-    o.name = loggerName
-    return o
+function Logger:__init(loggerName)
+    self.name = loggerName
+    self._previousLogLevel = -1
 end
 
 ---@param enumValue number
@@ -31,12 +32,12 @@ function Logger:Log(logLevel, message)
         logLevel,
         string.format("[%s - %s] %s", self.name, GetEnumerationToString(logLevel), message)
     )
-    self.previousLogLevel = logLevel
+    self._previousLogLevel = logLevel
 end
 
 ---@param message string
 function Logger:Append(message)
-    tes3mp.LogAppend(self.previousLogLevel, message)
+    tes3mp.LogAppend(self._previousLogLevel, message)
 end
 
 ---@param message string
@@ -56,16 +57,11 @@ end
 
 ---@class LoggerFactory
 ---@field CreatedLoggers table<string, Logger>
-local LoggerFactory = {
-    __InternalLogger = Logger:new(nil, "__SaintLogger_Internal_Logger__"),
-    CreatedLoggers = {}
-}
+local LoggerFactory = classy('LoggerFactory')
 
----@return LoggerFactory
-function LoggerFactory:new(o)
-    o = o or {}
-    setmetatable(o, LoggerFactory)
-    return o
+function LoggerFactory:__init()
+    self.CreatedLoggers = {}
+    self.__InternalLogger = Logger("__SaintLogger_Internal_Logger__") ---@type Logger
 end
 
 function LoggerFactory:__LogLoggers()
@@ -75,9 +71,9 @@ function LoggerFactory:__LogLoggers()
 end
 
 ---@param name string
----@return Logger logger
+---@return Logger
 function LoggerFactory:CreateLogger(name)
-    local logger = Logger:new(nil, name)
+    local logger = Logger(name)
     if self.CreatedLoggers[name] ~= nil then
         self:__LogLoggers()
         error("Logger by the name '" .. name .. "' already exists. Use a different name or delete the other logger.")
@@ -86,4 +82,6 @@ function LoggerFactory:CreateLogger(name)
     return logger
 end
 
-return LoggerFactory:new()
+---@type LoggerFactory
+local factory = LoggerFactory()
+return factory

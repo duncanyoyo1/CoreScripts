@@ -1,5 +1,5 @@
-require("config")
-tableHelper = require("tableHelper")
+local config = require("config")
+local tableHelper = require("tableHelper")
 local BaseWorld = require("world.base")
 
 ---@class JsonWorld : BaseWorld

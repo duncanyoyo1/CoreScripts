@@ -1,20 +1,29 @@
+-------------------------------------------------------------------------------
+--- SaintSideEffects
+--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+--- Creates side effects whenever a player has a the first journal entry added.
+--- This is intended to alleviate issues with kill counts for quests that check
+--- them.
+-------------------------------------------------------------------------------
+local customEventHooks = require('customEventHooks')
 local SaintCellReset = require('custom.SaintCellReset')
 local SaintLogger = require('custom.SaintLogger')
 local SaintCellResetManager = require('custom.SaintCellResetManager')
 
---TODO: This is largely incomplete and would need some proper databas-ing to be valuable for later quests. This does help alleviate the balmora beginning conflicts sorta
+--TODO: This is largely incomplete and would need some proper databas-ing to be valuable for later quests.
+--TODO: This does help alleviate the balmora beginning conflicts sorta, but has issues with quests later on
 
 local logger = SaintLogger:CreateLogger('SaintSideEffects')
 
 -- Hoisting workaround
-local Methods = {}
+local SaintSideEffects = {}
 local CreatedSideEffects = {}
 local scriptConfig = {}
 
 -- The entry point
 ---@param eventStatus EventStatus validation object
 ---@param pid number player id for who triggered event
-Methods.OnPlayerJournalHandler = function(eventStatus, pid)
+SaintSideEffects.OnPlayerJournalHandler = function(eventStatus, pid)
     if not eventStatus.validCustomHandlers then
         return eventStatus
     end
@@ -23,7 +32,7 @@ Methods.OnPlayerJournalHandler = function(eventStatus, pid)
     local latestEntry = journal[#journal]
 
     -- TODO: Investigate more performant solution here. Perhaps, cache quests into a map for faster access
-    -- Not performant by any means, but TECHNICALLY works
+    -- TODO: Not performant by any means, but TECHNICALLY works
     local firstJournalEntryForQuest = true
     for _, value in ipairs(journal) do
         local sameQuestDiffIndex = value.quest == latestEntry.quest and value.index ~= latestEntry.index
@@ -46,7 +55,7 @@ Methods.OnPlayerJournalHandler = function(eventStatus, pid)
 end
 
 ---@param eventStatus EventStatus
-Methods.Init = function(eventStatus)
+SaintSideEffects.Init = function(eventStatus)
     local sideEffectCount = 0
     for _ in pairs(scriptConfig.questSideEffectHadlers) do
         sideEffectCount = sideEffectCount + 1
@@ -64,9 +73,11 @@ local ClearCellDataForCells = function (cellDescriptions)
     local didReset = true
     for _, cellDescription in pairs(cellDescriptions) do
         if SaintCellResetManager.IsCellResetValid(cellDescription) then
+            ---Saint Note: Create function in cell reset manager for requesting a reset, this knows too much
             SaintCellReset.ResetCell(cellDescription)
         else
-            tes3mp.LogMessage(enumerations.log.WARN, "[SaintSideEffect - WARN] Unable to reset cell '" .. cellDescription .. "' despite checking.")
+            logger:Warn("[SaintSideEffect - WARN] Unable to reset cell '" .. cellDescription .. "' despite checking.")
+            ---Saint Note: This method seems better suited in the manager?
             SaintCellReset.MarkCellForReset(cellDescription)
             didReset = false
         end
@@ -94,7 +105,7 @@ end
 ---@param cellDescriptionList string[] cells to reset
 ---@param actorList string[] actors to reset
 ---@return function callback that will clear cell data and inform players if a clear may not be possible
-Methods.CreateSideEffect = function(cellDescriptionList, actorList)
+SaintSideEffects.CreateSideEffect = function(cellDescriptionList, actorList)
     return function(pid)
         if not ClearCellDataForCells(cellDescriptionList) then
             tes3mp.CustomMessageBox(pid, config.customMenuIds.questFault, scriptConfig.faultMessage, "Ok")
@@ -105,29 +116,29 @@ end
 
 -- Side Effects
 
-CreatedSideEffects.AntabolisInformant = Methods.CreateSideEffect({
+CreatedSideEffects.AntabolisInformant = SaintSideEffects.CreateSideEffect({
     "Arkngthand, Cells of Hollow Hand"
 }, {})
 
-CreatedSideEffects.GraMuzgobInformant = Methods.CreateSideEffect({
+CreatedSideEffects.GraMuzgobInformant = SaintSideEffects.CreateSideEffect({
     "Andrano Ancestral Tomb"
 }, {})
 
-CreatedSideEffects.RatHunt = Methods.CreateSideEffect({
+CreatedSideEffects.RatHunt = SaintSideEffects.CreateSideEffect({
     "Balmora, Drarayne Thelas' House",
     "Balmora, Drarayne Thelas' Storage"
 }, {
     "rat_cave_fgrh"
 })
 
-CreatedSideEffects.EggPoachers = Methods.CreateSideEffect({
+CreatedSideEffects.EggPoachers = SaintSideEffects.CreateSideEffect({
     "Shulk Egg Mine, Queen's Lair"
 }, {
     "sevilo othan",
     "daynila valas"
 })
 
-CreatedSideEffects.TelvanniAgents = Methods.CreateSideEffect({
+CreatedSideEffects.TelvanniAgents = SaintSideEffects.CreateSideEffect({
     "Ashanammu"
 }, {
     "fothnya herothran",
@@ -136,13 +147,13 @@ CreatedSideEffects.TelvanniAgents = Methods.CreateSideEffect({
     "alveleg"
 })
 
-CreatedSideEffects.DuraGraBol = Methods.CreateSideEffect({
+CreatedSideEffects.DuraGraBol = SaintSideEffects.CreateSideEffect({
     "Balmora, Dura gra-Bol's House"
 }, {
     "dura gra-bol"
 })
 
-CreatedSideEffects.LarriusVaroTellsAStory = Methods.CreateSideEffect({
+CreatedSideEffects.LarriusVaroTellsAStory = SaintSideEffects.CreateSideEffect({
     "Balmora, Council Club"
 }, {
     "madrale thirith",
@@ -172,7 +183,7 @@ scriptConfig.faultMessage =
 The locations and NPC's should be reset after approximately 5 minutes.]]
 
 -- Register listeners
-customEventHooks.registerHandler("OnPlayerJournal", Methods.OnPlayerJournalHandler)
-customEventHooks.registerHandler("OnServerPostInit", Methods.Init)
+customEventHooks.registerHandler("OnPlayerJournal", SaintSideEffects.OnPlayerJournalHandler)
+customEventHooks.registerHandler("OnServerPostInit", SaintSideEffects.Init)
 
-return Methods
+return SaintSideEffects

@@ -1,4 +1,4 @@
-Database = require("database")
+local Database = require("database")
 local BaseWorld = require("world.base")
 
 ---@class SqlWorld : BaseWorld

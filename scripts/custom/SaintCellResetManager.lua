@@ -1,3 +1,12 @@
+-------------------------------------------------------------------------------
+--- SaintCellResetManager
+--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+--- Manager class for SaintCellReset. Periodically resets cells.
+--- NOTE: Cells don't reset well when players are in them. We only reset EMPTY
+--- cells
+-------------------------------------------------------------------------------
+---Saint Note: Convert to classes
+local customEventHooks = require('customEventHooks')
 local SaintCellReset = require('custom.SaintCellReset')
 local SaintUtilities = require('custom.SaintUtilities')
 local SaintLogger = require('custom.SaintLogger')
@@ -9,11 +18,13 @@ local scriptConfig = {
 }
 -- Internal Use
 local logger = SaintLogger:CreateLogger('SaintCellResetManager')
-local Methods = {}
+---@class SaintCellResetManager
+local SaintCellResetManager = {}
+---@class Internal
 local Internal = {}
 
 ---@param cellDescription string cell name
-Methods.IsCellResetValid = function(cellDescription)
+SaintCellResetManager.IsCellResetValid = function(cellDescription)
     local result, error = SaintUtilities.TempLoadCellCallback(cellDescription, function(cell)
         local nowTime = os.time()
         local creationTime = cell.data.entry.creationTime
@@ -41,7 +52,7 @@ end
 
 Internal.IsCellPeriodicCellResetValid = function(cellDescription)
     return SaintUtilities.TempLoadCellCallback(cellDescription, function(cell)
-        if not Methods.IsCellResetValid(cellDescription) then
+        if not SaintCellResetManager.IsCellResetValid(cellDescription) then
             return false
         end
         if Internal.DoesCellContainVisitors(cellDescription) then
@@ -89,4 +100,4 @@ customEventHooks.registerHandler("OnServerPostInit", function(eventStatus)
     return eventStatus
 end)
 
-return Methods
+return SaintCellResetManager
