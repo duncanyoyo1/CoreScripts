@@ -32,7 +32,7 @@ Internal._ResetCellReImpl = function(cellDescription)
         cell:ClearRecordLinks()
 
         -- addition
-        cell.data.entry.creationTime = 0
+        cell.data.entry.creationTime = os.time()
     end)
 end
 
