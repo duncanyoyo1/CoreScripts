@@ -183,7 +183,7 @@ eventHandler.InitializeDefaultHandlers = function()
 
             instanceToModify.data.kills[actor.refId] = instanceToModify.data.kills[actor.refId] + 1
             instanceToModify:QuicksaveToDrive()
-            tes3mp.AddKill(actor.refId, WorldInstance.data.kills[actor.refId])
+            tes3mp.AddKill(actor.refId, instanceToModify.data.kills[actor.refId])
 
             table.insert(cell.unusableContainerUniqueIndexes, uniqueIndex)
         end

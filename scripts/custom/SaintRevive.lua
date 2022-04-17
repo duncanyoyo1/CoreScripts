@@ -4,6 +4,7 @@
 --- A stripped down adpatation of Atkana's Revive. Works well enough but I'd
 --- like to tailor it to be more direct. Kana's allowed for a lot of
 --- customization that I don't need or have a desire to complexify this.
+--- Ref: https://github.com/Atkana/tes3mp-scripts/blob/master/0.7/kanaRevive/kanaRevive.lua
 -------------------------------------------------------------------------------
 local classy = require('classy')
 local tableHelper = require('tableHelper')

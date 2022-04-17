@@ -74,8 +74,12 @@ Internal.PeriodicCellsReset = function(cellDescriptions)
             end
         end)
     end
+    local cellCount = tableHelper.getCount(cellDescriptions)
     if not tableHelper.isEmpty(cellsToReset) then
         SaintCellReset.ResetCells(cellsToReset)
+        logger:Info('Resetting ' .. cellCount .. ' cells')
+    else
+        logger:Info('Found no cells to reset out of ' .. cellCount)
     end
 end
 
