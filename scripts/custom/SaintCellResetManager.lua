@@ -2,11 +2,14 @@
 --- SaintCellResetManager
 --- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 --- Manager class for SaintCellReset. Periodically resets cells.
---- NOTE: Cells don't reset well when players are in them. We only reset EMPTY
+--- Note: Cells don't reset well when players are in them. We only reset EMPTY
 --- cells
 -------------------------------------------------------------------------------
 ---Saint Note: Convert to classes
 local customEventHooks = require('customEventHooks')
+local time = require('time')
+
+local SaintTicks = require('custom.SaintTicks')
 local SaintCellReset = require('custom.SaintCellReset')
 local SaintUtilities = require('custom.SaintUtilities')
 local SaintLogger = require('custom.SaintLogger')
@@ -51,7 +54,7 @@ Internal.DoesCellContainVisitors = function(cellDescription)
 end
 
 Internal.IsCellPeriodicCellResetValid = function(cellDescription)
-    return SaintUtilities.TempLoadCellCallback(cellDescription, function(cell)
+    return SaintUtilities.TempLoadCellCallback(cellDescription, function()
         if not SaintCellResetManager.IsCellResetValid(cellDescription) then
             return false
         end
@@ -88,15 +91,12 @@ Internal.PeriodicCellTimer = function()
     logger:Info("Timer ticking...")
     local cellNames = Internal.GetCellNames()
     Internal.PeriodicCellsReset(cellNames)
-    tes3mp.RestartTimer(GlobalCellResetTimer, time.seconds(scriptConfig.periodicCellCheckTimer))
 end
 
 
-GlobalCellResetTimerUpdate = Internal.PeriodicCellTimer
-GlobalCellResetTimer = tes3mp.CreateTimer("GlobalCellResetTimerUpdate", time.seconds(20))
-tes3mp.StartTimer(GlobalCellResetTimer)
 customEventHooks.registerHandler("OnServerPostInit", function(eventStatus) 
     logger:Info("Starting SaintCellResetManager...")
+    SaintTicks.RegisterTick(Internal.PeriodicCellTimer, time.seconds(10))
     return eventStatus
 end)
 

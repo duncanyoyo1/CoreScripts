@@ -55,6 +55,11 @@ function Logger:Warn(message)
     self:Log(enumerations.log.WARN, message)
 end
 
+---@param message string
+function Logger:Error(message)
+    self:Log(enumerations.log.ERROR, message)
+end
+
 ---@class LoggerFactory
 ---@field CreatedLoggers table<string, Logger>
 local LoggerFactory = classy('LoggerFactory')

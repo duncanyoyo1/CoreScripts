@@ -621,7 +621,7 @@ tes3mp = tes3mp
 ---@field GenerateRandomString fun(length: number): string
 ---@field GetSHA256Hash fun(input: string): string
 ---@field CreateTimer fun(functionName: string, seconds: number): number
----@field CreateTimerEx fun(functionName: string, seconds: number, argTypes: string, ...: any)
+---@field CreateTimerEx fun(functionName: string, seconds: number, argTypes: string, ...: any): number
 ---@field StartTimer fun(timerId: number)
 ---@field StopTimer fun(timerId: number)
 ---@field RestartTimer fun(timerId: number, time: number)
