@@ -96,7 +96,7 @@ end
 
 customEventHooks.registerHandler("OnServerPostInit", function(eventStatus) 
     logger:Info("Starting SaintCellResetManager...")
-    SaintTicks.RegisterTick(Internal.PeriodicCellTimer, time.seconds(10))
+    SaintTicks.RegisterTick(Internal.PeriodicCellTimer, time.seconds(30))
     return eventStatus
 end)
 

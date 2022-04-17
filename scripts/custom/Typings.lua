@@ -653,7 +653,7 @@ tes3mp = tes3mp
 ---@field AddDestinationOverride fun(oldCellDescription: string, newCellDesctiption: string)
 ---@field SendWorldDestinationOverride fun(pid: number)
 ---@field DoesFilePathExist fun(path: string): boolean
----@field SendWorldKillCount fun(pid: number, UNKNOWN: boolean)
+---@field SendWorldKillCount fun(pid: number, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
 ---@field SendObjectSound fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
 ---@field SendObjectRestock fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
 ---@field SendObjectDialogueChoice fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
