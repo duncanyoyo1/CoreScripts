@@ -96,7 +96,10 @@ function BasePlayer:__init(pid, playerName)
         recordLinks = {},
         alliedPlayers = {},
         destinationOverrides = {},
-        customVariables = {}
+        customVariables = {},
+        ----- SAINT ADDITION -----
+        kills = {},
+        --------------------------
     }
 
     for index = 0, (tes3mp.GetAttributeCount() - 1) do
@@ -148,6 +151,33 @@ end
 
 function BasePlayer:QuicksaveToDrive()
     error('UNIMPLEMENTED')
+end
+
+---- Kill Additions -------------------
+function BasePlayer:LoadKills()
+
+    tes3mp.ClearKillChanges()
+
+    for refId, killCount in pairs(self.data.kills) do
+
+        tes3mp.AddKill(refId, killCount)
+    end
+
+    tes3mp.SendWorldKillCount(self.pid)
+end
+
+function BasePlayer:SaveKills()
+
+    tes3mp.ReadReceivedWorldstate()
+
+    for index = 0, tes3mp.GetKillChangesSize() - 1 do
+
+        local refId = tes3mp.GetKillRefId(index)
+        local number = tes3mp.GetKillNumber(index)
+        self.data.kills[refId] = number
+    end
+
+    self:QuicksaveToDrive()
 end
 
 -------------------------------------------------------------------------------
@@ -292,7 +322,11 @@ function BasePlayer:FinishLogin()
             self:LoadReputation()
         end
 
-        WorldInstance:LoadKills(self.pid)
+        if config.shareKills then
+            WorldInstance:LoadKills(self.pid)
+        else
+            self:LoadKills()
+        end
 
         self:LoadSpecialStates()
 

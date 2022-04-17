@@ -68,7 +68,7 @@ config.nightStartHour = 20
 config.nightEndHour = 6
 
 -- Whether players should be allowed to use the ingame tilde (~) console by default
-config.allowConsole = false
+config.allowConsole = true
 
 -- Whether players should be allowed to rest in bed by default
 config.allowBedRest = true
@@ -470,5 +470,9 @@ config.recordstoreKeyOrder = { "general", "permanentRecords", "generatedRecords"
 
 config.worldKeyOrder = { "general", "time", "topics", "kills", "journal", "customVariables", "type",
     "index", "quest", "actorRefId", "year", "month", "day", "hour", "daysPassed", "timeScale" }
+
+----- SAINT ADDITION -----
+config.shareKills = false
+--------------------------
 
 return config

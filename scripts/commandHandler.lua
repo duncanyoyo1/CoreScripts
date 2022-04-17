@@ -730,14 +730,20 @@ function commandHandler.ProcessCommand(pid, cmd)
         end
 
     elseif cmd[1] == "resetkills" and moderator then
-
+        ---Saint Note: Modifications to support unshared kills
+        local instanteToModify
+        if config.shareKills then
+            instanteToModify = WorldInstance
+        else
+            instanteToModify = Players[pid]
+        end
         -- Set all currently recorded kills to 0 for connected players
-        for refId, killCount in pairs(WorldInstance.data.kills) do
-            WorldInstance.data.kills[refId] = 0
+        for refId, killCount in pairs(instanteToModify.data.kills) do
+            instanteToModify.data.kills[refId] = 0
         end
 
-        WorldInstance:QuicksaveToDrive()
-        WorldInstance:LoadKills(pid, true)
+        instanteToModify:QuicksaveToDrive()
+        instanteToModify:LoadKills(pid, true)
         tes3mp.SendMessage(pid, "All the kill counts for creatures and NPCs have been reset.\n", true)
 
     elseif cmd[1] == "suicide" then

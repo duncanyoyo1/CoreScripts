@@ -169,18 +169,28 @@ eventHandler.InitializeDefaultHandlers = function()
         tes3mp.ClearKillChanges()
 
         for uniqueIndex, actor in pairs(actors) do
-            if WorldInstance.data.kills[actor.refId] == nil then
-                WorldInstance.data.kills[actor.refId] = 0
+            --- Saint Note: Made some modifications here to allow for kill counts
+            ---@type BasePlayer|BaseWorld
+            local instanceToModify
+            if config.shareKills then
+                instanceToModify = WorldInstance
+            else
+                instanceToModify = Players[pid]
+            end
+            if instanceToModify.data.kills[actor.refId] == nil then
+                instanceToModify.data.kills[actor.refId] = 0
             end
 
-            WorldInstance.data.kills[actor.refId] = WorldInstance.data.kills[actor.refId] + 1
-            WorldInstance:QuicksaveToDrive()
+            instanceToModify.data.kills[actor.refId] = instanceToModify.data.kills[actor.refId] + 1
+            instanceToModify:QuicksaveToDrive()
             tes3mp.AddKill(actor.refId, WorldInstance.data.kills[actor.refId])
 
             table.insert(cell.unusableContainerUniqueIndexes, uniqueIndex)
         end
 
-        tes3mp.SendWorldKillCount(pid, true)
+        if config.shareKills then
+            tes3mp.SendWorldKillCount(pid, true)
+        end
 
         cell:RequestContainers(pid, tableHelper.getArrayFromIndexes(actors))
     end)
@@ -1690,12 +1700,22 @@ eventHandler.OnWorldKillCount = function(pid)
     if Players[pid] ~= nil and Players[pid]:IsLoggedIn() then
         local eventStatus = customEventHooks.triggerValidators("OnWorldKillCount", {pid})
         if eventStatus.validDefaultHandler then
-            WorldInstance:SaveKills(pid)
-            tes3mp.CopyReceivedWorldstateToStore()
-
-            -- Send this WorldKillCount packet to other players (sendToOthersPlayers is true),
-            -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
-            tes3mp.SendWorldKillCount(pid, true, true)
+            --- Saint Note: Annotated modifications here
+            ----- SAINT ADDITION -----
+            if config.shareKills then
+            --------------------------
+                WorldInstance:SaveKills(pid)
+                tes3mp.CopyReceivedWorldstateToStore()
+    
+                -- Send this WorldKillCount packet to other players (sendToOthersPlayers is true),
+                -- but skip sending it to the player we got it from (skipAttachedPlayer is true)
+                tes3mp.SendWorldKillCount(pid, true, true)
+            ----- SAINT ADDITION -----
+            else
+                Players[pid]:SaveKills()
+                -- tes3mp.CopyReceivedWorldstateToStore() -- what does this do?
+            end
+            --------------------------
         end
         customEventHooks.triggerHandlers("OnWorldKillCount", eventStatus, {pid})
         
