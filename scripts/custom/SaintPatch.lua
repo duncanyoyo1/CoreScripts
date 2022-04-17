@@ -67,7 +67,7 @@ SaintPatch.OnPlayerCellChangeHandler = function(eventStatus, pid)
         tes3mp.SetRot(pid, PreviousPlayerPositions[pid].rotX, PreviousPlayerPositions[pid].rotZ)
         tes3mp.SendCell(pid)
         tes3mp.SendPos(pid)
-        tes3mp.CustomMessageBox(pid, config.customMenuIds.improperMove, message, "Ok")
+        tes3mp.CustomMessageBox(pid, 10001, message, "Ok")
     end
     return eventStatus
 end

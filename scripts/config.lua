@@ -15,7 +15,7 @@ config.maxClientsPerIP = 3
 -- The difficulty level used by default
 -- Note: In OpenMW, the difficulty slider goes between -100 and 100, with 0 as the default,
 --       though you can use any integer value here
-config.difficulty = 0
+config.difficulty = 15
 
 -- The game settings to enforce for players
 -- Note 1: Anything from the [Game] category in settings-default.cfg can be added here
@@ -23,18 +23,18 @@ config.difficulty = 0
 --         changed from here
 config.gameSettings = {
     { name = "best attack", value = false },
-    { name = "prevent merchant equipping", value = false },
+    { name = "prevent merchant equipping", value = true },
     { name = "enchanted weapons are magical", value = true },
     { name = "rebalance soul gem values", value = false },
     { name = "barter disposition change is permanent", value = false },
-    { name = "strength influences hand to hand", value = 0 },
+    { name = "strength influences hand to hand", value = 2 },
     { name = "use magic item animations", value = false },
     { name = "normalise race speed", value = false },
     { name = "uncapped damage fatigue", value = false },
-    { name = "NPCs avoid collisions", value = false },
-    { name = "swim upward correction", value = false },
+    { name = "NPCs avoid collisions", value = true },
+    -- { name = "swim upward correction", value = false },
     { name = "trainers training skills based on base skill", value = true },
-    { name = "always allow stealing from knocked out actors", value = false }
+    { name = "always allow stealing from knocked out actors", value = true }
 }
 
 -- The world time used for a newly created world
@@ -60,7 +60,7 @@ config.worldStartupScripts = {"Startup", "BMStartUpScript"}
 config.playerStartupScripts = {"VampireCheck", "WereCheckScript"}
 
 -- Whether the world time should continue passing when there are no players on the server
-config.passTimeWhenEmpty = false
+config.passTimeWhenEmpty = true
 
 -- The hours at which night is regarded as starting and ending, used to pass time using a
 -- different timescale when it's night
@@ -74,37 +74,37 @@ config.allowConsole = false
 config.allowBedRest = true
 
 -- Whether players should be allowed to rest in the wilderness by default
-config.allowWildernessRest = true
+config.allowWildernessRest = false
 
 -- Whether players should be allowed to wait by default
 config.allowWait = true
 
 -- Whether journal entries should be shared across the players on the server or not
-config.shareJournal = true
+config.shareJournal = false
 
 -- Whether faction ranks should be shared across the players on the server or not
-config.shareFactionRanks = true
+config.shareFactionRanks = false
 
 -- Whether faction expulsion should be shared across the players on the server or not
 config.shareFactionExpulsion = false
 
 -- Whether faction reputation should be shared across the players on the server or not
-config.shareFactionReputation = true
+config.shareFactionReputation = false
 
 -- Whether dialogue topics should be shared across the players on the server or not
-config.shareTopics = true
+config.shareTopics = false
 
 -- Whether crime bounties should be shared across players on the server or not
 config.shareBounty = false
 
 -- Whether reputation should be shared across players on the server or not
-config.shareReputation = true
+config.shareReputation = false
 
 -- Whether map exploration should be shared across players on the server or not
 config.shareMapExploration = false
 
 -- Whether ingame videos should be played for other players when triggered by one player
-config.shareVideos = true
+config.shareVideos = false
 
 -- Which clientside script records should be blanked out so they are not run
 -- Note: By default, the original character generation scripts are included

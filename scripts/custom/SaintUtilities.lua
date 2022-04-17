@@ -54,4 +54,15 @@ SaintUtilities.EnsureProperIOLibrary = function(jsonInterface)
     end
 end
 
+---Parse a unique index
+---@param uniqueIndex string
+---@return number refNum
+---@return number mpNum
+SaintUtilities.ParseUniqueIndex = function(uniqueIndex)
+    local splitIndex = uniqueIndex:split("-")
+    local refNum = tonumber(splitIndex[1])
+    local mpNum = tonumber(splitIndex[2])
+    return refNum, mpNum
+end
+
 return SaintUtilities

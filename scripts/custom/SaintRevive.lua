@@ -61,9 +61,13 @@ local SaintRevive = classy('SaintRevive')
 ---@field cellDescription string
 ---@field pid number
 
----@class ObjectActiveObjectsContainer
+---@class ActivatedObjectsContainer
 ---@field uniqueIndex string
 ---@field refId string
+---@field activatingPid number
+
+---@class ActivatedPlayersContainer
+---@field pid number
 
 -------------------------------------------------
 
@@ -126,7 +130,6 @@ end
 ---@param cellDescription string|nil
 function SaintRevive:RemoveReviveMarker(uniqueIndex, cellDescription)
 	if uniqueIndex then
-		local cellDescription = nil
 		-- The OnObjectActivate call for this function provides a cell description in case the revive marker is from an old session
 		-- Use that if provided, otherwise it's safe to get it from looking up its information
 
@@ -422,34 +425,25 @@ end
 
 ---@param pid number
 ---@param cellDescription string
----@param objects ObjectActiveObjectsContainer[]
-function SaintRevive:OnObjectActivate(pid, cellDescription, objects)
-    for _, object in pairs(objects) do
-        local objectPid
-        local activatorPid
-        
-        -- Detect if the object being activated is a player
-        if tes3mp.IsObjectPlayer(object.uniqueIndex) then
-            objectPid = tes3mp.GetObjectPid(object.uniqueIndex)
+---@param objects ActivatedObjectsContainer[]
+---@param players ActivatedPlayersContainer[]
+function SaintRevive:OnObjectActivate(pid, cellDescription, objects, players)
+    for _, pidContainer in pairs(players) do
+        if self:_GetPlayerDowned(pidContainer.pid) then
+            self:OnPlayerRevive(pidContainer, pid)
+            return
         end
-        
-        -- Detect if the object was activated by a player
-        if tes3mp.DoesObjectHavePlayerActivating(object.uniqueIndex) then
-            activatorPid = tes3mp.GetObjectActivatingPid(object.uniqueIndex)
-        end
-        
-        if objectPid and activatorPid then
-            if self:_GetPlayerDowned(objectPid) then
-                self:OnPlayerRevive(objectPid, activatorPid)
-            end
-        elseif object.refId == self.config.recordRefId then
-            if self.reviveMarkers[object.uniqueIndex] and self:_GetPlayerDowned(self.reviveMarkers[object.uniqueIndex].pid) then
-                self:OnPlayerRevive(self.reviveMarkers[object.uniqueIndex].pid, activatorPid)
+    end
+
+    for uniqueIndex, objectContainer in pairs(objects) do
+        if objectContainer.refId == self.config.recordRefId then
+            if self.reviveMarkers[uniqueIndex] and self:_GetPlayerDowned(self.reviveMarkers[uniqueIndex].pid) then
+                self:OnPlayerRevive(self.reviveMarkers[uniqueIndex].pid, pid)
             else
-                --OnPlayerRevive already removes the marker
-                self:RemoveReviveMarker(object.uniqueIndex, cellDescription)
+                --OnPlayerRevive already removes the marker, this is a weird situation
+                self:RemoveReviveMarker(uniqueIndex, cellDescription)
             end
-            
+            return
         end
     end
 end
@@ -496,12 +490,11 @@ function SaintRevive:OnPlayerDeath(pid)
     ---Saint Note: This seems unnecessary? Or something, idk, dont like
 	if config.playersRespawn then
 		self:TrySetPlayerDowned(pid)
+        return true
 	else
 		tes3mp.SendMessage(pid, self:GetLangText("defaultPermanentDeath") .. "\n", false)
 		return false
 	end
-
-	return true
 end
 
 -------------------------------------------------------------------------------
@@ -526,8 +519,9 @@ end
 
 function SaintRevive:Init()
     customEventHooks.registerValidator("OnPlayerDeath", function(eventStatus, pid)
-        local result = self:OnPlayerDeath(pid)
-        return customEventHooks.makeEventStatus(false, not result)
+        local didRevive = self:OnPlayerDeath(pid)
+        local doDefault = not didRevive
+        return customEventHooks.makeEventStatus(false, doDefault)
     end)
     customEventHooks.registerValidator("OnPlayerDisconnect", function(eventStatus, pid)
         self:OnPlayerDisconnect(pid)
@@ -538,7 +532,7 @@ function SaintRevive:Init()
         return eventStatus
     end)
     customEventHooks.registerHandler("OnObjectActivate", function(eventStatus, pid, cellDescription, objects, players)
-        self:OnObjectActivate(pid, cellDescription, objects)
+        self:OnObjectActivate(pid, cellDescription, objects, players)
         return eventStatus
     end)
     customEventHooks.registerHandler("OnServerPostInit", function(eventStatus)

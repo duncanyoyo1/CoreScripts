@@ -10,6 +10,7 @@ local SaintCellReset = require('custom.SaintCellReset')
 local SaintLogger = require('custom.SaintLogger')
 local SaintCellResetManager = require('custom.SaintCellResetManager')
 
+---TODO: Convert to classy
 --TODO: This is largely incomplete and would need some proper databas-ing to be valuable for later quests.
 --TODO: This does help alleviate the balmora beginning conflicts sorta, but has issues with quests later on
 
@@ -108,7 +109,7 @@ end
 SaintSideEffects.CreateSideEffect = function(cellDescriptionList, actorList)
     return function(pid)
         if not ClearCellDataForCells(cellDescriptionList) then
-            tes3mp.CustomMessageBox(pid, config.customMenuIds.questFault, scriptConfig.faultMessage, "Ok")
+            tes3mp.CustomMessageBox(pid, 10000, scriptConfig.faultMessage, "Ok")
         end
         ClearKillCountsForCharacters(actorList)
     end

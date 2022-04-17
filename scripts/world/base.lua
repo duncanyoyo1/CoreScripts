@@ -52,6 +52,10 @@ function BaseWorld:LoadFromDrive()
     error('UNIMPLEMENTED')
 end
 
+function BaseWorld:SaveToDrive()
+    error('UNIMPLEMENTED')
+end
+
 function BaseWorld:QuicksaveToDrive()
     error('UNIMPLEMENTED')
 end
