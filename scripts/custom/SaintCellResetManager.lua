@@ -15,8 +15,7 @@ local SaintUtilities = require('custom.SaintUtilities')
 local SaintLogger = require('custom.SaintLogger')
 
 local scriptConfig = {
-    ResetTime = time.days(3),
-    version = '1',
+    ResetTime = time.toSeconds(time.days(3)),
     periodicCellCheckTimer = 60 * 5, -- 5 minutes
 }
 -- Internal Use
@@ -27,7 +26,7 @@ local SaintCellResetManager = {}
 local Internal = {}
 
 ---@param cellDescription string cell name
-SaintCellResetManager.IsCellResetValid = function(cellDescription)
+Internal.IsCellResetValid = function(cellDescription)
     local result, error = SaintUtilities.TempLoadCellCallback(cellDescription, function(cell)
         local nowTime = os.time()
         local creationTime = cell.data.entry.creationTime
@@ -55,13 +54,14 @@ end
 
 Internal.IsCellPeriodicCellResetValid = function(cellDescription)
     return SaintUtilities.TempLoadCellCallback(cellDescription, function()
-        if not SaintCellResetManager.IsCellResetValid(cellDescription) then
-            return false
+        local isValid, reason = Internal.IsCellResetValid(cellDescription)
+        if not isValid then
+            return false, reason
         end
         if Internal.DoesCellContainVisitors(cellDescription) then
-            return false
+            return false, 'Contains visitors'
         end
-        return true
+        return true, nil
     end)
 end
 
@@ -69,8 +69,11 @@ Internal.PeriodicCellsReset = function(cellDescriptions)
     local cellsToReset = {}
     for _, cellDescription in pairs(cellDescriptions) do
         SaintUtilities.TempLoadCellCallback(cellDescription, function()
-            if Internal.IsCellPeriodicCellResetValid(cellDescription) then
+            local isValid, reason = Internal.IsCellPeriodicCellResetValid(cellDescription)
+            if isValid then
                 table.insert(cellsToReset, cellDescription)
+            else
+                logger:Verbose('Skipping \'' .. cellDescription .. '\' for reason: '.. reason)
             end
         end)
     end
@@ -100,7 +103,7 @@ end
 
 customEventHooks.registerHandler("OnServerPostInit", function(eventStatus) 
     logger:Info("Starting SaintCellResetManager...")
-    SaintTicks.RegisterTick(Internal.PeriodicCellTimer, time.seconds(30))
+    SaintTicks.RegisterTick(Internal.PeriodicCellTimer, time.seconds(300))
     return eventStatus
 end)
 
