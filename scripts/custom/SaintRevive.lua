@@ -338,7 +338,7 @@ function SaintRevive:_SetPlayerLoggedOutDowned(pid, value)
         logger:Warn('Attempted to logged-out down a player that was not logged in!')
         return
     end
-    player.data.customVariables.loggedOutDowned =- value
+    player.data.customVariables.loggedOutDowned = value
 end
 
 ---@param pid number

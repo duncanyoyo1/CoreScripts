@@ -143,6 +143,7 @@ Internal.MarkAllCellsForResetCommand = function(pid)
     end
 end
 
+--- Saint Note: Move these commands to the manager
 customCommandHooks.registerCommand("MarkCellForReset", Internal.MarkCellForResetCommand)
 customCommandHooks.registerCommand("MarkAllCellsForReset", Internal.MarkAllCellsForResetCommand)
 customEventHooks.registerHandler("OnServerPostInit", function(eventStatus)
