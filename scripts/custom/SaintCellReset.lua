@@ -11,6 +11,7 @@
 local customEventHooks = require('customEventHooks')
 local customCommandHooks = require('customCommandHooks')
 local tableHelper = require('tableHelper')
+
 local SaintUtilities = require('custom.SaintUtilities')
 local SaintLogger = require('custom.SaintLogger')
 
@@ -128,7 +129,7 @@ end
 
 ---Command for marking a cell for reset
 ---@param pid number player id
-Internal.MarkCurrentCellForResetCommand = function(pid)
+Internal.MarkCellForResetCommand = function(pid)
     SaintCellReset.MarkCellForReset(Players[pid].data.location.cell)
     Players[pid]:Message("Marking '"..Players[pid].data.location.cell.."' for reset\n")
 end
@@ -142,20 +143,8 @@ Internal.MarkAllCellsForResetCommand = function(pid)
     end
 end
 
----Forcibly reset the current cell
----WARNING: players in cell get forcibly transferred to the '$Transitional Void'
----         and don't get beought back (consistently). This requires something
----         like SaintPatch to rememdy
----@param pid number player id
-Internal.ResetCurrentCellCommand = function(pid)
-    SaintCellReset.ResetCell(Players[pid].data.location.cell)
-    Players[pid]:Message("Resetting cell '"..Players[pid].data.location.cell.."'\n")
-end
-
-customCommandHooks.registerCommand("MarkCurrentCellForReset", Internal.MarkCurrentCellForResetCommand)
+customCommandHooks.registerCommand("MarkCellForReset", Internal.MarkCellForResetCommand)
 customCommandHooks.registerCommand("MarkAllCellsForReset", Internal.MarkAllCellsForResetCommand)
-customCommandHooks.registerCommand("ResetCurrentCell", Internal.ResetCurrentCellCommand)
-
 customEventHooks.registerHandler("OnServerPostInit", function(eventStatus)
     logger:Info("Starting SaintCellReset...")
     return eventStatus
