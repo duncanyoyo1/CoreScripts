@@ -8,6 +8,7 @@
 ---Saint Note: Convert to classes
 local customEventHooks = require('customEventHooks')
 local time = require('time')
+local tableHelper = require('tableHelper')
 
 local SaintTicks = require('custom.SaintTicks')
 local SaintCellReset = require('custom.SaintCellReset')
@@ -16,7 +17,10 @@ local SaintLogger = require('custom.SaintLogger')
 
 local scriptConfig = {
     ResetTime = time.toSeconds(time.days(3)),
-    periodicCellCheckTimer = 60 * 5, -- 5 minutes
+    periodicCellCheckTimer = time.toSeconds(time.minutes(5)),
+    blackList = {
+        -- 
+    }
 }
 -- Internal Use
 local logger = SaintLogger:CreateLogger('SaintCellResetManager')
@@ -39,6 +43,10 @@ Internal.IsCellResetValid = function(cellDescription)
         if cellDescription == "$Transitional Void" then
             logger:Warn("A player is checking the void...")
             return false, "Player is in the void"
+        end
+
+        if tableHelper.containsValue(scriptConfig.blackList, cellDescription) then
+            return false, "Blacklisted cell"
         end
 
         return true
