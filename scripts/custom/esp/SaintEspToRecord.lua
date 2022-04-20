@@ -5,10 +5,14 @@
 --- Ref: https://www.mwmythicmods.com/tutorials/MorrowindESPFormat.html
 -------------------------------------------------------------------------------
 
+---TODO: Currently have an issue where certain records are _underfilled_
+---TODO: causing the next subsequent reads to fail
+
 local io = require('io')
 local config = require('config')
 
 local SaintUtilities = require('custom.SaintUtilities')
+local RecordEnums = require('custom.esp.RecordTypesEnum')
 local BinaryStringReader = require('custom.io.BinaryStringReader')
 
 ---@alias BINARY string
@@ -70,13 +74,25 @@ SaintEspToRecord.ReadRecord = function(binaryReader)
     local recordSize = SaintEspToRecord.ConvertBinaryToInteger(binaryReader:Read(CONSTS.INTEGER))
     local unusedRecord = binaryReader:Read(CONSTS.INTEGER)
     local recordFlags = binaryReader:Read(CONSTS.INTEGER)
-    local recordData = binaryReader:Read(recordSize)
+    print('RECORD', recordName, recordSize)
+    local fields = {}
+    while true do
+        local possibleFieldName = binaryReader:Peak(4)
+        if RecordEnums.RECORD_TYPES_LOOKUP[possibleFieldName] ~= nil then
+            break
+        end
+        local field = SaintEspToRecord.ReadField(binaryReader)
+        print('FIELD', field.name, field.size, field.data)
+        table.insert(fields, field)
+    end
+    -- local recordData = binaryReader:Read(recordSize)
     return {
         name = recordName,
         size = recordSize,
         unused = unusedRecord,
         flags = recordFlags,
-        data = recordData
+        -- data = recordData,
+        fields = fields,
     }
 end
 
@@ -86,7 +102,6 @@ SaintEspToRecord.ReadField = function (binaryReader)
     if fieldName == nil then
         return nil
     end
-    print(fieldName)
     local fieldDataSize = SaintEspToRecord.ConvertBinaryToInteger(binaryReader:Read(CONSTS.INTEGER))
     local fieldData = binaryReader:Read(fieldDataSize)
     return {
@@ -99,39 +114,39 @@ end
 ---@param binaryReader BinaryStringReader
 SaintEspToRecord.ReadEspHeader = function(binaryReader)
     local FILESIGNATURE = binaryReader:Read(CONSTS.INTEGER)
-    print(FILESIGNATURE)
     local headerSize = binaryReader:Read(CONSTS.INTEGER)
     local reserved = binaryReader:Read(CONSTS.LONG)
     local HEADER = binaryReader:Read(CONSTS.INTEGER)
-    print(HEADER)
     local headerSize2 = binaryReader:Read(CONSTS.INTEGER)
     local versionNumber = binaryReader:Read(CONSTS.INTEGER)
     local unknown1 = binaryReader:Read(CONSTS.INTEGER)
     local authorName = binaryReader:Read(32)
     local description = binaryReader:Read(260)
-    ---Saint Note: This is not always true, their could be more than 1 master file
-    local MasterFileField = SaintEspToRecord.ReadField(binaryReader)
-    local DataField = SaintEspToRecord.ReadField(binaryReader)
+
+    while true do
+        local nextTag = binaryReader:Peak(CONSTS.INTEGER)
+        if nextTag ~= RecordEnums.RECORD_TYPES.MASTER then
+            break
+        end
+        local MasterFileField = SaintEspToRecord.ReadField(binaryReader)
+        local DataField = SaintEspToRecord.ReadField(binaryReader)
+    end
 end
 
 SaintEspToRecord.ReadEsp = function(filePath)
-    print(config.dataPath .. filePath)
-    local dataFile, err = io.open(config.dataPath .. filePath, "r")
+    local dataFile, err = io.open(filePath, 'rb')
     if err then
         error(err)
     end
-    local binaryData = dataFile:read("*a")
+    local binaryData = dataFile:read('*a')
     dataFile:close()
     local binaryStringReader = BinaryStringReader(binaryData);
     SaintEspToRecord.ReadEspHeader(binaryStringReader)
-    print('past header')
     while true do
         local record = SaintEspToRecord.ReadRecord(binaryStringReader)
         if record == nil then
             break
         end
-        print('RECORD', record.name, record.size)
-        print('R_DATA', record.data)
         print()
         print()
     end
@@ -139,8 +154,7 @@ end
 
 local fileNames = SaintUtilities.GetFileNamesInFolder(config.dataPath .. '/esp')
 for _, fileName in pairs(fileNames) do
-    print(fileName)
-    SaintEspToRecord.ReadEsp('/esp/' .. fileName)
+    SaintEspToRecord.ReadEsp(config.dataPath .. '/esp/' .. fileName)
 end
 
 return SaintEspToRecord

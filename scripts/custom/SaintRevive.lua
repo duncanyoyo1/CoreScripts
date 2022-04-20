@@ -118,7 +118,7 @@ function SaintRevive:CreateReviveMarker(pidForMarker)
         --Saint Note: These next few lines may need to be brought into another function
 
         -- Delete the marker for the downed player, and anyone who was in the cell
-        for _, pid in cell.visitors do
+        for _, pid in pairs(cell.visitors) do
             logicHandler.DeleteObjectForPlayer(pid, cellDescription, uniqueIndex)
         end
 
@@ -284,6 +284,7 @@ function SaintRevive:TrySetPlayerDowned(pid)
 		self:DownPlayer(pid, remaining)
 	elseif not self:_GetPlayerDowned(pid) then
 		self:_SetPlayerDowned(pid)
+        self:DownPlayer(pid)
 	end
 end
 
@@ -431,7 +432,7 @@ end
 function SaintRevive:OnObjectActivate(pid, cellDescription, objects, players)
     for _, pidContainer in pairs(players) do
         if self:_GetPlayerDowned(pidContainer.pid) then
-            self:OnPlayerRevive(pidContainer, pid)
+            self:OnPlayerRevive(pidContainer.pid, pid)
             return
         end
     end
@@ -485,9 +486,9 @@ function SaintRevive:OnPlayerDeath(pid)
 	else
 		message = self:GetLangText("defaultSuicide", {name = logicHandler.GetChatName(pid)})
 	end
-	
+
 	tes3mp.SendMessage(pid, message .. "\n", true)
-	
+
     ---Saint Note: This seems unnecessary? Or something, idk, dont like
 	if config.playersRespawn then
 		self:TrySetPlayerDowned(pid)

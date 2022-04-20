@@ -7,3 +7,5 @@ require('custom.SaintCellReset')
 require('custom.SaintCellResetManager')
 require('custom.SaintRevive')
 require('custom.SaintPatch')
+
+-- require('custom.esp.SaintEspToRecord')
