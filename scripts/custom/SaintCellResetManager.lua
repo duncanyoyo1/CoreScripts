@@ -95,7 +95,7 @@ Internal.PeriodicCellsReset = function(cellDescriptions)
 end
 
 Internal.GetCellNames = function()
-    local fileNames = SaintUtilities.GetFileNamesInFolder('./server/data/cell')
+    local fileNames = SaintUtilities.GetFileNamesInFolder(config.dataPath .. '/cell')
     for index, fileName in pairs(fileNames) do
         fileNames[index] = fileName:gsub("%.json", "")
     end
