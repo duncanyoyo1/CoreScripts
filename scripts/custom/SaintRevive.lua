@@ -6,7 +6,6 @@
 --- customization that I don't need or have a desire to complexify this.
 --- Ref: https://github.com/Atkana/tes3mp-scripts/blob/master/0.7/kanaRevive/kanaRevive.lua
 -------------------------------------------------------------------------------
-local classy = require('classy')
 local tableHelper = require('tableHelper')
 
 local config = require('config')
@@ -53,7 +52,7 @@ local lang = {
 ---@field config SaintReviveScriptConfig
 ---@field pidMarkerLookup table<number, string>
 ---@field reviveMarkers table<string, MarkerData>
-local SaintRevive = classy('SaintRevive')
+local SaintRevive = {}
 
 ---- Intermediate Types -------------------------
 
@@ -73,10 +72,10 @@ local SaintRevive = classy('SaintRevive')
 -------------------------------------------------
 
 ---@param config SaintReviveScriptConfig
-function SaintRevive:__init(config)
-    self.reviveMarkers = {}
-    self.pidMarkerLookup = {}
-    self.config = tableHelper.deepCopy(config)
+function SaintRevive.__init(config)
+    SaintRevive.reviveMarkers = {}
+    SaintRevive.pidMarkerLookup = {}
+    SaintRevive.config = tableHelper.deepCopy(config)
 end
 
 -------------------------------------------------------------------------------
@@ -84,7 +83,7 @@ end
 -------------------------------------------------------------------------------
 
 ---@param pidForMarker number
-function SaintRevive:CreateReviveMarker(pidForMarker)
+function SaintRevive.CreateReviveMarker(pidForMarker)
     logger:Info("Creating revive marker for player PID '" .. pidForMarker .. "'")
     local playerName = Players[pidForMarker].accountName
 	local cellDescription = Players[pidForMarker].data.location.cell
@@ -97,7 +96,7 @@ function SaintRevive:CreateReviveMarker(pidForMarker)
 		rotZ = tes3mp.GetRotZ(pidForMarker)
 	}
     local objectData = {
-        refId = self.config.recordRefId,
+        refId = SaintRevive.config.recordRefId,
         count = 1,
         charge = -1,
         enchantmentCharge = -1,
@@ -108,12 +107,12 @@ function SaintRevive:CreateReviveMarker(pidForMarker)
 	SaintUtilities.TempLoadCellCallback(cellDescription, function(cell)
 		local uniqueIndex = logicHandler.CreateObjectAtLocation(cellDescription, location, objectData, "place")
 
-        self.reviveMarkers[uniqueIndex] = {
+        SaintRevive.reviveMarkers[uniqueIndex] = {
             playerName = playerName,
             cellDescription = cellDescription,
             pid = pidForMarker
         }
-        self.pidMarkerLookup[pidForMarker] = uniqueIndex
+        SaintRevive.pidMarkerLookup[pidForMarker] = uniqueIndex
 
         --Saint Note: These next few lines may need to be brought into another function
 
@@ -121,21 +120,18 @@ function SaintRevive:CreateReviveMarker(pidForMarker)
         for _, pid in pairs(cell.visitors) do
             logicHandler.DeleteObjectForPlayer(pid, cellDescription, uniqueIndex)
         end
-
-        -- A little bit extra to maybe ensure that the player whose marker it is doesn't see it
-        logicHandler.DeleteObjectForPlayer(pidForMarker, cellDescription, uniqueIndex)
 	end)
 end
 
 ---@param uniqueIndex string
 ---@param cellDescription string|nil
-function SaintRevive:RemoveReviveMarker(uniqueIndex, cellDescription)
+function SaintRevive.RemoveReviveMarker(uniqueIndex, cellDescription)
 	if uniqueIndex then
 		-- The OnObjectActivate call for this function provides a cell description in case the revive marker is from an old session
 		-- Use that if provided, otherwise it's safe to get it from looking up its information
 
         --Saint Note: I don't like the above or this logic, but whatever
-        local reviveMarker = self.reviveMarkers[uniqueIndex]
+        local reviveMarker = SaintRevive.reviveMarkers[uniqueIndex]
         cellDescription = cellDescription or reviveMarker.cellDescription
 
 		SaintUtilities.TempLoadCellCallback(cellDescription, function(cell)
@@ -144,34 +140,35 @@ function SaintRevive:RemoveReviveMarker(uniqueIndex, cellDescription)
 		end)
 
 		if reviveMarker then
-			self.pidMarkerLookup[reviveMarker.pid] = nil
+			SaintRevive.pidMarkerLookup[reviveMarker.pid] = nil
 		end
 
-		self.reviveMarkers[uniqueIndex] = nil
+		SaintRevive.reviveMarkers[uniqueIndex] = nil
     else
-        logger:Warn("Attempted to clean up a revive marker with no index!")
+        local safeValue = tostring(uniqueIndex)
+        logger:Warn("Attempted to clean up a revive marker with no index! Index: " .. safeValue)
 	end
 end
 
 ---@param downedPid number
 ---@param reviverPid number
-function SaintRevive:OnPlayerRevive(downedPid, reviverPid)
-    local newHealth, newMagicka, newFatigue = self:CalculateRevivedPlayerStats(downedPid)
+function SaintRevive.OnPlayerRevive(downedPid, reviverPid)
+    local newHealth, newMagicka, newFatigue = SaintRevive.CalculateRevivedPlayerStats(downedPid)
     -- Inform players about the revival
 	local exemptPids = {downedPid, reviverPid}
 	local downedPlayerName = Players[downedPid].accountName
 	local reviverPlayerName = Players[reviverPid].accountName
-	local broadcastMessage = self:GetLangText("revivedOtherMessage", {receive = downedPlayerName, give = reviverPlayerName})
+	local broadcastMessage = SaintRevive.GetLangText("revivedOtherMessage", {receive = downedPlayerName, give = reviverPlayerName})
 	
 	-- ...Inform the player being revived
-	tes3mp.SendMessage(downedPid, self:GetLangText("revivedReceiveMessage", {name = reviverPlayerName}) .. "\n")
+	tes3mp.SendMessage(downedPid, SaintRevive.GetLangText("revivedReceiveMessage", {name = reviverPlayerName}) .. "\n")
 	
 	-- ...Inform the reviver
-	tes3mp.SendMessage(reviverPid, self:GetLangText("revivedGiveMessage", {name = downedPlayerName}) .. "\n")
+	tes3mp.SendMessage(reviverPid, SaintRevive.GetLangText("revivedGiveMessage", {name = downedPlayerName}) .. "\n")
 	
-    self:SendMessageToAllOnServer(broadcastMessage, exemptPids)
+    SaintRevive.SendMessageToAllOnServer(broadcastMessage, exemptPids)
 	
-    self:_SetPlayerDowned(downedPid, false)
+    SaintRevive._SetPlayerDowned(downedPid, false)
 	contentFixer.UnequipDeadlyItems(downedPid) -- Morrowind mega mind workaround
 	tes3mp.Resurrect(downedPid, 0)
 	tes3mp.SetHealthCurrent(downedPid, newHealth)
@@ -179,66 +176,66 @@ function SaintRevive:OnPlayerRevive(downedPid, reviverPid)
 	tes3mp.SetFatigueCurrent(downedPid, newFatigue)
 	tes3mp.SendStatsDynamic(downedPid)
 	
-    self:RemoveReviveMarker(self.pidMarkerLookup[downedPid])
+    SaintRevive.RemoveReviveMarker(SaintRevive.pidMarkerLookup[downedPid])
 end
 
 ---@param pid number
-function SaintRevive:OnPlayerBleedout(pid)
-    self:_SetPlayerDowned(pid, false)
+function SaintRevive.OnPlayerBleedout(pid)
+    SaintRevive._SetPlayerDowned(pid, false)
 	
 	-- Inform the player
-    tes3mp.SendMessage(pid, self:GetLangText("bleedoutPlayerMessage") .. "\n")
+    tes3mp.SendMessage(pid, SaintRevive.GetLangText("bleedoutPlayerMessage") .. "\n")
 	
 	-- Inform others if configured
 	local exemptPids = {pid}
 	local pname = Players[pid].accountName
-	local message = self:GetLangText("bleedoutOtherMessage", {name = pname})
+	local message = SaintRevive.GetLangText("bleedoutOtherMessage", {name = pname})
 
-    self:SendMessageToAllOnServer(message, exemptPids)
+    SaintRevive.SendMessageToAllOnServer(message, exemptPids)
 
     OnDeathTimeExpiration(pid, pname)
 	
-    self:RemoveReviveMarker(self.pidMarkerLookup[pid])
+    SaintRevive.RemoveReviveMarker(SaintRevive.pidMarkerLookup[pid])
 end
 
 ---@param pid number
 ---@param timeRemaining number|nil
-function SaintRevive:DownPlayer(pid, timeRemaining)
-    self:_SetPlayerDowned(pid, true)
+function SaintRevive.DownPlayer(pid, timeRemaining)
+    SaintRevive._SetPlayerDowned(pid, true)
 
     local secondsLeft
 	if not timeRemaining then
-		secondsLeft = self.config.bleedoutTime
-        self:_SetPlayerBleedoutTicks(pid, 0)
+		secondsLeft = SaintRevive.config.bleedoutTime
+        SaintRevive._SetPlayerBleedoutTicks(pid, 0)
 	else
-		secondsLeft = timeRemaining
-        self:_SetPlayerBleedoutTicks(pid, self.config.bleedoutTime - secondsLeft)
+		secondsLeft = SaintRevive.config.bleedoutTime - timeRemaining
+        SaintRevive._SetPlayerBleedoutTicks(pid, secondsLeft)
 	end
 	
 	-- Send the first basic messages
-	tes3mp.SendMessage(pid, self:GetLangText("awaitingReviveMessage") .. "\n")
+	tes3mp.SendMessage(pid, SaintRevive.GetLangText("awaitingReviveMessage") .. "\n")
 	local downedPlayerName = Players[pid].accountName
 	local exemptPids = {pid}
-	local downBroadcastMessage = self:GetLangText("awaitingReviveOtherMessage", {name = downedPlayerName})
-    self:SendMessageToAllOnServer(downBroadcastMessage, exemptPids)
-    tes3mp.SendMessage(pid, self:GetLangText("bleedingOutMessage", {seconds = secondsLeft}) .. "\n")
+	local downBroadcastMessage = SaintRevive.GetLangText("awaitingReviveOtherMessage", {name = downedPlayerName})
+    SaintRevive.SendMessageToAllOnServer(downBroadcastMessage, exemptPids)
+    tes3mp.SendMessage(pid, SaintRevive.GetLangText("bleedingOutMessage", {seconds = secondsLeft}) .. "\n")
 
 
-    local timerId = tes3mp.CreateTimerEx("BleedoutTick", time.seconds(1), "ii", pid, self.config.bleedoutTime)
-    self:_SetBleedoutTimerId(pid, timerId)
+    local timerId = tes3mp.CreateTimerEx("BleedoutTick", time.seconds(1), "ii", pid, SaintRevive.config.bleedoutTime)
+    SaintRevive._SetBleedoutTimerId(pid, timerId)
     tes3mp.StartTimer(timerId)
     logger:Info("Creating timer with ID: '" .. timerId .. "' for player PID '" .. pid .. "'")
 
-    self:CreateReviveMarker(pid)
+    SaintRevive.CreateReviveMarker(pid)
 
-	tes3mp.SendMessage(pid, self:GetLangText("giveInPrompt") .. "\n")
+	tes3mp.SendMessage(pid, SaintRevive.GetLangText("giveInPrompt") .. "\n")
 end
 
 ---@param pid number
 ---@return number NewHealth
 ---@return number NewMagicka
 ---@return number NewFatigue
-function SaintRevive:CalculateRevivedPlayerStats(pid)
+function SaintRevive.CalculateRevivedPlayerStats(pid)
     local healthBase = tes3mp.GetHealthBase(pid)
 	local fatigueCurrent = tes3mp.GetFatigueCurrent(pid)
 	local fatigueBase = tes3mp.GetFatigueBase(pid)
@@ -247,26 +244,26 @@ function SaintRevive:CalculateRevivedPlayerStats(pid)
 	
 	local newHealth, newMagicka, newFatigue
 	
-	if self.config.health < 1.0 then
-        newHealth = math.floor((healthBase * self.config.health) + 0.5 )
+	if SaintRevive.config.health < 1.0 then
+        newHealth = math.floor((healthBase * SaintRevive.config.health) + 0.5 )
 	else
-		newHealth = self.config.health
+		newHealth = SaintRevive.config.health
 	end
 	
-	if self.config.magicka == "preserve" then
+	if SaintRevive.config.magicka == "preserve" then
 		newMagicka = magickaCurrent
-	elseif self.config.magicka < 1.0 then
-		newMagicka = math.floor((magickaBase * self.config.magicka) + 0.5 )
+	elseif SaintRevive.config.magicka < 1.0 then
+		newMagicka = math.floor((magickaBase * SaintRevive.config.magicka) + 0.5 )
 	else
-		newMagicka = self.config.magicka
+		newMagicka = SaintRevive.config.magicka
 	end
 	
-	if self.config.fatigue == "preserve" then
+	if SaintRevive.config.fatigue == "preserve" then
 		newFatigue = fatigueCurrent
-	elseif self.config.fatigue < 1.0 then
-		newFatigue = math.floor((fatigueBase * self.config.fatigue) + 0.5 )
+	elseif SaintRevive.config.fatigue < 1.0 then
+		newFatigue = math.floor((fatigueBase * SaintRevive.config.fatigue) + 0.5 )
 	else
-		newFatigue = self.config.fatigue
+		newFatigue = SaintRevive.config.fatigue
 	end
 
     newHealth = math.max(math.min(newHealth, healthBase), 1) -- gotta be one if we are ressing
@@ -276,15 +273,15 @@ function SaintRevive:CalculateRevivedPlayerStats(pid)
     return newHealth, newMagicka, newFatigue
 end
 
-function SaintRevive:TrySetPlayerDowned(pid)
-	if self:_GetPlayerLoggedOutDowned(pid) then
-		local remaining = self.config.bleedoutTime - Players[pid].data.customVariables.bleedoutTicks
-        self:_SetPlayerLoggedOutDowned(pid, nil)
+function SaintRevive.TrySetPlayerDowned(pid)
+	if SaintRevive._GetPlayerLoggedOutDowned(pid) then
+		local remaining = SaintRevive.config.bleedoutTime - Players[pid].data.customVariables.bleedoutTicks
+        SaintRevive._SetPlayerLoggedOutDowned(pid, nil)
 		
-		self:DownPlayer(pid, remaining)
-	elseif not self:_GetPlayerDowned(pid) then
-		self:_SetPlayerDowned(pid)
-        self:DownPlayer(pid)
+		SaintRevive.DownPlayer(pid, remaining)
+	elseif not SaintRevive._GetPlayerDowned(pid) then
+		SaintRevive._SetPlayerDowned(pid)
+        SaintRevive.DownPlayer(pid)
 	end
 end
 
@@ -296,7 +293,7 @@ end
 
 ---@param pid number
 ---@param value number
-function SaintRevive:_SetPlayerBleedoutTicks(pid, value)
+function SaintRevive._SetPlayerBleedoutTicks(pid, value)
     local player = Players[pid]
     if not player then
         logger:Warn('Attempted to bleedout a player that was not logged in!')
@@ -305,7 +302,7 @@ function SaintRevive:_SetPlayerBleedoutTicks(pid, value)
     player.data.customVariables.bleedoutTicks = value
 end
 
-function SaintRevive:_GetPlayerBleedoutTicks(pid)
+function SaintRevive._GetPlayerBleedoutTicks(pid)
     local player = Players[pid]
     if not player then
         logger:Warn('Attempted to access a player that was not logged in!')
@@ -315,14 +312,14 @@ function SaintRevive:_GetPlayerBleedoutTicks(pid)
 end
 
 ---@param pid number
-function SaintRevive:_GetPlayerDowned(pid)
+function SaintRevive._GetPlayerDowned(pid)
     local player = Players[pid]
     return player and player.data.customVariables.isDowned or false
 end
 
 ---@param pid number
 ---@param value boolean
-function SaintRevive:_SetPlayerDowned(pid, value)
+function SaintRevive._SetPlayerDowned(pid, value)
     local player = Players[pid]
     if not player then
         logger:Warn('Attempted to down a player that was not logged in!')
@@ -333,7 +330,7 @@ end
 
 ---@param pid number
 ---@param value boolean
-function SaintRevive:_SetPlayerLoggedOutDowned(pid, value)
+function SaintRevive._SetPlayerLoggedOutDowned(pid, value)
     local player = Players[pid]
     if not player then
         logger:Warn('Attempted to logged-out down a player that was not logged in!')
@@ -343,7 +340,7 @@ function SaintRevive:_SetPlayerLoggedOutDowned(pid, value)
 end
 
 ---@param pid number
-function SaintRevive:_GetPlayerLoggedOutDowned(pid)
+function SaintRevive._GetPlayerLoggedOutDowned(pid)
     local player = Players[pid]
     if not player then
         logger:Warn('Attempted to logged-out down a player that was not logged in!')
@@ -354,7 +351,7 @@ end
 
 ---@param pid number
 ---@param timerId number
-function SaintRevive:_SetBleedoutTimerId(pid, timerId)
+function SaintRevive._SetBleedoutTimerId(pid, timerId)
     local player = Players[pid]
     if not player then
         logger:Warn('Attempted to set the bleedout timer of a player that was not logged in!')
@@ -363,7 +360,7 @@ function SaintRevive:_SetBleedoutTimerId(pid, timerId)
     player.data.customVariables.bleedoutTimerId = timerId
 end
 
-function SaintRevive:_GetBleedoutTimerId(pid)
+function SaintRevive._GetBleedoutTimerId(pid)
     local player = Players[pid]
     if not player then
         logger:Warn('Attempted to set the bleedout timer of a player that was not logged in!')
@@ -376,7 +373,7 @@ end
 --- Language Functions
 ---Saint Note: I don't like this atm
 -------------------------------------------
-function SaintRevive:GetLangText(key, data)
+function SaintRevive.GetLangText(key, data)
 	local function replacer(wildcard)
 		if data[wildcard] then
 			return data[wildcard]
@@ -391,7 +388,7 @@ function SaintRevive:GetLangText(key, data)
 	return text
 end
 
-function SaintRevive:SendMessageToAllWithCellLoaded(cellDescription, message, exceptionPids)
+function SaintRevive.SendMessageToAllWithCellLoaded(cellDescription, message, exceptionPids)
 	for pid, player in pairs(Players) do
 		if tableHelper.containsValue(player.cellsLoaded, cellDescription) and not tableHelper.containsValue(exceptionPids or {}, pid) then
 			tes3mp.SendMessage(pid, message .. "\n")
@@ -399,7 +396,7 @@ function SaintRevive:SendMessageToAllWithCellLoaded(cellDescription, message, ex
 	end
 end
 
-function SaintRevive:SendMessageToAllOnServer(message, exceptionPids)
+function SaintRevive.SendMessageToAllOnServer(message, exceptionPids)
 	for pid, player in pairs(Players) do
 		if not tableHelper.containsValue(exceptionPids or {}, pid) then
 			tes3mp.SendMessage(pid, message .. "\n")
@@ -412,16 +409,16 @@ end
 --- TES3MP Hooks and Registration
 -------------------------------------------------------------------------------
 
-function SaintRevive:OnDieCommand(pid)
-    if self:_GetPlayerDowned(pid) then
-        self:OnPlayerBleedout(pid)
+function SaintRevive.OnDieCommand(pid)
+    if SaintRevive._GetPlayerDowned(pid) then
+        SaintRevive.OnPlayerBleedout(pid)
     end
 end
 
-function SaintRevive:OnPlayerFinishLogin(pid)
-    if self:_GetPlayerDowned(pid) then
+function SaintRevive.OnPlayerFinishLogin(pid)
+    if SaintRevive._GetPlayerDowned(pid) then
 		Players[pid]:SetHealthCurrent(0)
-		self:_SetPlayerLoggedOutDowned(pid, true)
+		SaintRevive._SetPlayerLoggedOutDowned(pid, true)
 	end
 end
 
@@ -429,38 +426,38 @@ end
 ---@param cellDescription string
 ---@param objects ActivatedObjectsContainer[]
 ---@param players ActivatedPlayersContainer[]
-function SaintRevive:OnObjectActivate(pid, cellDescription, objects, players)
+function SaintRevive.OnObjectActivate(pid, cellDescription, objects, players)
     for _, pidContainer in pairs(players) do
-        if self:_GetPlayerDowned(pidContainer.pid) then
-            self:OnPlayerRevive(pidContainer.pid, pid)
+        if SaintRevive._GetPlayerDowned(pidContainer.pid) then
+            SaintRevive.OnPlayerRevive(pidContainer.pid, pid)
             return
         end
     end
 
     for uniqueIndex, objectContainer in pairs(objects) do
-        if objectContainer.refId == self.config.recordRefId then
-            if self.reviveMarkers[uniqueIndex] and self:_GetPlayerDowned(self.reviveMarkers[uniqueIndex].pid) then
-                self:OnPlayerRevive(self.reviveMarkers[uniqueIndex].pid, pid)
+        if objectContainer.refId == SaintRevive.config.recordRefId then
+            if SaintRevive.reviveMarkers[uniqueIndex] and SaintRevive._GetPlayerDowned(SaintRevive.reviveMarkers[uniqueIndex].pid) then
+                SaintRevive.OnPlayerRevive(SaintRevive.reviveMarkers[uniqueIndex].pid, pid)
             else
                 --OnPlayerRevive already removes the marker, this is a weird situation
-                self:RemoveReviveMarker(uniqueIndex, cellDescription)
+                SaintRevive.RemoveReviveMarker(uniqueIndex, cellDescription)
             end
             return
         end
     end
 end
 
-function SaintRevive:OnServerPostInit()
-    if RecordStores[self.config.objectType].data.permanentRecords[self.config.recordRefId] == nil then
+function SaintRevive.OnServerPostInit()
+    if RecordStores[SaintRevive.config.objectType].data.permanentRecords[SaintRevive.config.recordRefId] == nil then
 		local data = {
-            model = self.config.model,
-            name = self:GetLangText("reviveMarkerName"),
+            model = SaintRevive.config.model,
+            name = SaintRevive.GetLangText("reviveMarkerName"),
             script = "nopickup"
         }
 		
-		RecordStores[self.config.objectType].data.permanentRecords[self.config.recordRefId] = data
+		RecordStores[SaintRevive.config.objectType].data.permanentRecords[SaintRevive.config.recordRefId] = data
 		
-		RecordStores[self.config.objectType]:SaveToDrive()
+		RecordStores[SaintRevive.config.objectType]:SaveToDrive()
         logger:Info("Created record for custom marker")
     else
         logger:Info("Custom record already exists, skipping")
@@ -468,33 +465,33 @@ function SaintRevive:OnServerPostInit()
 end
 
 ---@param pid number
-function SaintRevive:OnPlayerDisconnect(pid)
-    if self:_GetPlayerDowned(pid) then
-        self:RemoveReviveMarker(self.pidMarkerLookup[pid])
+function SaintRevive.OnPlayerDisconnect(pid)
+    if SaintRevive._GetPlayerDowned(pid) then
+        SaintRevive.RemoveReviveMarker(SaintRevive.pidMarkerLookup[pid])
     end
 end
 
 ---@param pid number
 ---@return boolean DidPlayerGetDowned
-function SaintRevive:OnPlayerDeath(pid)
+function SaintRevive.OnPlayerDeath(pid)
     local message
 	if tes3mp.DoesPlayerHavePlayerKiller(pid) and tes3mp.GetPlayerKillerPid(pid) ~= pid then
 		local killerPid = tes3mp.GetPlayerKillerPid(pid)
-		message = self:GetLangText("defaultKilledByPlayer", {name = logicHandler.GetChatName(pid), killer = logicHandler.GetChatName(killerPid)})
+		message = SaintRevive.GetLangText("defaultKilledByPlayer", {name = logicHandler.GetChatName(pid), killer = logicHandler.GetChatName(killerPid)})
 	elseif tes3mp.GetPlayerKillerName(pid) ~= "" then
-		message = self:GetLangText("defaultKilledByOther", {name = logicHandler.GetChatName(pid), killer = tes3mp.GetPlayerKillerName(pid)})
+		message = SaintRevive.GetLangText("defaultKilledByOther", {name = logicHandler.GetChatName(pid), killer = tes3mp.GetPlayerKillerName(pid)})
 	else
-		message = self:GetLangText("defaultSuicide", {name = logicHandler.GetChatName(pid)})
+		message = SaintRevive.GetLangText("defaultSuicide", {name = logicHandler.GetChatName(pid)})
 	end
 
 	tes3mp.SendMessage(pid, message .. "\n", true)
 
     ---Saint Note: This seems unnecessary? Or something, idk, dont like
 	if config.playersRespawn then
-		self:TrySetPlayerDowned(pid)
+		SaintRevive.TrySetPlayerDowned(pid)
         return true
 	else
-		tes3mp.SendMessage(pid, self:GetLangText("defaultPermanentDeath") .. "\n", false)
+		tes3mp.SendMessage(pid, SaintRevive.GetLangText("defaultPermanentDeath") .. "\n", false)
 		return false
 	end
 end
@@ -506,47 +503,48 @@ end
 function BleedoutTick(pid, bleedoutTime)
     local player = Players[pid]
 	if player and Players[pid]:IsLoggedIn() then
-		if SaintRevive:_GetPlayerDowned(pid) then
-            SaintRevive:_SetPlayerBleedoutTicks(pid, SaintRevive:_GetPlayerBleedoutTicks() or 1)
+		if SaintRevive._GetPlayerDowned(pid) then
+            SaintRevive._SetPlayerBleedoutTicks(pid, SaintRevive._GetPlayerBleedoutTicks(pid) + 1)
 			
-			if SaintRevive:_GetPlayerBleedoutTicks(pid) >= bleedoutTime then
-				return SaintRevive:OnPlayerBleedout(pid)
+			if SaintRevive._GetPlayerBleedoutTicks(pid) >= bleedoutTime then
+				return SaintRevive.OnPlayerBleedout(pid)
 			else
-				local timerId = SaintRevive:_GetBleedoutTimerId(pid)
+                tes3mp.SendMessage(pid, tostring(SaintRevive._GetPlayerBleedoutTicks(pid)) .. '...\n')
+				local timerId = SaintRevive._GetBleedoutTimerId(pid)
 				return tes3mp.RestartTimer(timerId, time.seconds(1))
 			end
 		end
 	end
 end
 
-function SaintRevive:Init()
+function SaintRevive.Init()
     customEventHooks.registerValidator("OnPlayerDeath", function(eventStatus, pid)
-        local didRevive = self:OnPlayerDeath(pid)
+        local didRevive = SaintRevive.OnPlayerDeath(pid)
         local doDefault = not didRevive
         return customEventHooks.makeEventStatus(false, doDefault)
     end)
     customEventHooks.registerValidator("OnPlayerDisconnect", function(eventStatus, pid)
-        self:OnPlayerDisconnect(pid)
+        SaintRevive.OnPlayerDisconnect(pid)
         return eventStatus
     end)
     customEventHooks.registerHandler("OnPlayerFinishLogin",  function(eventStatus, pid)
-        self:OnPlayerFinishLogin(pid)
+        SaintRevive.OnPlayerFinishLogin(pid)
         return eventStatus
     end)
     customEventHooks.registerHandler("OnObjectActivate", function(eventStatus, pid, cellDescription, objects, players)
-        self:OnObjectActivate(pid, cellDescription, objects, players)
+        SaintRevive.OnObjectActivate(pid, cellDescription, objects, players)
         return eventStatus
     end)
     customEventHooks.registerHandler("OnServerPostInit", function(eventStatus)
-        self:OnServerPostInit()
+        SaintRevive.OnServerPostInit()
         return eventStatus
     end)
     customCommandHooks.registerCommand("die", function(pid)
-        self:OnDieCommand(pid)
+        SaintRevive.OnDieCommand(pid)
     end)
 end
 
 ---@type SaintRevive
-local sr_instance = SaintRevive(ScriptConfig)
-sr_instance:Init()
-return sr_instance
+SaintRevive.__init(ScriptConfig)
+SaintRevive.Init()
+return SaintRevive
