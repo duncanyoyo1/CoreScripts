@@ -9,11 +9,16 @@
 ---TODO: causing the next subsequent reads to fail
 
 local io = require('io')
+local tableHelper = require('tableHelper')
 local config = require('config')
 
+local SaintLogger = require('custom.SaintLogger')
 local SaintUtilities = require('custom.SaintUtilities')
 local RecordEnums = require('custom.esp.RecordTypesEnum')
+local SupportedRecordStores = require('custom.esp.SupportedRecordStores')
 local BinaryStringReader = require('custom.io.BinaryStringReader')
+
+local logger = SaintLogger:CreateLogger('SaintEspToRecord')
 
 ---@alias BINARY string
 
@@ -54,7 +59,7 @@ SaintEspToRecord.Convert256NumberToHexCode = function(num)
 end
 
 ---@param binary BINARY
----@return integer[]
+---@return integer
 SaintEspToRecord.ConvertBinaryToInteger = function(binary)
     local arr = {string.byte(binary, 1, #binary)}
     local str = ''
@@ -68,30 +73,20 @@ end
 ---@param binaryReader BinaryStringReader
 SaintEspToRecord.ReadRecord = function(binaryReader)
     local recordName = binaryReader:Read(CONSTS.INTEGER)
-    if recordName == nil then
-        return nil
-    end
     local recordSize = SaintEspToRecord.ConvertBinaryToInteger(binaryReader:Read(CONSTS.INTEGER))
     local unusedRecord = binaryReader:Read(CONSTS.INTEGER)
     local recordFlags = binaryReader:Read(CONSTS.INTEGER)
-    print('RECORD', recordName, recordSize)
+    local fieldBinaryReader = BinaryStringReader(binaryReader:Read(recordSize))
     local fields = {}
-    while true do
-        local possibleFieldName = binaryReader:Peak(4)
-        if RecordEnums.RECORD_TYPES_LOOKUP[possibleFieldName] ~= nil then
-            break
-        end
-        local field = SaintEspToRecord.ReadField(binaryReader)
-        print('FIELD', field.name, field.size, field.data)
+    while fieldBinaryReader:HasData() do
+        local field = SaintEspToRecord.ReadField(fieldBinaryReader)
         table.insert(fields, field)
     end
-    -- local recordData = binaryReader:Read(recordSize)
     return {
         name = recordName,
         size = recordSize,
         unused = unusedRecord,
         flags = recordFlags,
-        -- data = recordData,
         fields = fields,
     }
 end
@@ -99,9 +94,6 @@ end
 ---@param binaryReader BinaryStringReader
 SaintEspToRecord.ReadField = function (binaryReader)
     local fieldName = binaryReader:Read(CONSTS.INTEGER)
-    if fieldName == nil then
-        return nil
-    end
     local fieldDataSize = SaintEspToRecord.ConvertBinaryToInteger(binaryReader:Read(CONSTS.INTEGER))
     local fieldData = binaryReader:Read(fieldDataSize)
     return {
@@ -123,14 +115,20 @@ SaintEspToRecord.ReadEspHeader = function(binaryReader)
     local authorName = binaryReader:Read(32)
     local description = binaryReader:Read(260)
 
+    local requiredFiles = {} ---@type string[]
     while true do
         local nextTag = binaryReader:Peak(CONSTS.INTEGER)
         if nextTag ~= RecordEnums.RECORD_TYPES.MASTER then
             break
         end
         local MasterFileField = SaintEspToRecord.ReadField(binaryReader)
+        print(MasterFileField.name, MasterFileField.size, MasterFileField.data)
         local DataField = SaintEspToRecord.ReadField(binaryReader)
+        table.insert(requiredFiles, MasterFileField.name)
     end
+    return {
+        masterFiles = requiredFiles
+    }
 end
 
 SaintEspToRecord.ReadEsp = function(filePath)
@@ -141,20 +139,31 @@ SaintEspToRecord.ReadEsp = function(filePath)
     local binaryData = dataFile:read('*a')
     dataFile:close()
     local binaryStringReader = BinaryStringReader(binaryData);
-    SaintEspToRecord.ReadEspHeader(binaryStringReader)
-    while true do
+    local header = SaintEspToRecord.ReadEspHeader(binaryStringReader)
+    local records = {}
+    while binaryStringReader:HasData() do
         local record = SaintEspToRecord.ReadRecord(binaryStringReader)
-        if record == nil then
-            break
-        end
-        print()
-        print()
+        table.insert(records, record)
     end
+    return records
 end
 
 local fileNames = SaintUtilities.GetFileNamesInFolder(config.dataPath .. '/esp')
 for _, fileName in pairs(fileNames) do
-    SaintEspToRecord.ReadEsp(config.dataPath .. '/esp/' .. fileName)
+    local records = SaintEspToRecord.ReadEsp(config.dataPath .. '/esp/' .. fileName)
+    local unsupportedRecordCount = 0
+    for _, record in pairs(records) do
+        local isSupportedRecordType = tableHelper.containsValue(SupportedRecordStores, record.name)
+        if isSupportedRecordType then
+        else
+            logger:Warn('Found an unsupported record: ' .. record.name)
+            unsupportedRecordCount = unsupportedRecordCount + 1
+        end
+    end
+    if unsupportedRecordCount > 0 then
+        logger:Warn('There are ' .. unsupportedRecordCount .. ' unsupported record types within this mod')
+        logger:Warn('This mod (' .. fileName .. ') will likely not run properly')
+    end
 end
 
 return SaintEspToRecord

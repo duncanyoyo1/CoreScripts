@@ -18,10 +18,10 @@ end
 ---@param byteCount integer
 ---@return string|nil
 function BinaryStringReader:Peak(byteCount)
-    if self.index > self.length then
-        return nil
+    if self:HasData() then
+        return self:_read(byteCount, false)
     end
-    return self:_read(byteCount, false)
+    return nil
 end
 
 ---@param byteCount integer
@@ -46,6 +46,10 @@ end
 function BinaryStringReader:Unread(byteCount)
     self.index = self.index - byteCount
     if self.index < 1 then error('Attempting to unread to a negative index') end
+end
+
+function BinaryStringReader:HasData()
+    return self.index <= self.length
 end
 
 local BinaryStringReaderConstructor = BinaryStringReader ---@type fun(str: string): BinaryStringReader
