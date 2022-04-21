@@ -122,7 +122,6 @@ SaintEspToRecord.ReadEspHeader = function(binaryReader)
             break
         end
         local MasterFileField = SaintEspToRecord.ReadField(binaryReader)
-        print(MasterFileField.name, MasterFileField.size, MasterFileField.data)
         local DataField = SaintEspToRecord.ReadField(binaryReader)
         table.insert(requiredFiles, MasterFileField.name)
     end
@@ -145,16 +144,29 @@ SaintEspToRecord.ReadEsp = function(filePath)
         local record = SaintEspToRecord.ReadRecord(binaryStringReader)
         table.insert(records, record)
     end
-    return records
+    return {
+        header = header,
+        records = records
+    }
+end
+
+function PrintField(fields)
+    for _, field in pairs(fields) do
+        print(field.name, field.size, field.data)
+    end
 end
 
 local fileNames = SaintUtilities.GetFileNamesInFolder(config.dataPath .. '/esp')
 for _, fileName in pairs(fileNames) do
-    local records = SaintEspToRecord.ReadEsp(config.dataPath .. '/esp/' .. fileName)
+    logger:Verbose('Reading: ' .. fileName)
+    local Esp = SaintEspToRecord.ReadEsp(config.dataPath .. '/esp/' .. fileName)
+    local records = Esp.records
     local unsupportedRecordCount = 0
     for _, record in pairs(records) do
         local isSupportedRecordType = tableHelper.containsValue(SupportedRecordStores, record.name)
         if isSupportedRecordType then
+            print(record.name)
+            PrintField(record.fields)
         else
             logger:Warn('Found an unsupported record: ' .. record.name)
             unsupportedRecordCount = unsupportedRecordCount + 1
