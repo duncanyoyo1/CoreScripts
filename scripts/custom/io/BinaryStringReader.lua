@@ -1,4 +1,5 @@
 local classy = require('classy')
+local ffi = require('ffi')
 
 ---@class BinaryStringReader
 local BinaryStringReader = classy('BinaryStringReader')
@@ -9,10 +10,15 @@ function BinaryStringReader:__init(binaryData)
     self.length = #binaryData
 end
 
----@param byteCount integer
----@return string
-function BinaryStringReader:Read(byteCount)
-    return self:_read(byteCount, true)
+---@param byteCount number
+---@param type nil|string optional
+---@return string|number
+function BinaryStringReader:Read(byteCount, type)
+    local result = self:_read(byteCount, true)
+    if type then
+        return ffi.cast(type .. '*', result)[0]
+    end
+    return result
 end
 
 ---@param byteCount integer
