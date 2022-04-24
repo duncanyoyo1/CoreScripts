@@ -188,9 +188,7 @@ eventHandler.InitializeDefaultHandlers = function()
             table.insert(cell.unusableContainerUniqueIndexes, uniqueIndex)
         end
 
-        if config.shareKills then
-            tes3mp.SendWorldKillCount(pid, true)
-        end
+        tes3mp.SendWorldKillCount(pid, config.shareKills)
 
         cell:RequestContainers(pid, tableHelper.getArrayFromIndexes(actors))
     end)
