@@ -55,7 +55,7 @@ end
 function GlobalSaintTick(tickInterval)
     logger:Info('Ticking for ' .. tickInterval .. '...')
     local ticks = Timers[tickInterval]
-    for _, callback in ipairs(ticks.timers) do
+    for _, callback in pairs(ticks.timers) do
         callback()
     end
     tes3mp.RestartTimer(ticks.timerId, tickInterval)

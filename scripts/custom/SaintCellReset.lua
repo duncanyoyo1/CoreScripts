@@ -102,14 +102,14 @@ end
 SaintCellReset.ResetCells = function(cellDescriptions)
     local cellChanges = {}
     tes3mp.ClearCellsToReset()
-    for _, cellDescription in ipairs(cellDescriptions) do
+    for _, cellDescription in pairs(cellDescriptions) do
         cellChanges[cellDescription] = Internal.CaptureCellChanges(cellDescription)
         Internal._ResetCellReImpl(cellDescription)
         tes3mp.AddCellToReset(cellDescription)
         logger:Info("Resetting cell '" .. cellDescription .. "'")
     end
 
-    for _, pid in ipairs(Players) do
+    for pid, _ in pairs(Players) do
         tes3mp.SendCellReset(pid, false)
     end
 
@@ -137,7 +137,7 @@ end
 ---Command for marking all loaded cells of a player to be reset
 ---@param pid number player id
 Internal.MarkAllCellsForResetCommand = function(pid)
-    for _, cellDescription in ipairs(Players[pid].cellsLoaded) do
+    for _, cellDescription in pairs(Players[pid].cellsLoaded) do
         SaintCellReset.MarkCellForReset(cellDescription)
         Players[pid]:Message("Marking '"..cellDescription.."' for reset\n")
     end
