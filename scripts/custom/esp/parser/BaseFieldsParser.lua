@@ -7,7 +7,8 @@ local DELEFieldParser    = require('custom.esp.parser.primitive.DELEFieldParser'
 ---@param funcMap FuncMap
 ---@param compositeType CompositeType
 ---@param arrayType ArrayType
-return function(binaryReader, funcMap, compositeType, arrayType)
+---@param context table
+return function(binaryReader, funcMap, compositeType, arrayType, context)
     local fields = {}
     while binaryReader:HasData() do
         local fieldName = binaryReader:Peak(Size.INTEGER)
@@ -31,10 +32,10 @@ return function(binaryReader, funcMap, compositeType, arrayType)
             local field = ParseField(binaryReader)
             data = DELEFieldParser(BinaryStringReader(field.data))
         elseif compositeFunc then
-            data = compositeFunc(binaryReader)
+            data = compositeFunc(binaryReader, context)
         elseif singularFunc then
             local field = ParseField(binaryReader)
-            data = singularFunc(BinaryStringReader(field.data))
+            data = singularFunc(BinaryStringReader(field.data), context)
         else
             -- We are looking into something that is either ANOTHER record
             -- or another array item
@@ -43,18 +44,15 @@ return function(binaryReader, funcMap, compositeType, arrayType)
         end
 
         if arrayFieldName then
-            print('###################', 'INSERTING: ', data, 'INTO: ', arrayFieldName, '##########################')
             local array = fields[arrayFieldName] or {}
             table.insert(array, data)
             fields[arrayFieldName] = array
         elseif compositeFunc then
             -- if the field is composite but not an array
             for key, value in pairs(data) do
-                print('###################', 'INSERTING: ', value, 'INTO: ', key, '##########################')
                 fields[key] = value
             end
         else
-            print('###################', 'INSERTING: ', data, 'INTO: ', fieldName, '##########################')
             fields[fieldName] = data
         end
     end

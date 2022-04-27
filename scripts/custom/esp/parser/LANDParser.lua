@@ -18,10 +18,10 @@ end
 ---@param binaryReader BinaryStringReader
 local ParseVNML = function(binaryReader)
     local VNML = {}
-    for i = 0,65, 1 do
+    for i = 0,65-1, 1 do
         local arr = {}
-        for j = 0, 65, 1 do
-            table[j] = {
+        for j = 0, 65-1, 1 do
+            arr[j] = {
                 x = binaryReader:Read(Size.BYTE, Types.INT8),
                 y = binaryReader:Read(Size.BYTE, Types.INT8),
                 z = binaryReader:Read(Size.BYTE, Types.INT8),
@@ -39,9 +39,9 @@ local ParseVHGT = function(binaryReader)
         heightData = (
             function()
                 local result = {}
-                for i = 0,65, 1 do
+                for i = 0,65-1, 1 do
                     local arr = {}
-                    for j = 0, 65, 1 do
+                    for j = 0, 65-1, 1 do
                         arr[j] = binaryReader:Read(Size.BYTE, Types.INT8)
                     end
                     result[i] = arr
@@ -60,10 +60,10 @@ end
 ---@param binaryReader BinaryStringReader
 local ParseWNAM = function(binaryReader)
     local WNAM = {}
-    for i = 0,9, 1 do
+    for i = 0,9-1, 1 do
         local arr = {}
-        for j = 0, 9, 1 do
-            table[j] = binaryReader:Read(Size.BYTE, Types.UINT8)
+        for j = 0, 9-1, 1 do
+            arr[j] = binaryReader:Read(Size.BYTE, Types.UINT8)
         end
         WNAM[i] = arr
     end
@@ -73,10 +73,10 @@ end
 ---@param binaryReader BinaryStringReader
 local ParseVCLR = function(binaryReader)
     local VCLR = {}
-    for i = 0,65, 1 do
+    for i = 0,65-1, 1 do
         local arr = {}
-        for j = 0, 65, 1 do
-            table[j] = {
+        for j = 0, 65-1, 1 do
+            arr[j] = {
                 r = binaryReader:Read(Size.BYTE, Types.INT8),
                 g = binaryReader:Read(Size.BYTE, Types.INT8),
                 b = binaryReader:Read(Size.BYTE, Types.INT8),
@@ -90,10 +90,10 @@ end
 ---@param binaryReader BinaryStringReader
 local ParseVTEX = function(binaryReader)
     local VTEX = {}
-    for i = 0,65, 1 do
+    for i = 0,16-1, 1 do
         local arr = {}
-        for j = 0, 65, 1 do
-            table[j] = binaryReader:Read(Size.HALFWORD, Types.UINT16)
+        for j = 0, 16-1, 1 do
+            arr[j] = binaryReader:Read(Size.HALFWORD, Types.UINT16)
         end
         VTEX[i] = arr
     end

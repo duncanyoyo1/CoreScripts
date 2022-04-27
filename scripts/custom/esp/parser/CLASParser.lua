@@ -15,11 +15,6 @@ end
 
 ---@param binaryReader BinaryStringReader
 local ParseCLDT = function(binaryReader)
-    return binaryReader:Read(binaryReader.length)
-end
-
----@param binaryReader BinaryStringReader
-local ParseDESC = function(binaryReader)
     return {
         primaryAttributes = {
             binaryReader:Read(Size.INTEGER, Types.UINT32),
@@ -43,6 +38,11 @@ local ParseDESC = function(binaryReader)
         flags = binaryReader:Read(Size.INTEGER, Types.UINT32),
         autoCalcFlags = binaryReader:Read(Size.INTEGER, Types.UINT32),
     }
+end
+
+---@param binaryReader BinaryStringReader
+local ParseDESC = function(binaryReader)
+    return binaryReader:Read(binaryReader.length)
 end
 
 local funcMap = {

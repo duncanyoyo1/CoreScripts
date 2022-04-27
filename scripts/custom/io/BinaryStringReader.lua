@@ -37,8 +37,7 @@ function BinaryStringReader:_read(byteCount, increment)
     local offset = byteCount - 1 -- sub is inclusive and 1 based indexing sucks
     local start = self.index
     local finish = start + offset
-    if finish > #self.binaryString then
-        print(start, finish, self.length)
+    if finish > self.length then
         error('Attempting to read beyond length')
     end
     local data = string.sub(self.binaryString, start, finish)

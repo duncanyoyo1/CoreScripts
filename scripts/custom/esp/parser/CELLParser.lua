@@ -86,7 +86,7 @@ local ParseCNDT = function(binaryReader)
 end
 
 ---@param binaryReader BinaryStringReader
-local ParseCompositeMovedReference = function(binaryReader)
+local ParseCompositeMovedReference = function(binaryReader, context)
     local followFields = {
         ['MVRF'] = ParseMVRF,
         ['CNAM'] = ParseCNAM,
@@ -96,7 +96,7 @@ local ParseCompositeMovedReference = function(binaryReader)
     }
     local followArrays = {
     }
-    return BaseFieldsParser(binaryReader, followFields, followComposities, followArrays)
+    return BaseFieldsParser(binaryReader, followFields, followComposities, followArrays, context)
 end
 
 ---@param binaryReader BinaryStringReader
@@ -178,7 +178,7 @@ local ParseINDX = function(binaryReader)
 end
 
 ---@param binaryReader BinaryStringReader
-local ParseCompositeFaction = function(binaryReader)
+local ParseCompositeFaction = function(binaryReader, context)
     local followFields = {
         ['CNAM'] = ParseCNAM,
         ['INDX'] = ParseINDX,
@@ -187,7 +187,7 @@ local ParseCompositeFaction = function(binaryReader)
     }
     local followArrays = {
     }
-    return BaseFieldsParser(binaryReader, followFields, followComposities, followArrays)
+    return BaseFieldsParser(binaryReader, followFields, followComposities, followArrays, context)
 end
 
 ---@param binaryReader BinaryStringReader
@@ -196,7 +196,7 @@ local ParseDNAM = function(binaryReader)
 end
 
 ---@param binaryReader BinaryStringReader
-local ParseCompositeDestination = function(binaryReader)
+local ParseCompositeDestination = function(binaryReader, context)
     local followFields = {
         ['DODT'] = ParseDODT,
         ['DNAM'] = ParseDNAM,
@@ -205,7 +205,7 @@ local ParseCompositeDestination = function(binaryReader)
     }
     local followArrays = {
     }
-    return BaseFieldsParser(binaryReader, followFields, followComposities, followArrays)
+    return BaseFieldsParser(binaryReader, followFields, followComposities, followArrays, context)
 end
 
 ---@param binaryReader BinaryStringReader
@@ -214,7 +214,7 @@ local ParseFRMR = function(binaryReader)
 end
 
 ---@param binaryReader BinaryStringReader
-local ParseCompositeFormReference = function(binaryReader)
+local ParseCompositeFormReference = function(binaryReader, context)
     local followFields = {
         ['FRMR'] = ParseFRMR,
         ['NAME'] = ParseNAME,
@@ -239,7 +239,7 @@ local ParseCompositeFormReference = function(binaryReader)
     local followArrays = {
         ['DODT'] = 'Destinations',
     }
-    return BaseFieldsParser(binaryReader, followFields, followComposities, followArrays)
+    return BaseFieldsParser(binaryReader, followFields, followComposities, followArrays, context)
 end
 
 local funcMap = {

@@ -26,40 +26,102 @@ local ParseFNAM = function(binaryReader)
 end
 
 ---@param binaryReader BinaryStringReader
+local ParseRNAM = function(binaryReader)
+    return binaryReader:Read(binaryReader.length)
+end
+
+---@param binaryReader BinaryStringReader
+local ParseANAM = function(binaryReader)
+    return binaryReader:Read(binaryReader.length)
+end
+
+---@param binaryReader BinaryStringReader
+local ParseBNAM = function(binaryReader)
+    return binaryReader:Read(binaryReader.length)
+end
+
+---@param binaryReader BinaryStringReader
+local ParseKNAM = function(binaryReader)
+    return binaryReader:Read(binaryReader.length)
+end
+
+---@param binaryReader BinaryStringReader
 local ParseSCRI = function(binaryReader)
     return binaryReader:Read(binaryReader.length)
 end
 
 ---@param binaryReader BinaryStringReader
 local ParseNPDT = function(binaryReader)
-    return {
-        type = binaryReader:Read(Size.INTEGER, Types.UINT32),
-        level = binaryReader:Read(Size.INTEGER, Types.UINT32),
-        attributes = {
-            binaryReader:Read(Size.INTEGER, Types.UINT32),
-            binaryReader:Read(Size.INTEGER, Types.UINT32),
-            binaryReader:Read(Size.INTEGER, Types.UINT32),
-            binaryReader:Read(Size.INTEGER, Types.UINT32),
-            binaryReader:Read(Size.INTEGER, Types.UINT32),
-            binaryReader:Read(Size.INTEGER, Types.UINT32),
-            binaryReader:Read(Size.INTEGER, Types.UINT32),
-            binaryReader:Read(Size.INTEGER, Types.UINT32),
-        },
-        health = binaryReader:Read(Size.INTEGER, Types.UINT32),
-        spellPts = binaryReader:Read(Size.INTEGER, Types.UINT32),
-        fatigue = binaryReader:Read(Size.INTEGER, Types.UINT32),
-        soul = binaryReader:Read(Size.INTEGER, Types.UINT32),
-        combat = binaryReader:Read(Size.INTEGER, Types.UINT32),
-        magic = binaryReader:Read(Size.INTEGER, Types.UINT32),
-        stealth = binaryReader:Read(Size.INTEGER, Types.UINT32),
-        attackMin1 = binaryReader:Read(Size.INTEGER, Types.UINT32),
-        attackMax1 = binaryReader:Read(Size.INTEGER, Types.UINT32),
-        attackMin2 = binaryReader:Read(Size.INTEGER, Types.UINT32),
-        attackMax2 = binaryReader:Read(Size.INTEGER, Types.UINT32),
-        attackMin3 = binaryReader:Read(Size.INTEGER, Types.UINT32),
-        attackMax3 = binaryReader:Read(Size.INTEGER, Types.UINT32),
-        gold = binaryReader:Read(Size.INTEGER, Types.UINT32),
-    }
+    if binaryReader.length == 52 then
+        return {
+            level = binaryReader:Read(Size.HALFWORD, Types.UINT16),
+            attributes = {
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+            },
+            skills = {
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+            },
+            unknown = binaryReader:Read(Size.BYTE, Types.UINT8),
+            health = binaryReader:Read(Size.HALFWORD, Types.UINT16),
+            spellPts = binaryReader:Read(Size.HALFWORD, Types.UINT16),
+            fatigue = binaryReader:Read(Size.HALFWORD, Types.UINT16),
+            disposition = binaryReader:Read(Size.BYTE, Types.UINT8),
+            reputation = binaryReader:Read(Size.BYTE, Types.UINT8),
+            rank = binaryReader:Read(Size.BYTE, Types.UINT8),
+            unknown2 = binaryReader:Read(Size.BYTE, Types.UINT8),
+            gold = binaryReader:Read(Size.INTEGER, Types.UINT32),
+        }
+    elseif binaryReader.length == 12 then
+        return {
+            level = binaryReader:Read(Size.HALFWORD, Types.UINT16),
+            disposition = binaryReader:Read(Size.BYTE, Types.UINT8),
+            reputation = binaryReader:Read(Size.BYTE, Types.UINT8),
+            rank = binaryReader:Read(Size.BYTE, Types.UINT8),
+            unknown = {
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+                binaryReader:Read(Size.BYTE, Types.UINT8),
+            },
+            gold = binaryReader:Read(Size.INTEGER, Types.UINT32),
+        }
+    else
+        error('Unknown size of npc_ data struct')
+    end
 end
 
 ---@param binaryReader BinaryStringReader
@@ -201,8 +263,12 @@ end
 local funcMap = {
     ['NAME'] = ParseNAME,
     ['MODL'] = ParseMODL,
-    ['CNAM'] = ParseCNAM,
     ['FNAM'] = ParseFNAM,
+    ['RNAM'] = ParseRNAM,
+    ['CNAM'] = ParseCNAM,
+    ['ANAM'] = ParseANAM,
+    ['BNAM'] = ParseBNAM,
+    ['KNAM'] = ParseKNAM,
     ['SCRI'] = ParseSCRI,
     ['NPDT'] = ParseNPDT,
     ['FLAG'] = ParseFLAG,
@@ -210,6 +276,8 @@ local funcMap = {
     ['NPCO'] = ParseNPCO,
     ['NPCS'] = ParseNPCS,
     ['AIDT'] = ParseAIDT,
+
+    --- Saint Note: Initially thought these were a composite, but it doesn't seem to be the case
     ['AI_A'] = ParseAI_A,
     ['AI_E'] = ParseAI_EF,
     ['AI_F'] = ParseAI_EF,
@@ -234,6 +302,6 @@ local arrayType = {
 
 ---@param binaryReader BinaryStringReader
 return function(binaryReader)
-    assert(binaryReader:Peak(Size.INTEGER) == 'CREA')
+    assert(binaryReader:Peak(Size.INTEGER) == 'NPC_')
     return BaseRecordParser(binaryReader, funcMap, compositeGroup, arrayType)
 end

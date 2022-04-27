@@ -5,13 +5,15 @@ local BaseRecordParser = require('custom.esp.parser.BaseRecordParser')
 
 ---@param binaryReader BinaryStringReader
 local ParseHEDR = function(binaryReader)
-    return {
+    local data = {
         version = binaryReader:Read(Size.INTEGER, Types.FLOAT),
         flags = binaryReader:Read(Size.INTEGER),
         author = binaryReader:Read(32),
         description = binaryReader:Read(256),
         recordCount = binaryReader:Read(Size.INTEGER, Types.UINT32),
     }
+    print('Records:', data.recordCount)
+    return data
 end
 
 ---@param binaryReader BinaryStringReader
@@ -25,7 +27,7 @@ local ParseDATA = function(binaryReader)
 end
 
 ---@param binaryReader BinaryStringReader
-local ParseCompositeMasterFileList = function(binaryReader)
+local ParseCompositeMasterFileList = function(binaryReader, context)
     local followFields = {
         ['MAST'] = ParseMAST,
         ['DATA'] = ParseDATA,
@@ -34,7 +36,7 @@ local ParseCompositeMasterFileList = function(binaryReader)
     }
     local followArrays = {
     }
-    return BaseFieldsParser(binaryReader, followFields, followComposities, followArrays)
+    return BaseFieldsParser(binaryReader, followFields, followComposities, followArrays, context)
 end
 
 local funcMap = {

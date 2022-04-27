@@ -31,6 +31,29 @@ local FACTParser         = require('custom.esp.parser.FACTParser')
 local GLOBParser         = require('custom.esp.parser.GLOBParser')
 local GMSTParser         = require('custom.esp.parser.GMSTParser')
 local INFOParser         = require('custom.esp.parser.INFOParser')
+local INGRParser         = require('custom.esp.parser.INGRParser')
+local LANDParser         = require('custom.esp.parser.LANDParser')
+local LEVCParser         = require('custom.esp.parser.LEVCParser')
+local LEVIParser         = require('custom.esp.parser.LEVIParser')
+local LIGHParser         = require('custom.esp.parser.LIGHParser')
+local LOCKParser         = require('custom.esp.parser.LOCKParser')
+local LTEXParser         = require('custom.esp.parser.LTEXParser')
+local MGEFParser         = require('custom.esp.parser.MGEFParser')
+local MISCParser         = require('custom.esp.parser.MISCParser')
+local NPC_Parser         = require('custom.esp.parser.NPC_Parser')
+local PGRDParser         = require('custom.esp.parser.PGRDParser')
+local PROBParser         = require('custom.esp.parser.PROBParser')
+local RACEParser         = require('custom.esp.parser.RACEParser')
+local REGNParser         = require('custom.esp.parser.REGNParser')
+local REPAParser         = require('custom.esp.parser.REPAParser')
+local SCPTParser         = require('custom.esp.parser.SCPTParser')
+local SKILParser         = require('custom.esp.parser.SKILParser')
+local SNDGParser         = require('custom.esp.parser.SNDGParser')
+local SOUNParser         = require('custom.esp.parser.SOUNParser')
+local SPELParser         = require('custom.esp.parser.SPELParser')
+local SSCRParser         = require('custom.esp.parser.SSCRParser')
+local STATParser         = require('custom.esp.parser.STATParser')
+local WEAPParser         = require('custom.esp.parser.WEAPParser')
 local Size               = require('custom.esp.parser.primitive.Size')
 
 local logger = SaintLogger:CreateLogger('SaintEspToRecord')
@@ -60,12 +83,46 @@ local Parsers = {
     ['GLOB'] = GLOBParser,
     ['GMST'] = GMSTParser,
     ['INFO'] = INFOParser,
+    ['INGR'] = INGRParser,
+    ['LAND'] = LANDParser,
+    ['LEVC'] = LEVCParser,
+    ['LEVI'] = LEVIParser,
+    ['LIGH'] = LIGHParser,
+    ['LOCK'] = LOCKParser,
+    ['LTEX'] = LTEXParser,
+    ['MGEF'] = MGEFParser,
+    ['MISC'] = MISCParser,
+    ['NPC_'] = NPC_Parser,
+    ['PGRD'] = PGRDParser,
+    ['PROB'] = PROBParser,
+    ['RACE'] = RACEParser,
+    ['REGN'] = REGNParser,
+    ['REPA'] = REPAParser,
+    ['SCPT'] = SCPTParser,
+    ['SKIL'] = SKILParser,
+    ['SNDG'] = SNDGParser,
+    ['SOUN'] = SOUNParser,
+    ['SPEL'] = SPELParser,
+    ['SSCR'] = SSCRParser,
+    ['STAT'] = STATParser,
+    ['WEAP'] = WEAPParser,
 
     ['TES3'] = TES3Parser,
 }
 
+local collect = function()
+    local pre = collectgarbage('count')
+    collectgarbage('collect')
+    local post = collectgarbage('count')
+    print('Pre: ', pre, 'Post: ', post)
+end
+
 SaintEspToRecord.ReadEsp = function(filePath)
     local dataFile, err = io.open(filePath, 'rb')
+    if dataFile == nil then
+        error('Failed to open: ' .. filePath)
+        return -- fixes lua plugin
+    end
     if err then
         error(err)
     end
@@ -73,15 +130,21 @@ SaintEspToRecord.ReadEsp = function(filePath)
     dataFile:close()
     local binaryStringReader = BinaryStringReader(binaryData);
     local records = {}
+    local count = 0
     while binaryStringReader:HasData() do
         local nextRecordType = binaryStringReader:Peak(Size.INTEGER)
         local record
         if Parsers[nextRecordType] then
             record = Parsers[nextRecordType](binaryStringReader)
         else
-            record = ParseRecord(binaryStringReader)
+            -- record = ParseRecord(binaryStringReader)
+            error('UNRECOGNIZED RECORD: ' .. nextRecordType)
         end
         table.insert(records, record)
+        count = count + 1
+        if count % 2000 == 0 then
+            collect()
+        end
     end
     return records
 end
@@ -95,12 +158,16 @@ end
 local fileNames = SaintUtilities.GetFileNamesInFolder(config.dataPath .. '/esp')
 for _, fileName in pairs(fileNames) do
     logger:Verbose('Reading: ' .. fileName)
-    local esp = SaintEspToRecord.ReadEsp(config.dataPath .. '/esp/' .. fileName)
-    print()
-    print()
-    print(tableHelper.getPrintableTable(esp))
-    print()
-    print()
+    if fileName ~= 'Morrowind.esm' then
+        logger:Verbose('Skipping...')
+    else
+        local esp = SaintEspToRecord.ReadEsp(config.dataPath .. '/esp/' .. fileName)
+        print()
+        print()
+        print(tableHelper.getPrintableTable(esp))
+        print()
+        print()
+    end
 end
 
 return SaintEspToRecord

@@ -111,7 +111,7 @@ local ParseQSTR = function(binaryReader)
 end
 
 ---@param binaryReader BinaryStringReader
-local ParseCompositeFuncVarList = function(binaryReader)
+local ParseCompositeFuncVarList = function(binaryReader, context)
     local followFields = {
         ['SCVR'] = ParseSCVR,
         ['INTV'] = ParseINTV,
@@ -121,7 +121,7 @@ local ParseCompositeFuncVarList = function(binaryReader)
     }
     local followArrays = {
     }
-    return BaseFieldsParser(binaryReader, followFields, followComposities, followArrays)
+    return BaseFieldsParser(binaryReader, followFields, followComposities, followArrays, context)
 end
 
 local funcMap = {

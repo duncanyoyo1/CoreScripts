@@ -34,7 +34,7 @@ local ParseINTV = function(binaryReader)
 end
 
 ---@param binaryReader BinaryStringReader
-local ParseCompositeCreatures = function(binaryReader)
+local ParseCompositeCreatures = function(binaryReader, context)
     local followFields = {
         ['INAM'] = ParseINAM,
         ['INTV'] = ParseINTV,
@@ -43,7 +43,7 @@ local ParseCompositeCreatures = function(binaryReader)
     }
     local followArrays = {
     }
-    return BaseFieldsParser(binaryReader, followFields, followComposities, followArrays)
+    return BaseFieldsParser(binaryReader, followFields, followComposities, followArrays, context)
 end
 
 local funcMap = {

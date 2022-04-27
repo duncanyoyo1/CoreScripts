@@ -8,4 +8,4 @@ require('custom.SaintCellResetManager')
 require('custom.SaintRevive')
 require('custom.SaintPatch')
 
--- require('custom.esp.SaintEspToRecord')
+require('custom.esp.SaintEspToRecord')
