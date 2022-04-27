@@ -6,8 +6,15 @@ local BinaryStringReader = classy('BinaryStringReader')
 
 function BinaryStringReader:__init(binaryData)
     self.binaryString = binaryData
-    self.index = 1
     self.length = #binaryData
+    self.index = 1
+end
+
+---NOTE: Not supported in LuaJIT
+function BinaryStringReader:__gc()
+    if self.index < self.length then
+        error('All data not read!')
+    end
 end
 
 ---@param byteCount number

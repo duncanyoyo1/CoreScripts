@@ -7,8 +7,8 @@
 -------------------------------------------------------------------------------
 local io                 = require('io')
 local config             = require('config')
-local ParseRecord        = require('custom.esp.parser.primitive.ParseRecord')
 local SaintLogger        = require('custom.SaintLogger')
+local SaintScriptSave    = require('custom.SaintScriptSave')
 local SaintUtilities     = require('custom.SaintUtilities')
 local BinaryStringReader = require('custom.io.BinaryStringReader')
 local TES3Parser         = require('custom.esp.parser.TES3Parser')
@@ -55,8 +55,17 @@ local SSCRParser         = require('custom.esp.parser.SSCRParser')
 local STATParser         = require('custom.esp.parser.STATParser')
 local WEAPParser         = require('custom.esp.parser.WEAPParser')
 local Size               = require('custom.esp.parser.primitive.Size')
+local SupportedRecordStores = require('custom.esp.SupportedRecordStores')
 
 local logger = SaintLogger:CreateLogger('SaintEspToRecord')
+local loadOrderSSS = SaintScriptSave('SaintEspToRecordLoadOrder')
+
+loadOrderSSS:SetData({
+    loadOrder = {
+        'delete-test.esp',
+        'morrowind.esm',
+    }
+})
 
 ---@alias BINARY string
 
@@ -110,18 +119,11 @@ local Parsers = {
     ['TES3'] = TES3Parser,
 }
 
-local collect = function()
-    local pre = collectgarbage('count')
-    collectgarbage('collect')
-    local post = collectgarbage('count')
-    print('Pre: ', pre, 'Post: ', post)
-end
-
-SaintEspToRecord.ReadEsp = function(filePath)
+SaintEspToRecord.ReadEsp = function(filePath, recordHandler)
     local dataFile, err = io.open(filePath, 'rb')
     if dataFile == nil then
         error('Failed to open: ' .. filePath)
-        return -- fixes lua plugin
+        return -- calms lua plugin
     end
     if err then
         error(err)
@@ -129,45 +131,60 @@ SaintEspToRecord.ReadEsp = function(filePath)
     local binaryData = dataFile:read('*a')
     dataFile:close()
     local binaryStringReader = BinaryStringReader(binaryData);
-    local records = {}
-    local count = 0
     while binaryStringReader:HasData() do
         local nextRecordType = binaryStringReader:Peak(Size.INTEGER)
-        local record
-        if Parsers[nextRecordType] then
-            record = Parsers[nextRecordType](binaryStringReader)
-        else
-            -- record = ParseRecord(binaryStringReader)
-            error('UNRECOGNIZED RECORD: ' .. nextRecordType)
-        end
-        table.insert(records, record)
-        count = count + 1
-        if count % 2000 == 0 then
-            collect()
-        end
-    end
-    return records
-end
-
-function PrintFields(fields)
-    for _, field in pairs(fields) do
-        print(field.name, field.size, field.data)
+        local record = Parsers[nextRecordType](binaryStringReader)
+        recordHandler(record)
     end
 end
 
-local fileNames = SaintUtilities.GetFileNamesInFolder(config.dataPath .. '/esp')
-for _, fileName in pairs(fileNames) do
-    logger:Verbose('Reading: ' .. fileName)
-    if fileName ~= 'Morrowind.esm' then
-        logger:Verbose('Skipping...')
+SaintEspToRecord.GetEspsInFolder = function()
+    local fileNames = SaintUtilities.GetFileNamesInFolder(config.dataPath .. '/esp')
+    local filteredFileNames = {}
+    for _, fileName in pairs(fileNames) do
+        if string.match(string.lower(fileName), "%.es[mp]") then
+            table.insert(filteredFileNames, fileName)
+        end
+    end
+    return filteredFileNames
+end
+
+SaintEspToRecord.CreateLoadOrderForFiles = function()
+    local filteredDataFiles = {}
+    local dataFiles = SaintEspToRecord.GetEspsInFolder()
+    local loadOrder = loadOrderSSS:GetData().loadOrder
+    for _, loadOrderFile in ipairs(loadOrder) do
+        local foundFile = false
+
+        for _, dataFile in pairs(dataFiles) do
+            if string.lower(dataFile) == string.lower(loadOrderFile) then
+                foundFile = true
+                table.insert(filteredDataFiles, dataFile)
+                break
+            end
+        end
+
+        if foundFile == false then
+            error('Failed to find specified data file in load order: ' .. loadOrderFile)
+        end
+    end
+    return filteredDataFiles
+end
+
+SaintEspToRecord.Execute = function(handler)
+    local fileNames = SaintEspToRecord.CreateLoadOrderForFiles()
+    for _, fileName in pairs(fileNames) do
+        logger:Verbose('Reading: ' .. fileName)
+        SaintEspToRecord.ReadEsp(config.dataPath .. '/esp/' .. fileName, handler)
+    end
+end
+
+SaintEspToRecord.Execute(function(record)
+    if SupportedRecordStores[record.name] then
+        -- 
     else
-        local esp = SaintEspToRecord.ReadEsp(config.dataPath .. '/esp/' .. fileName)
-        print()
-        print()
-        print(tableHelper.getPrintableTable(esp))
-        print()
-        print()
+        print('Unsupported Record type: ' .. record.name)
     end
-end
+end)
 
 return SaintEspToRecord

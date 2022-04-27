@@ -50,6 +50,7 @@ return function(binaryReader, funcMap, compositeType, arrayType, context)
         elseif compositeFunc then
             -- if the field is composite but not an array
             for key, value in pairs(data) do
+                assert(fields[key] == nil)
                 fields[key] = value
             end
         else

@@ -5,15 +5,13 @@ local BaseRecordParser = require('custom.esp.parser.BaseRecordParser')
 
 ---@param binaryReader BinaryStringReader
 local ParseHEDR = function(binaryReader)
-    local data = {
+    return {
         version = binaryReader:Read(Size.INTEGER, Types.FLOAT),
         flags = binaryReader:Read(Size.INTEGER),
         author = binaryReader:Read(32),
         description = binaryReader:Read(256),
         recordCount = binaryReader:Read(Size.INTEGER, Types.UINT32),
     }
-    print('Records:', data.recordCount)
-    return data
 end
 
 ---@param binaryReader BinaryStringReader

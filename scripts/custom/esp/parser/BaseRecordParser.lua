@@ -11,6 +11,10 @@ return function(binaryReader, funcMap, compositeType, arrayType, context)
     context = context or {}
     local record = ParseRecord(binaryReader)
     local fieldsParser = BinaryStringReader(record.data)
-    record.fields = BaseFieldsParser(fieldsParser, funcMap, compositeType, arrayType, context)
-    return record
+    local fields = BaseFieldsParser(fieldsParser, funcMap, compositeType, arrayType, context)
+    return {
+        name = record.name,
+        flags = record.flags,
+        fields = fields,
+    }
 end
