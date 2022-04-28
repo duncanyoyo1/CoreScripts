@@ -183,7 +183,7 @@ SaintEspToRecord.Execute(function(record)
     if SupportedRecordStores[record.name] then
         -- 
     else
-        print('Unsupported Record type: ' .. record.name)
+        logger:Warn('Unsupported Record type: ' .. record.name)
     end
 end)
 
