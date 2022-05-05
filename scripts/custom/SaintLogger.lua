@@ -71,7 +71,7 @@ end
 
 function LoggerFactory:__LogLoggers()
     for loggerName, _ in pairs(self.CreatedLoggers) do
-        LoggerFactory.__InternalLogger:Info(loggerName)
+        self.__InternalLogger:Info(loggerName)
     end
 end
 
