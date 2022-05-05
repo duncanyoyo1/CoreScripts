@@ -173,6 +173,11 @@ print('Pre:', collectgarbage('count'))
 print('Prec:', collectgarbage('collect'))
 print('Prer:', collectgarbage('count'))
 SaintEspToRecord.Execute(function(record)
+    if SupportedRecordStores[record.name] then
+        -- 
+    else
+        logger:Warn('Unsupported Record type: ' .. record.name)
+    end
 end)
 print('Postr:', collectgarbage('count'))
 print('Collect', collectgarbage('collect'))
