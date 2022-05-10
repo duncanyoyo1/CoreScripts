@@ -125,7 +125,7 @@ tes3mp = tes3mp
 ---@field SendClass fun(pid: number)
 
 ---@class TES3MP
----@field SendMessage fun(pid: number, message: string, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendMessage fun(pid: number, message: string, sendToOtherPlayers: boolean|nil, skipAttachedPlayer: boolean|nil)
 ---@field CleanChatForPid fun(pid: number)
 ---@field CleanChat fun()
 
@@ -612,7 +612,7 @@ tes3mp = tes3mp
 ---@field SendWorldMap fun(pid: number, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
 ---@field SendWorldTime fun(pid: number, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
 ---@field SendWorldWeather fun(pid: number, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
----@field SendWorldCollisionOverride fun(pid: number, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendWorldCollisionOverride fun(pid: number, sendToOtherPlayers: boolean|nil, skipAttachedPlayer: boolean|nil)
 
 --- The following declaration was NOT extracted from teh docs website, this is
 --- only used internal to the server tools that are here
@@ -621,7 +621,7 @@ tes3mp = tes3mp
 ---@field GenerateRandomString fun(length: number): string
 ---@field GetSHA256Hash fun(input: string): string
 ---@field CreateTimer fun(functionName: string, seconds: number): number
----@field CreateTimerEx fun(functionName: string, seconds: number, argTypes: string, ...: any): number
+---@field CreateTimerEx fun(functionName: string, seconds: number, argTypes: string, ...): number
 ---@field StartTimer fun(timerId: number)
 ---@field StopTimer fun(timerId: number)
 ---@field RestartTimer fun(timerId: number, time: number)
@@ -653,7 +653,7 @@ tes3mp = tes3mp
 ---@field AddDestinationOverride fun(oldCellDescription: string, newCellDesctiption: string)
 ---@field SendWorldDestinationOverride fun(pid: number)
 ---@field DoesFilePathExist fun(path: string): boolean
----@field SendWorldKillCount fun(pid: number, sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
+---@field SendWorldKillCount fun(pid: number, sendToOtherPlayers: boolean|nil, skipAttachedPlayer: boolean|nil)
 ---@field SendObjectSound fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
 ---@field SendObjectRestock fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)
 ---@field SendObjectDialogueChoice fun(sendToOtherPlayers: boolean, skipAttachedPlayer: boolean)

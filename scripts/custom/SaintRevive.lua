@@ -318,7 +318,7 @@ function SaintRevive._GetPlayerDowned(pid)
 end
 
 ---@param pid number
----@param value boolean
+---@param value boolean|nil
 function SaintRevive._SetPlayerDowned(pid, value)
     local player = Players[pid]
     if not player then
