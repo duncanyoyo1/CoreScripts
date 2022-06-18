@@ -14,16 +14,19 @@ local SaintTicks = require('custom.SaintTicks')
 local SaintCellReset = require('custom.SaintCellReset')
 local SaintUtilities = require('custom.SaintUtilities')
 local SaintLogger = require('custom.SaintLogger')
+local SaintScriptSave = require('custom.SaintScriptSave')
 
 local scriptConfig = {
     ResetTime = time.toSeconds(time.days(3)),
     periodicCellCheckTimer = time.toSeconds(time.minutes(5)),
     blackList = {
-        -- 
+        'Fake cell'
     }
 }
 -- Internal Use
 local logger = SaintLogger:CreateLogger('SaintCellResetManager')
+local DataManager = SaintScriptSave('SaintCellResetManager')
+local adjustedBlackList = {}
 ---@class SaintCellResetManager
 local SaintCellResetManager = {}
 ---@class Internal
@@ -36,17 +39,17 @@ Internal.IsCellResetValid = function(cellDescription)
         local creationTime = cell.data.entry.creationTime
         local timeDiference = nowTime - creationTime
         if timeDiference < scriptConfig.ResetTime then
-            return false, "Not enough time has passed"
+            return false, 'Not enough time has passed'
         end
 
         --- Never attempt to augment or operate on the void
-        if cellDescription == "$Transitional Void" then
-            logger:Warn("A player is checking the void...")
-            return false, "Player is in the void"
+        if cellDescription == '$Transitional Void' then
+            logger:Warn('A player is checking the void...')
+            return false, 'Player is in the void'
         end
 
-        if tableHelper.containsValue(scriptConfig.blackList, cellDescription) then
-            return false, "Blacklisted cell"
+        if tableHelper.containsValue(adjustedBlackList, cellDescription) then
+            return false, 'Blacklisted cell'
         end
 
         return true
@@ -97,22 +100,39 @@ end
 Internal.GetCellNames = function()
     local fileNames = SaintUtilities.GetFileNamesInFolder(config.dataPath .. '/cell')
     for index, fileName in pairs(fileNames) do
-        fileNames[index] = fileName:gsub("%.json", "")
+        fileNames[index] = fileName:gsub('%.json', '')
     end
     return fileNames
 end
 
 Internal.PeriodicCellTimer = function()
-    logger:Info("Timer ticking...")
+    logger:Info('Timer ticking...')
     local cellNames = Internal.GetCellNames()
     Internal.PeriodicCellsReset(cellNames)
 end
 
-
-customEventHooks.registerHandler("OnServerPostInit", function(eventStatus) 
-    logger:Info("Starting SaintCellResetManager...")
+customEventHooks.registerHandler('OnServerPostInit', function(eventStatus) 
+    local data = DataManager:GetData() or {}
+    tableHelper.merge(adjustedBlackList, scriptConfig.blackList)
+    tableHelper.merge(adjustedBlackList, data)
     SaintTicks.RegisterTick(Internal.PeriodicCellTimer, time.seconds(300))
+    logger:Info('Starting SaintCellResetManager...')
     return eventStatus
+end)
+
+customEventHooks.registerHandler('OnServerExit', function(eventStatus)
+    DataManager:SetData(adjustedBlackList)
+    DataManager:Save()
+    logger:Info('Saving data')
+    return eventStatus
+end)
+
+customCommandHooks.registerCommand('SCRMRegisterBlackCell', function(pid)
+    local player = Players[pid]
+    local cell = player.data.location.cell
+    table.insert(adjustedBlackList, cell)
+    DataManager:SetData(adjustedBlackList)
+    DataManager:Save()
 end)
 
 return SaintCellResetManager
