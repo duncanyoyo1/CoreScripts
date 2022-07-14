@@ -15,6 +15,11 @@ function SaintScriptSave:__init(saveFilePath)
     self.saveFilePath = 'custom/' .. saveFilePath:gsub('%.json', '') .. '.json'
     logger:Info('Using "' .. self.saveFilePath .. '" as a save file')
     self.data = jsonInterface.load(self.saveFilePath)
+    if self.data == nil then
+        logger:Info('Creating save file at ' .. self.saveFilePath)
+        jsonInterface.save(self.saveFilePath)
+        self.data = jsonInterface.load(self.saveFilePath)
+    end
     self:_StartListeners()
 end
 
@@ -34,6 +39,7 @@ end
 
 function SaintScriptSave:_StartListeners()
     customEventHooks.registerHandler("OnServerExit", function()
+        logger:Verbose('Saving: ' .. self.saveFilePath)
         self:Save()
     end)
 end

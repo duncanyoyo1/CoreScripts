@@ -20,12 +20,11 @@ local scriptConfig = {
     ResetTime = time.toSeconds(time.days(3)),
     periodicCellCheckTimer = time.toSeconds(time.minutes(5)),
     blackList = {
-        'Fake cell'
+        -- You can add cells here or via the command, which is saved/laoded via SSS
     }
 }
 -- Internal Use
 local logger = SaintLogger:CreateLogger('SaintCellResetManager')
-local DataManager = SaintScriptSave('SaintCellResetManager')
 local adjustedBlackList = {}
 ---@class SaintCellResetManager
 local SaintCellResetManager = {}
@@ -91,9 +90,9 @@ Internal.PeriodicCellsReset = function(cellDescriptions)
     local cellCount = tableHelper.getCount(cellDescriptions)
     if not tableHelper.isEmpty(cellsToReset) then
         SaintCellReset.ResetCells(cellsToReset)
-        logger:Info('Resetting ' .. cellCount .. ' cells')
+        logger:Verbose('Resetting ' .. cellCount .. ' cells')
     else
-        logger:Info('Found no cells to reset out of ' .. cellCount)
+        logger:Verbose('Found no cells to reset out of ' .. cellCount)
     end
 end
 
@@ -112,25 +111,24 @@ Internal.PeriodicCellTimer = function()
 end
 
 customEventHooks.registerHandler('OnServerPostInit', function(eventStatus) 
+    local DataManager = SaintScriptSave('SaintCellResetManager')
     local data = DataManager:GetData() or {}
-    tableHelper.merge(adjustedBlackList, scriptConfig.blackList)
-    tableHelper.merge(adjustedBlackList, data)
-    SaintTicks.RegisterTick(Internal.PeriodicCellTimer, time.seconds(300))
-    logger:Info('Starting SaintCellResetManager...')
-    return eventStatus
-end)
-
-customEventHooks.registerHandler('OnServerExit', function(eventStatus)
+    tableHelper.merge(adjustedBlackList, scriptConfig.blackList, true)
+    tableHelper.merge(adjustedBlackList, data, true)
     DataManager:SetData(adjustedBlackList)
     DataManager:Save()
-    logger:Info('Saving data')
+    SaintTicks.RegisterTick(Internal.PeriodicCellTimer, time.seconds(300))
+    logger:Info('Starting SaintCellResetManager...')
     return eventStatus
 end)
 
 customCommandHooks.registerCommand('SCRMRegisterBlackCell', function(pid)
     local player = Players[pid]
     local cell = player.data.location.cell
+    tes3mp.SendMessage(pid, 'Registering current cell to black list: ' .. cell)
+    logger:Info('Registering current cell to black list: ' .. cell)
     table.insert(adjustedBlackList, cell)
+    local DataManager = SaintScriptSave('SaintCellResetManager')
     DataManager:SetData(adjustedBlackList)
     DataManager:Save()
 end)
