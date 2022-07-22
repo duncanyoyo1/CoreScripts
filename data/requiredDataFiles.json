@@ -20,5 +20,6 @@
     { "TOTSP_Patch_for_Purists_4.0.2.esp":           ["0xA32E49BF"] },
     { "Missing snow armor.esp":                      ["0xBE36209B"] },
     { "Cyrodiil_Main.esm":                           ["0x6933A0C5"] },
-    { "Expansion Delay.ESP":                         ["0xC8424096"] }
+    { "Expansion Delay.ESP":                         ["0xC8424096"] },
+    { "SaintSkeletonRace.ESP":                       ["0x04AFBE5C"] }
 ]
