@@ -19,7 +19,7 @@ local scriptConfig = {
 
 ---@param eventStatus EventStatus
 ---@param pid number
-SaintEnchantmentRegeneration.OnPlayerLoginHandler = function(eventStatus, pid)
+SaintEnchantmentRegeneration.OnPlayerFinishLoginHandler = function(eventStatus, pid)
     if not eventStatus.validCustomHandlers then
         return eventStatus
     end
@@ -29,7 +29,6 @@ end
 
 ---@param player BasePlayer
 SaintEnchantmentRegeneration.RegenerateEnchantedItems = function(player)
-    tes3mp.ClearInventoryChanges(player.pid)
     -- Regenerate inventory, since equipment is included in that
     for index, item in ipairs(player.data.inventory) do
         local lastLogin = player.data.timestamps.lastDisconnect
@@ -40,11 +39,11 @@ SaintEnchantmentRegeneration.RegenerateEnchantedItems = function(player)
             item.charge = math.min(item.enchantmentCharge, newCharge)
         end
     end
-    player:SaveToDrive()
-    tes3mp.SendInventoryChanges(player.pid, true)
+    player:LoadInventory()
+    player:LoadEquipment()
 end
 
-customEventHooks.registerHandler("OnPlayerConnect", SaintEnchantmentRegeneration.OnPlayerLoginHandler)
+customEventHooks.registerHandler("OnPlayerFinishLogin", SaintEnchantmentRegeneration.OnPlayerFinishLoginHandler)
 customEventHooks.registerHandler("OnServerPostInit", function(eventStatus) 
     logger:Info("Starting SaintEnchantmentRegeneration...")
     return eventStatus
