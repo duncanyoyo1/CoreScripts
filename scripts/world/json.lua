@@ -64,11 +64,11 @@ function World:LoadFromDrive()
 end
 
 -- Deprecated function with confusing name, kept around for backwards compatibility
-function Cell:Save()
+function World:Save()
     self:SaveToDrive()
 end
 
-function Cell:Load()
+function World:Load()
     self:LoadFromDrive()
 end
 

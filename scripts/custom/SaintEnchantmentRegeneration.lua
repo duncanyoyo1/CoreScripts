@@ -14,7 +14,7 @@ local logger = SaintLogger:CreateLogger('SaintEnchantmentRegeneration')
 local SaintEnchantmentRegeneration = {}
 
 local scriptConfig = {
-    rechargeRate = 1 -- Charge recovered per DAY
+    rechargeRate = 24 * 10 -- Charge recovered per DAY
 }
 
 ---@param eventStatus EventStatus
@@ -35,11 +35,13 @@ SaintEnchantmentRegeneration.RegenerateEnchantedItems = function(player)
         local lastLogin = player.data.timestamps.lastDisconnect
         local now = os.time()
         local daysSinceLastLogin = time.toDays(now - lastLogin)
-        local newCharge = item.charge + daysSinceLastLogin * scriptConfig.rechargeRate
-        item.charge = math.min(item.enchantmentCharge, newCharge)
+        if item.enchantmentCharge > 0 and item.charge > 0 then
+            local newCharge = item.enchantmentCharge + daysSinceLastLogin * scriptConfig.rechargeRate
+            item.charge = math.min(item.enchantmentCharge, newCharge)
+        end
     end
     player:SaveToDrive()
-    tes3mp.SendInventoryChanges(player.pid)
+    tes3mp.SendInventoryChanges(player.pid, true)
 end
 
 customEventHooks.registerHandler("OnPlayerConnect", SaintEnchantmentRegeneration.OnPlayerLoginHandler)

@@ -65,11 +65,11 @@ function Player:LoadFromDrive()
 end
 
 -- Deprecated function with confusing name, kept around for backwards compatibility
-function Cell:Save()
+function Player:Save()
     self:SaveToDrive()
 end
 
-function Cell:Load()
+function Player:Load()
     self:LoadFromDrive()
 end
 

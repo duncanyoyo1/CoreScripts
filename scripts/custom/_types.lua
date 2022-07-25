@@ -75,10 +75,12 @@ tes3mp = tes3mp
 ---@field DoesActorHavePlayerKiller fun(index: integer): boolean
 ---@field DoesActorHavePosition fun(index: integer): boolean
 ---@field DoesActorHaveStatsDynamic fun(index: integer): boolean
+---@field DoesActorSpellsActiveHavePlayerCaster fun(packetIndex: integer, spellIndex: integer): boolean
 ---@field DoesFileExist fun(filePath: string): boolean
 ---@field DoesFilePathExist fun(path: string): boolean
 ---@field DoesObjectHaveContainer fun(index: integer): boolean
 ---@field DoesObjectHavePlayerActivating fun(index: integer): boolean
+---@field DoesObjectHavePlayerHitting fun(packetIndex: integer): boolean
 ---@field DoesObjectHavePlayerSummoner fun(index: integer): boolean
 ---@field DoesPlayerHavePlayerKiller fun(pid: number): boolean
 ---@field DoesSpellsActiveHavePlayerCaster fun(pid: number, changesIndex: integer): boolean
@@ -86,6 +88,7 @@ tes3mp = tes3mp
 ---@field EquipItem fun(pid: number, slot: number, refId: string, count: number, charge: number, enchantmentCharge: number)
 ---@field GenerateRandomString fun(length: number): string
 ---@field GetActorCell fun(index: integer): string
+---@field GetActorDeathState fun(packetIndex: integer): integer
 ---@field GetActorEquipmentItemCharge fun(index: integer, slot: number): number
 ---@field GetActorEquipmentItemCount fun(index: integer, slot: number): number
 ---@field GetActorEquipmentItemEnchantmentCharge fun(index: integer, slot: number): number
@@ -115,6 +118,20 @@ tes3mp = tes3mp
 ---@field GetActorRotX fun(index: integer): number
 ---@field GetActorRotY fun(index: integer): number
 ---@field GetActorRotZ fun(index: integer): number
+---@field GetActorSpellsActiveCasterPid fun(packetIndex, spellIndex): integer
+---@field GetActorSpellsActiveCasterRefId fun(packetIndex: integer, spellIndex: integer): string
+---@field GetActorSpellsActiveCasterRefNum fun(packetIndex: integer, spellIndex: integer): integer
+---@field GetActorSpellsActiveChangesAction fun(packetIndex: integer): integer
+---@field GetActorSpellsActiveChangesSize fun(packetIndex: integer): integer
+---@field GetActorSpellsActiveDisplayName fun(packetIndex: integer, spellIndex: integer): string
+---@field GetActorSpellsActiveEffectArg fun(packetIndex: integer, spellIndex: integer, effectIndex: integer): integer
+---@field GetActorSpellsActiveEffectCount fun(packetIndex: integer, spellIndex: integer): integer
+---@field GetActorSpellsActiveEffectDuration fun(packetIndex: integer, spellIndex: integer, effectIndex: integer): number
+---@field GetActorSpellsActiveEffectId fun(packetIndex: integer, spellIndex: integer, effectIndex: integer): integer
+---@field GetActorSpellsActiveEffectMagnitude fun(packetIndex: integer, spellIndex: integer, effectIndex: integer): number
+---@field GetActorSpellsActiveEffectTimeLeft fun(packetIndex: integer, spellIndex: integer, effectIndex: integer): number
+---@field GetActorSpellsActiveId fun(packetIndex: integer, spellIndex: integer): string
+---@field GetActorSpellsActiveStackingState fun(packetIndex: integer, spellIndex: integer): boolean
 ---@field GetArchitectureType fun(): string
 ---@field GetAttributeBase fun(pid: number, attributeId: number): number
 ---@field GetAttributeCount fun(): number
@@ -138,6 +155,16 @@ tes3mp = tes3mp
 ---@field GetClassMinorSkill fun(pid: number, slot: number): number
 ---@field GetClassName fun(pid: number): string
 ---@field GetClassSpecialization fun(pid: number): number
+---@field GetClientGlobalFloatValue fun(index: integer): number
+---@field GetClientGlobalId fun(index: integer): string
+---@field GetClientGlobalIntValue fun(index: integer): integer
+---@field GetClientGlobalsSize fun(): integer
+---@field GetClientGlobalVariableType fun(index: integer): integer
+---@field GetClientLocalFloatValue fun(packetIndex: integer, variableIndex: integer): number
+---@field GetClientLocalInternalIndex fun(packetIndex: integer, variableIndex: integer): integer
+---@field GetClientLocalIntValue fun(packetIndex: integer, variableIndex: integer): integer
+---@field GetClientLocalsSize fun(packetIndex: integer): integer
+---@field GetClientLocalVariableType fun(packetIndex: integer, variableIndex: integer): integer
 ---@field GetContainerChangesSize fun(objectindex: integer): number
 ---@field GetContainerItemActionCount fun(objectindex: integer, itemindex: integer): number
 ---@field GetContainerItemCharge fun(objectindex: integer, itemindex: integer): number
@@ -218,9 +245,22 @@ tes3mp = tes3mp
 ---@field GetObjectActivatingRefNum fun(index: integer): number
 ---@field GetObjectCharge fun(index: integer): number
 ---@field GetObjectCount fun(index: integer): number
+---@field GetObjectDialogueChoiceTopic fun(packetIndex: integer): string
+---@field GetObjectDialogueChoiceType fun(packetIndex: integer): integer
 ---@field GetObjectDoorState fun(index: integer): number
 ---@field GetObjectEnchantmentCharge fun(index: integer): number
+---@field GetObjectGoldPool fun(packetIndex: integer): integer
 ---@field GetObjectGoldValue fun(index: integer): number
+---@field GetObjectHitBlock fun(packetIndex: integer): boolean
+---@field GetObjectHitDamage fun(packetIndex: integer): number
+---@field GetObjectHitKnockdown fun(packetIndex: integer): boolean
+---@field GetObjectHitSuccess fun(packetIndex: integer): boolean
+---@field GetObjectHittingMpNum fun(packetIndex: integer): integer
+---@field GetObjectHittingPid fun(packetIndex: integer): integer
+---@field GetObjectHittingRefId fun(packetIndex: integer): string
+---@field GetObjectHittingRefNum fun(packetIndex: integer): integer
+---@field GetObjectLastGoldRestockDay fun(packetIndex: integer): integer
+---@field GetObjectLastGoldRestockHour fun(packetIndex: integer): number
 ---@field GetObjectListAction fun(): number
 ---@field GetObjectListClientScript fun(): string
 ---@field GetObjectListConsoleCommand fun(): string
@@ -240,12 +280,15 @@ tes3mp = tes3mp
 ---@field GetObjectRotZ fun(index: integer): number
 ---@field GetObjectScale fun(index: integer): number
 ---@field GetObjectSoul fun(index: integer): string
+---@field GetObjectSoundId fun(packetIndex: integer): string
 ---@field GetObjectState fun(index: integer): boolean
 ---@field GetObjectSummonDuration fun(index: integer): number
+---@field GetObjectSummonEffectId fun(packetIndex: integer): number
 ---@field GetObjectSummonerMpNum fun(index: integer): number
 ---@field GetObjectSummonerPid fun(index: integer): number
 ---@field GetObjectSummonerRefId fun(index: integer): string
 ---@field GetObjectSummonerRefNum fun(index: integer): number
+---@field GetObjectSummonSpellId fun(packetIndex: integer): string
 ---@field GetObjectSummonState fun(index: integer): boolean
 ---@field GetOperatingSystemType fun(): string
 ---@field GetPlayerKillerMpNum fun(pid: number): number
@@ -288,6 +331,7 @@ tes3mp = tes3mp
 ---@field GetRecordId fun(index: integer): string
 ---@field GetRecordModel fun(index: integer): string
 ---@field GetRecordName fun(index: integer): string
+---@field GetRecordQuantity fun(recordIndex: integer): integer
 ---@field GetRecordScript fun(index: integer): string
 ---@field GetRecordSubtype fun(index: integer): number
 ---@field GetRecordType fun(): number
@@ -348,6 +392,7 @@ tes3mp = tes3mp
 ---@field IsChangingRegion fun(pid: number): boolean
 ---@field IsClassDefault fun(pid: number): number
 ---@field IsInExterior fun(pid: number): boolean
+---@field IsObjectDroppedByPlayer fun(packetIndex: integer): boolean
 ---@field IsObjectPlayer fun(index: integer): boolean
 ---@field IsWerewolf fun(pid: number): boolean
 ---@field Jail fun(pid: number, jailDays: number, ignoreJailTeleportation: boolean, ignoreJailSkillIncreases: boolean, jailProgressText: string, jailEndText: string)
@@ -647,48 +692,3 @@ tes3mp = tes3mp
 ---@field UnequipActorItem fun(slot: number)
 ---@field UnequipItem fun(pid: number, slot: number)
 ---@field UseActorCollisionForPlacedObjects fun(useActorCollision: boolean)
----@field GetClientGlobalsSize fun(): integer
----@field GetClientGlobalId fun(index: integer): string
----@field GetClientGlobalVariableType fun(index: integer): integer
----@field GetClientGlobalIntValue fun(index: integer): integer
----@field GetClientGlobalFloatValue fun(index: integer): number
----@field GetActorSpellsActiveChangesSize fun(packetIndex: integer): integer
----@field GetActorSpellsActiveId fun(packetIndex: integer, spellIndex: integer): string
----@field GetActorSpellsActiveChangesAction fun(packetIndex: integer): integer
----@field GetActorSpellsActiveDisplayName fun(packetIndex: integer, spellIndex: integer): string
----@field GetActorSpellsActiveStackingState fun(packetIndex: integer, spellIndex: integer): boolean
----@field DoesActorSpellsActiveHavePlayerCaster fun(packetIndex: integer, spellIndex: integer): boolean
----@field GetActorSpellsActiveCasterPid fun(packetIndex, spellIndex): integer
----@field GetActorSpellsActiveCasterRefNum fun(packetIndex: integer, spellIndex: integer): integer
----@field GetActorSpellsActiveCasterRefId fun(packetIndex: integer, spellIndex: integer): string
----@field GetActorSpellsActiveEffectCount fun(packetIndex: integer, spellIndex: integer): integer
----@field GetActorSpellsActiveEffectId fun(packetIndex: integer, spellIndex: integer, effectIndex: integer): integer
----@field GetActorSpellsActiveEffectMagnitude fun(packetIndex: integer, spellIndex: integer, effectIndex: integer): number
----@field GetActorSpellsActiveEffectDuration fun(packetIndex: integer, spellIndex: integer, effectIndex: integer): number
----@field GetActorSpellsActiveEffectTimeLeft fun(packetIndex: integer, spellIndex: integer, effectIndex: integer): number
----@field GetActorSpellsActiveEffectArg fun(packetIndex: integer, spellIndex: integer, effectIndex: integer): integer
----@field GetActorDeathState fun(packetIndex: integer): integer
----@field GetObjectSoundId fun(packetIndex: integer): string
----@field GetObjectHitSuccess fun(packetIndex: integer): boolean
----@field GetObjectHitDamage fun(packetIndex: integer): number
----@field GetObjectHitBlock fun(packetIndex: integer): boolean
----@field GetObjectHitKnockdown fun(packetIndex: integer): boolean
----@field DoesObjectHavePlayerHitting fun(packetIndex: integer): boolean
----@field GetObjectHittingPid fun(packetIndex: integer): integer
----@field GetObjectHittingRefId fun(packetIndex: integer): string
----@field GetObjectHittingRefNum fun(packetIndex: integer): integer
----@field GetObjectHittingMpNum fun(packetIndex: integer): integer
----@field IsObjectDroppedByPlayer fun(packetIndex: integer): boolean
----@field GetObjectSummonEffectId fun(packetIndex: integer): number
----@field GetObjectSummonSpellId fun(packetIndex: integer): string
----@field GetObjectDialogueChoiceType fun(packetIndex: integer): integer
----@field GetObjectDialogueChoiceTopic fun(packetIndex: integer): string
----@field GetObjectGoldPool fun(packetIndex: integer): integer
----@field GetObjectLastGoldRestockHour fun(packetIndex: integer): number
----@field GetObjectLastGoldRestockDay fun(packetIndex: integer): integer
----@field GetClientLocalsSize fun(packetIndex: integer): integer
----@field GetClientLocalInternalIndex fun(packetIndex: integer, variableIndex: integer): integer
----@field GetClientLocalVariableType fun(packetIndex: integer, variableIndex: integer): integer
----@field GetClientLocalIntValue fun(packetIndex: integer, variableIndex: integer): integer
----@field GetClientLocalFloatValue fun(packetIndex: integer, variableIndex: integer): number
----@field GetRecordQuantity fun(recordIndex: integer): integer
