@@ -53,4 +53,13 @@ function RecordStore:LoadFromDrive()
     end
 end
 
+-- Deprecated function with confusing name, kept around for backwards compatibility
+function Cell:Save()
+    self:SaveToDrive()
+end
+
+function Cell:Load()
+    self:LoadFromDrive()
+end
+
 return RecordStore
