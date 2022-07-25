@@ -4,7 +4,19 @@ local stateHelper = require("stateHelper")
 local tableHelper = require("tableHelper")
 
 ---@class BasePlayer
+---@field currentCustomMenu unknown|nil
+---@field previousCustomMenu unknown|nil
+---@field displayedMenuButtons unknown[]|nil
+---@field ipAddress unknown
+---@field confiscationTargetName unknown
 local BasePlayer = class("BasePlayer")
+
+---@class Item
+---@field refId string
+---@field enchantmentCharge string
+---@field count string
+---@field charge string
+---@field soul string
 
 function BasePlayer:__init(pid, playerName)
     self.dbPid = nil
@@ -79,7 +91,7 @@ function BasePlayer:__init(pid, playerName)
         attributes = {},
         skills = {},
         equipment = {},
-        inventory = {},
+        inventory = {}, ---@type Item[]
         spellbook = {},
         spellsActive = {},
         cooldowns = {},
@@ -360,7 +372,7 @@ function BasePlayer:FinishLogin()
         for _, otherAccountName in ipairs(self.data.alliedPlayers) do
             if logicHandler.IsPlayerNameLoggedIn(otherAccountName) then
                 local otherPlayer = logicHandler.GetPlayerByName(otherAccountName)
-                otherPlayer:LoadAllies()
+                otherPlayer:LoadAllies() ---@ignore
             end
         end
 

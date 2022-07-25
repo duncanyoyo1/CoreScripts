@@ -37,6 +37,9 @@ SaintUtilities.GetFileNamesInFolder = function(folder)
     end
     local fileNames, popen = {}, io.popen
     local pfile = popen(cmd)
+    if pfile == nil then
+        return {}
+    end
     for filename in pfile:lines() do
         table.insert(fileNames, filename)
     end
@@ -56,8 +59,8 @@ end
 
 ---Parse a unique index
 ---@param uniqueIndex string
----@return number refNum
----@return number mpNum
+---@return number? refNum
+---@return number? mpNum
 SaintUtilities.ParseUniqueIndex = function(uniqueIndex)
     local splitIndex = uniqueIndex:split("-")
     local refNum = tonumber(splitIndex[1])

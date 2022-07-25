@@ -30,7 +30,7 @@ function Cell:CreateEntry()
         tes3mp.LogMessage(enumerations.log.INFO, "Successfully created JSON file for cell " .. self.entryName)
     else
         local message = "Failed to create JSON file for " .. self.entryName
-        tes3mp.LogMessage(enumerations.log.WARN, message, true)
+        tes3mp.LogMessage(enumerations.log.WARN, message)
     end
 end
 
