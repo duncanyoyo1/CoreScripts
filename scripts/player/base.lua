@@ -372,7 +372,7 @@ function BasePlayer:FinishLogin()
         for _, otherAccountName in ipairs(self.data.alliedPlayers) do
             if logicHandler.IsPlayerNameLoggedIn(otherAccountName) then
                 local otherPlayer = logicHandler.GetPlayerByName(otherAccountName)
-                otherPlayer:LoadAllies() ---@ignore
+                otherPlayer:LoadAllies()
             end
         end
 
