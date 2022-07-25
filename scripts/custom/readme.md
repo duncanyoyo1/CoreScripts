@@ -1,6 +1,7 @@
 ### Saint Scripts
 * SaintCellReset - Simple API for resetting cells (intended for use by scripters)
 * SaintCellResetManager - Yet Another™ Cell Resetter, inspired by atkana's and learwolf's reset methodology
+* SaintEnchantmentRegeneration - Regenerate enchanted items for logged out players
 * SaintEspToRecord - [IN DEV] Reads an esp/esm and creates records for tes3mp
 * SaintLogger - Logging API and dependency for most saint scripts (intended for use by scripters)
 * SaintPatch - Bring players out of the void if a bad reset forces them there
