@@ -4,22 +4,5 @@
     { "Bloodmoon.esm":                               ["0x43DD2132"] },
     { "Patch for Purists.esm":                       ["0x81362B3F"] },
     { "Patch for Purists - Semi-Purist Fixes.ESP":   ["0x7AC1FB23"] },
-    { "Tamriel_Data.esm":                            ["0x8F9CE167"] },
-    { "TR_Mainland.esm":                             ["0x33277D5B"] },
-    { "TR_Preview.esp":                              ["0x01E8B77A"] },
-    { "TR_Mainland_2101_hotfix.ESP":                 ["0xDB609C86"] },
-    { "TR_Factions.esp":                             ["0x0B098DA5"] },
-    { "TR_Travels.esp":                              ["0xDF3763EE"] },
-    { "TR_Travels_(Preview_and_Mainland).esp":       ["0x2E02D66E"] },
-    { "Wyrmhaven.esm":                               ["0x5B71CD2C"] },
-    { "Sky_Main.esm":                                ["0xB9DC433F"] },
-    { "Solstheim Tomb of The Snow Prince.esm":       ["0x71933E2E"] },
-    { "TOTSP TD Content Integration.esp":            ["0xFF2598E3"] },
-    { "TOTSP TD Content Integration - Spiders.esp":  ["0x1D1D3ED6"] },
-    { "TOTSP_TR_Preview.esp":                        ["0xA116B257"] },
-    { "TOTSP_Patch_for_Purists_4.0.2.esp":           ["0xA32E49BF"] },
-    { "Missing snow armor.esp":                      ["0xBE36209B"] },
-    { "Cyrodiil_Main.esm":                           ["0x6933A0C5"] },
-    { "Expansion Delay.ESP":                         ["0xC8424096"] },
-    { "SaintSkeletonRace.ESP":                       ["0x04AFBE5C"] }
+    { "Expansion Delay.ESP":                         ["0xC8424096"] }
 ]

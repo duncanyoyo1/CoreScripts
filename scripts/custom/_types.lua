@@ -428,7 +428,7 @@ tes3mp = tes3mp
 ---@field SendBookChanges fun(pid: number, sendToOtherPlayers: boolean|nil, skipAttachedPlayer: boolean|nil)
 ---@field SendBounty fun(pid: number)
 ---@field SendCell fun(pid: number)
----@field SendCellReset fun(pid: number, sendToOtherPlayers: boolean) Discovered send to other players
+---@field SendCellReset fun(pid: number, sendToOtherPlayers: boolean)
 ---@field SendClass fun(pid: number)
 ---@field SendClientScriptGlobal fun(pid: number, sendToOtherPlayers: boolean|nil, skipAttachedPlayer: boolean|nil)
 ---@field SendClientScriptLocal fun(forEveryone: boolean)

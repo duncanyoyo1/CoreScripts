@@ -1759,7 +1759,7 @@ eventHandler.OnWorldKillCount = function(pid)
             ----- SAINT ADDITION -----
             else
                 Players[pid]:SaveKills()
-                -- tes3mp.CopyReceivedWorldstateToStore() -- what does this do?
+                tes3mp.CopyReceivedWorldstateToStore()
             end
             --------------------------
         end

@@ -255,7 +255,7 @@ function SaintRevive.CalculateRevivedPlayerStats(pid)
 	elseif SaintRevive.config.magicka < 1.0 then
 		newMagicka = math.floor((magickaBase * SaintRevive.config.magicka) + 0.5 )
 	else
-		newMagicka = SaintRevive.config.magicka
+		newMagicka = SaintRevive.config.magicka ---@type number
 	end
 	
 	if SaintRevive.config.fatigue == "preserve" then
@@ -263,13 +263,12 @@ function SaintRevive.CalculateRevivedPlayerStats(pid)
 	elseif SaintRevive.config.fatigue < 1.0 then
 		newFatigue = math.floor((fatigueBase * SaintRevive.config.fatigue) + 0.5 )
 	else
-		newFatigue = SaintRevive.config.fatigue
+		newFatigue = SaintRevive.config.fatigue ---@type number
 	end
 
     newHealth = math.max(math.min(newHealth, healthBase), 1) -- gotta be one if we are ressing
 	newMagicka = math.max(math.min(newMagicka, magickaBase), 0)
 	newFatigue = math.max(math.min(newFatigue, fatigueBase), 0)
-
     return newHealth, newMagicka, newFatigue
 end
 
@@ -329,7 +328,7 @@ function SaintRevive._SetPlayerDowned(pid, value)
 end
 
 ---@param pid number
----@param value boolean
+---@param value boolean|nil
 function SaintRevive._SetPlayerLoggedOutDowned(pid, value)
     local player = Players[pid]
     if not player then
@@ -509,7 +508,7 @@ function BleedoutTick(pid, bleedoutTime)
 			if SaintRevive._GetPlayerBleedoutTicks(pid) >= bleedoutTime then
 				return SaintRevive.OnPlayerBleedout(pid)
 			else
-                tes3mp.SendMessage(pid, tostring(SaintRevive._GetPlayerBleedoutTicks(pid)) .. '...\n')
+                tes3mp.SendMessage(pid, tostring(ScriptConfig.bleedoutTime - SaintRevive._GetPlayerBleedoutTicks(pid)) .. '...\n')
 				local timerId = SaintRevive._GetBleedoutTimerId(pid)
 				return tes3mp.RestartTimer(timerId, time.seconds(1))
 			end

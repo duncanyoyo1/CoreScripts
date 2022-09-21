@@ -17,9 +17,9 @@ function BinaryStringReader:__gc()
     end
 end
 
----@param byteCount number
+---@param byteCount integer
 ---@param type nil|string optional
----@return string|number
+---@return string|integer|number
 function BinaryStringReader:Read(byteCount, type)
     local result = self:_read(byteCount, true)
     if type then

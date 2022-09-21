@@ -1,6 +1,5 @@
 local jsonInterface = require('jsonInterface')
 local classy = require('classy')
-local customEventHooks = require('customEventHooks')
 local SaintUtilities = require('custom.SaintUtilities')
 local SaintLogger = require('custom.SaintLogger')
 
@@ -20,7 +19,6 @@ function SaintScriptSave:__init(saveFilePath)
         jsonInterface.save(self.saveFilePath)
         self.data = jsonInterface.load(self.saveFilePath)
     end
-    self:_StartListeners()
 end
 
 ---@param data any
@@ -35,13 +33,6 @@ end
 
 function SaintScriptSave:Save()
     jsonInterface.quicksave(self.saveFilePath, self.data)
-end
-
-function SaintScriptSave:_StartListeners()
-    customEventHooks.registerHandler("OnServerExit", function()
-        logger:Verbose('Saving: ' .. self.saveFilePath)
-        self:Save()
-    end)
 end
 
 ---@type fun(saveFilePath: string): SaintScriptSave

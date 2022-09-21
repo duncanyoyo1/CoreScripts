@@ -8,5 +8,6 @@ require('custom.SaintCellResetManager')
 require('custom.SaintRevive')
 require('custom.SaintPatch')
 require('custom.SaintEnchantmentRegeneration')
+require('custom.SaintPartyKills')
 
 -- require('custom.esp.SaintEspToRecord')

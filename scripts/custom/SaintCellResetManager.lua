@@ -7,6 +7,7 @@
 -------------------------------------------------------------------------------
 ---Saint Note: Convert to classes
 local customEventHooks = require('customEventHooks')
+local customCommandHooks = require('customCommandHooks')
 local time = require('time')
 local tableHelper = require('tableHelper')
 
@@ -17,19 +18,23 @@ local SaintLogger = require('custom.SaintLogger')
 local SaintScriptSave = require('custom.SaintScriptSave')
 
 local scriptConfig = {
-    ResetTime = time.toSeconds(time.days(3)),
+    ResetTime = time.toSeconds(time.days(1)),
     periodicCellCheckTimer = time.toSeconds(time.minutes(5)),
     blackList = {
         -- You can add cells here or via the command, which is saved/laoded via SSS
-    }
+    },
 }
 -- Internal Use
 local logger = SaintLogger:CreateLogger('SaintCellResetManager')
+local prioritizedCellsToClear = {}
 local adjustedBlackList = {}
 ---@class SaintCellResetManager
 local SaintCellResetManager = {}
----@class Internal
-local Internal = {}
+---@class SCRMInternal
+local Internal = {
+    CurrentResetIndex = 1,
+    CellNames = {}
+}
 
 ---@param cellDescription string cell name
 Internal.IsCellResetValid = function(cellDescription)
@@ -75,19 +80,25 @@ Internal.IsCellPeriodicCellResetValid = function(cellDescription)
     end)
 end
 
-Internal.PeriodicCellsReset = function(cellDescriptions)
+--- NOTE: Remove slicing login here and propogate up to the timer
+Internal.PeriodicCellsReset = function(cellDescriptions, startIndex, endIndex)
     local cellsToReset = {}
-    for _, cellDescription in pairs(cellDescriptions) do
-        SaintUtilities.TempLoadCellCallback(cellDescription, function()
-            local isValid, reason = Internal.IsCellPeriodicCellResetValid(cellDescription)
-            if isValid then
-                table.insert(cellsToReset, cellDescription)
-            else
-                logger:Verbose('Skipping \'' .. cellDescription .. '\' for reason: '.. reason)
-            end
-        end)
+    for index=startIndex, endIndex, 1 do
+        local cellDescription = cellDescriptions[index]
+        if cellDescription ~= nil then
+            SaintUtilities.TempLoadCellCallback(cellDescription, function()
+                local isValid, reason = Internal.IsCellPeriodicCellResetValid(cellDescription)
+                if isValid then
+                    table.insert(cellsToReset, cellDescription)
+                else
+                    logger:Verbose('Skipping \'' .. cellDescription .. '\' for reason: '.. reason)
+                end
+            end)
+        else
+            logger:Warn('Attempting to go out of bounds! Index: ' .. index)
+        end
     end
-    local cellCount = tableHelper.getCount(cellDescriptions)
+    local cellCount = (endIndex - startIndex) + 1
     if not tableHelper.isEmpty(cellsToReset) then
         SaintCellReset.ResetCells(cellsToReset)
         logger:Verbose('Resetting ' .. cellCount .. ' cells')
@@ -96,30 +107,111 @@ Internal.PeriodicCellsReset = function(cellDescriptions)
     end
 end
 
+Internal.PrioritizedCellReset = function(cellDescriptions)
+    local cellsToReset = {}
+    for cellDescription, notories in pairs(cellDescriptions) do
+        if cellDescription ~= nil then
+            SaintUtilities.TempLoadCellCallback(cellDescription, function()
+                if Internal.DoesCellContainVisitors(cellDescription) then
+                    logger:Verbose('Skipping \'' .. cellDescription .. '\' because it has visitors')
+                else
+                    table.insert(cellsToReset, cellDescription)
+                end
+            end)
+        end
+    end
+    local cellCount = #cellsToReset
+    if not tableHelper.isEmpty(cellsToReset) then
+        SaintCellReset.ResetCells(cellsToReset)
+        logger:Verbose('Resetting ' .. cellCount .. ' cells')
+    else
+        logger:Verbose('Found no cells to reset out of ' .. cellCount)
+    end
+    return cellsToReset
+end
+
+--- NOTE: This is expense. Need to find a caheable and less expensive way to do this
 Internal.GetCellNames = function()
     local fileNames = SaintUtilities.GetFileNamesInFolder(config.dataPath .. '/cell')
+    local cleanedFiles = {}
     for index, fileName in pairs(fileNames) do
-        fileNames[index] = fileName:gsub('%.json', '')
+        if string.find(fileName, '%.json') then
+            local cleanedName = fileName:gsub('%.json', '')
+            table.insert(cleanedFiles, cleanedName)
+        end
     end
-    return fileNames
+    return cleanedFiles
+end
+
+Internal.GetCellNamesTimer = function()
+    Internal.CellNames = Internal.GetCellNames()
+    logger:Info('There are now ' .. tableHelper.getCount(Internal.CellNames) .. ' cells to reset')
 end
 
 Internal.PeriodicCellTimer = function()
-    logger:Info('Timer ticking...')
-    local cellNames = Internal.GetCellNames()
-    Internal.PeriodicCellsReset(cellNames)
+    local count = tableHelper.getCount(Internal.CellNames)
+    local sliceAmount = math.floor(count / 30)
+    local nextIndex = math.min(Internal.CurrentResetIndex + sliceAmount, count)
+
+    logger:Info('Resetting prioritized cells (if any)...')
+    local resetCells = Internal.PrioritizedCellReset(prioritizedCellsToClear)
+    for _, cellDescription in pairs(resetCells) do
+        local notories = prioritizedCellsToClear[cellDescription]
+        for _, pid in pairs(notories) do
+            tes3mp.SendMessage(pid, "Cell '" .. cellDescription .. "' has been reset\n")
+        end
+        prioritizedCellsToClear[cellDescription] = nil
+    end
+
+    logger:Info('Resetting regular cells...')
+    Internal.PeriodicCellsReset(Internal.CellNames, Internal.CurrentResetIndex, nextIndex)
+
+    if nextIndex > count then
+        Internal.CurrentResetIndex = 1
+    else
+        Internal.CurrentResetIndex = nextIndex
+    end
 end
 
 customEventHooks.registerHandler('OnServerPostInit', function(eventStatus) 
     local DataManager = SaintScriptSave('SaintCellResetManager')
-    local data = DataManager:GetData() or {}
+    local data = DataManager:GetData() or {
+        blacklistedCells = {},
+        cachedCellList = {}
+    }
     tableHelper.merge(adjustedBlackList, scriptConfig.blackList, true)
-    tableHelper.merge(adjustedBlackList, data, true)
-    DataManager:SetData(adjustedBlackList)
+    tableHelper.merge(adjustedBlackList, data.blacklistedCells, true)
+    data.cachedCellList = Internal.GetCellNames()
+    DataManager:SetData(data)
     DataManager:Save()
-    SaintTicks.RegisterTick(Internal.PeriodicCellTimer, time.seconds(300))
+    Internal.CellNames = data.cachedCellList
+
+    SaintTicks.RegisterTick(Internal.GetCellNamesTimer, time.hours(1))
+    SaintTicks.RegisterTick(Internal.PeriodicCellTimer, time.minutes(1))
     logger:Info('Starting SaintCellResetManager...')
     return eventStatus
+end)
+
+customEventHooks.registerHandler('OnCellLoad', function(eventStatus, pid, cellDescription)
+    local DataManager = SaintScriptSave('SaintCellResetManager')
+    local data = DataManager:GetData()
+    if data.cachedCellList[cellDescription] == nil then
+        table.insert(data.cachedCellList, cellDescription)
+    end
+    DataManager:SetData(data)
+    DataManager:Save()
+end)
+
+--- NOTE: it'd be nice to notify players when the cell reset
+customCommandHooks.registerCommand('QueueCellReset', function(pid)
+    local playerCell = Players[pid].data.location.cell
+    local queuedNotories = prioritizedCellsToClear[playerCell]
+    if queuedNotories == nil then
+        queuedNotories = {}
+        prioritizedCellsToClear[playerCell] = queuedNotories
+    end
+    table.insert(prioritizedCellsToClear[playerCell], pid)
+    tes3mp.SendMessage(pid, "Queueing '" .. playerCell .. "' for a reset\n")
 end)
 
 customCommandHooks.registerCommand('SCRMRegisterBlackCell', function(pid)
@@ -129,7 +221,9 @@ customCommandHooks.registerCommand('SCRMRegisterBlackCell', function(pid)
     logger:Info('Registering current cell to black list: ' .. cell)
     table.insert(adjustedBlackList, cell)
     local DataManager = SaintScriptSave('SaintCellResetManager')
-    DataManager:SetData(adjustedBlackList)
+    local data = DataManager:GetData()
+    table.insert(data.blacklistedCells, cell)
+    DataManager:SetData(data)
     DataManager:Save()
 end)
 
