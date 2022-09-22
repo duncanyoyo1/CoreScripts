@@ -33,5 +33,6 @@
         "tes3mp",
         "time",
         "updateTimerId",
-    ]
+    ],
+    "Lua.runtime.version": "LuaJIT"
 }

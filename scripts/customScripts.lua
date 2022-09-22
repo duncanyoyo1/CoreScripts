@@ -3,11 +3,9 @@
 -- require('custom/yourScript')
 --
 -- Refer to the Tutorial.md file for information on how to use various event and command hooks in your scripts.
-require('custom.SaintCellReset')
-require('custom.SaintCellResetManager')
-require('custom.SaintRevive')
-require('custom.SaintPatch')
-require('custom.SaintEnchantmentRegeneration')
-require('custom.SaintPartyKills')
+require('custom.saint.cellreset.main')
+require('custom.saint.revive.main')
+require('custom.saint.enchantmentregen.main')
+require('custom.saint.partykills.main')
 
--- require('custom.esp.SaintEspToRecord')
+-- require('custom.saint.record.SaintEspToRecord')
