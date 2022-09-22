@@ -20,7 +20,10 @@ local logger = SaintLogger:CreateLogger('SaintRevive')
 ---@class SaintRevive
 ---@field pidMarkerLookup table<number, string>
 ---@field reviveMarkers table<string, MarkerData>
-local SaintRevive = {}
+local SaintRevive = {
+    reviveMarkers = {},
+    pidMarkerLookup = {},
+}
 
 ---- Intermediate Types -------------------------
 
@@ -36,13 +39,6 @@ local SaintRevive = {}
 
 ---@class ActivatedPlayersContainer
 ---@field pid number
-
--------------------------------------------------
-
-function SaintRevive.Initialize()
-    SaintRevive.reviveMarkers = {}
-    SaintRevive.pidMarkerLookup = {}
-end
 
 -------------------------------------------------------------------------------
 --- Meat and Potatoes
@@ -340,15 +336,6 @@ end
 ---Saint Note: I don't like this atm
 -------------------------------------------
 
-function SaintRevive.SendMessageToAllWithCellLoaded(cellDescription, message, exceptionPids)
-    for pid, player in pairs(Players) do
-        if tableHelper.containsValue(player.cellsLoaded, cellDescription) and
-            not tableHelper.containsValue(exceptionPids or {}, pid) then
-            tes3mp.SendMessage(pid, message .. "\n")
-        end
-    end
-end
-
 function SaintRevive.SendMessageToAllOnServer(message, exceptionPids)
     for pid, player in pairs(Players) do
         if not tableHelper.containsValue(exceptionPids or {}, pid) then
@@ -476,6 +463,4 @@ function BleedoutTick(pid, bleedoutTime)
     end
 end
 
----@type SaintRevive
-SaintRevive.Initialize()
 return SaintRevive
