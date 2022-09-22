@@ -18,7 +18,6 @@ local ReviveLang         = require('custom.saint.revive.lang')
 local logger = SaintLogger:CreateLogger('SaintRevive')
 
 ---@class SaintRevive
----@field config SaintReviveScriptConfig
 ---@field pidMarkerLookup table<number, string>
 ---@field reviveMarkers table<string, MarkerData>
 local SaintRevive = {}
@@ -40,11 +39,9 @@ local SaintRevive = {}
 
 -------------------------------------------------
 
----@param config SaintReviveScriptConfig
-function SaintRevive.__init(config)
+function SaintRevive.Initialize()
     SaintRevive.reviveMarkers = {}
     SaintRevive.pidMarkerLookup = {}
-    SaintRevive.config = tableHelper.deepCopy(config)
 end
 
 -------------------------------------------------------------------------------
@@ -65,7 +62,7 @@ function SaintRevive.CreateReviveMarker(pidForMarker)
         rotZ = tes3mp.GetRotZ(pidForMarker)
     }
     local objectData = {
-        refId = SaintRevive.config.recordRefId,
+        refId = ScriptConfig.recordRefId,
         count = 1,
         charge = -1,
         enchantmentCharge = -1,
@@ -175,10 +172,10 @@ function SaintRevive.DownPlayer(pid, timeRemaining)
 
     local secondsLeft
     if not timeRemaining then
-        secondsLeft = SaintRevive.config.bleedoutTime
+        secondsLeft = ScriptConfig.bleedoutTime
         SaintRevive._SetPlayerBleedoutTicks(pid, 0)
     else
-        secondsLeft = SaintRevive.config.bleedoutTime - timeRemaining
+        secondsLeft = ScriptConfig.bleedoutTime - timeRemaining
         SaintRevive._SetPlayerBleedoutTicks(pid, secondsLeft)
     end
 
@@ -191,7 +188,7 @@ function SaintRevive.DownPlayer(pid, timeRemaining)
     tes3mp.SendMessage(pid, ReviveLang.GetLangText("bleedingOutMessage", { seconds = secondsLeft }) .. "\n")
 
 
-    local timerId = tes3mp.CreateTimerEx("BleedoutTick", time.seconds(1), "ii", pid, SaintRevive.config.bleedoutTime)
+    local timerId = tes3mp.CreateTimerEx("BleedoutTick", time.seconds(1), "ii", pid, ScriptConfig.bleedoutTime)
     SaintRevive._SetBleedoutTimerId(pid, timerId)
     tes3mp.StartTimer(timerId)
     logger:Info("Creating timer with ID: '" .. timerId .. "' for player PID '" .. pid .. "'")
@@ -214,26 +211,26 @@ function SaintRevive.CalculateRevivedPlayerStats(pid)
 
     local newHealth, newMagicka, newFatigue
 
-    if SaintRevive.config.health < 1.0 then
-        newHealth = math.floor((healthBase * SaintRevive.config.health) + 0.5)
+    if ScriptConfig.health < 1.0 then
+        newHealth = math.floor((healthBase * ScriptConfig.health) + 0.5)
     else
-        newHealth = SaintRevive.config.health
+        newHealth = ScriptConfig.health
     end
 
-    if SaintRevive.config.magicka == "preserve" then
+    if ScriptConfig.magicka == "preserve" then
         newMagicka = magickaCurrent
-    elseif SaintRevive.config.magicka < 1.0 then
-        newMagicka = math.floor((magickaBase * SaintRevive.config.magicka) + 0.5)
+    elseif ScriptConfig.magicka < 1.0 then
+        newMagicka = math.floor((magickaBase * ScriptConfig.magicka) + 0.5)
     else
-        newMagicka = SaintRevive.config.magicka ---@type number
+        newMagicka = ScriptConfig.magicka ---@type number
     end
 
-    if SaintRevive.config.fatigue == "preserve" then
+    if ScriptConfig.fatigue == "preserve" then
         newFatigue = fatigueCurrent
-    elseif SaintRevive.config.fatigue < 1.0 then
-        newFatigue = math.floor((fatigueBase * SaintRevive.config.fatigue) + 0.5)
+    elseif ScriptConfig.fatigue < 1.0 then
+        newFatigue = math.floor((fatigueBase * ScriptConfig.fatigue) + 0.5)
     else
-        newFatigue = SaintRevive.config.fatigue ---@type number
+        newFatigue = ScriptConfig.fatigue ---@type number
     end
 
     newHealth = math.max(math.min(newHealth, healthBase), 1) -- gotta be one if we are ressing
@@ -244,7 +241,7 @@ end
 
 function SaintRevive.TrySetPlayerDowned(pid)
     if SaintRevive._GetPlayerLoggedOutDowned(pid) then
-        local remaining = SaintRevive.config.bleedoutTime - Players[pid].data.customVariables.bleedoutTicks
+        local remaining = ScriptConfig.bleedoutTime - Players[pid].data.customVariables.bleedoutTicks
         SaintRevive._SetPlayerLoggedOutDowned(pid, nil)
 
         SaintRevive.DownPlayer(pid, remaining)
@@ -393,7 +390,7 @@ function SaintRevive.OnObjectActivate(pid, cellDescription, objects, players)
 
     for _, objectContainer in pairs(objects) do
         local uniqueIndex = objectContainer.uniqueIndex
-        if objectContainer.refId == SaintRevive.config.recordRefId then
+        if objectContainer.refId == ScriptConfig.recordRefId then
             if SaintRevive.reviveMarkers[uniqueIndex] and
                 SaintRevive._GetPlayerDowned(SaintRevive.reviveMarkers[uniqueIndex].pid) then
                 SaintRevive.OnPlayerRevive(SaintRevive.reviveMarkers[uniqueIndex].pid, pid)
@@ -407,16 +404,16 @@ function SaintRevive.OnObjectActivate(pid, cellDescription, objects, players)
 end
 
 function SaintRevive.OnServerPostInit()
-    if RecordStores[SaintRevive.config.objectType].data.permanentRecords[SaintRevive.config.recordRefId] == nil then
+    if RecordStores[ScriptConfig.objectType].data.permanentRecords[ScriptConfig.recordRefId] == nil then
         local data = {
-            model = SaintRevive.config.model,
+            model = ScriptConfig.model,
             name = ReviveLang.GetLangText("reviveMarkerName"),
             script = "nopickup"
         }
 
-        RecordStores[SaintRevive.config.objectType].data.permanentRecords[SaintRevive.config.recordRefId] = data
+        RecordStores[ScriptConfig.objectType].data.permanentRecords[ScriptConfig.recordRefId] = data
 
-        RecordStores[SaintRevive.config.objectType]:SaveToDrive()
+        RecordStores[ScriptConfig.objectType]:SaveToDrive()
         logger:Info("Created record for custom marker")
     else
         logger:Info("Custom record already exists, skipping")
@@ -480,5 +477,5 @@ function BleedoutTick(pid, bleedoutTime)
 end
 
 ---@type SaintRevive
-SaintRevive.__init(ScriptConfig)
+SaintRevive.Initialize()
 return SaintRevive
