@@ -6,14 +6,14 @@
 --- customization that I don't need or have a desire to complexify this.
 --- Ref: https://github.com/Atkana/tes3mp-scripts/blob/master/0.7/kanaRevive/kanaRevive.lua
 -------------------------------------------------------------------------------
-local tableHelper        = require('tableHelper')
-local Tes3mpConfig       = require('config')
-local contentFixer       = require('contentFixer')
-local logicHandler       = require('logicHandler')
-local SaintUtilities     = require('custom.saint.common.utilities.main')
-local SaintLogger        = require('custom.saint.common.logger.main')
-local ScriptConfig       = require('custom.saint.revive.config')
-local ReviveLang         = require('custom.saint.revive.lang')
+local tableHelper    = require('tableHelper')
+local Tes3mpConfig   = require('config')
+local contentFixer   = require('contentFixer')
+local logicHandler   = require('logicHandler')
+local SaintUtilities = require('custom.saint.common.utilities.main')
+local SaintLogger    = require('custom.saint.common.logger.main')
+local ScriptConfig   = require('custom.saint.revive.config')
+local Lang           = require('custom.saint.revive.lang')
 
 local logger = SaintLogger:CreateLogger('SaintRevive')
 
@@ -120,14 +120,14 @@ function SaintRevive.OnPlayerRevive(downedPid, reviverPid)
     local exemptPids = { downedPid, reviverPid }
     local downedPlayerName = Players[downedPid].accountName
     local reviverPlayerName = Players[reviverPid].accountName
-    local broadcastMessage = ReviveLang.GetLangText("revivedOtherMessage",
+    local broadcastMessage = Lang.GetLangText("revivedOtherMessage",
         { receive = downedPlayerName, give = reviverPlayerName })
 
     -- ...Inform the player being revived
-    tes3mp.SendMessage(downedPid, ReviveLang.GetLangText("revivedReceiveMessage", { name = reviverPlayerName }) .. "\n")
+    tes3mp.SendMessage(downedPid, Lang.GetLangText("revivedReceiveMessage", { name = reviverPlayerName }) .. "\n")
 
     -- ...Inform the reviver
-    tes3mp.SendMessage(reviverPid, ReviveLang.GetLangText("revivedGiveMessage", { name = downedPlayerName }) .. "\n")
+    tes3mp.SendMessage(reviverPid, Lang.GetLangText("revivedGiveMessage", { name = downedPlayerName }) .. "\n")
 
     SaintRevive.SendMessageToAllOnServer(broadcastMessage, exemptPids)
 
@@ -147,12 +147,12 @@ function SaintRevive.OnPlayerBleedout(pid)
     SaintRevive._SetPlayerDowned(pid, false)
 
     -- Inform the player
-    tes3mp.SendMessage(pid, ReviveLang.GetLangText("bleedoutPlayerMessage") .. "\n")
+    tes3mp.SendMessage(pid, Lang.GetLangText("bleedoutPlayerMessage") .. "\n")
 
     -- Inform others if configured
     local exemptPids = { pid }
     local pname = Players[pid].accountName
-    local message = ReviveLang.GetLangText("bleedoutOtherMessage", { name = pname })
+    local message = Lang.GetLangText("bleedoutOtherMessage", { name = pname })
 
     SaintRevive.SendMessageToAllOnServer(message, exemptPids)
 
@@ -176,12 +176,12 @@ function SaintRevive.DownPlayer(pid, timeRemaining)
     end
 
     -- Send the first basic messages
-    tes3mp.SendMessage(pid, ReviveLang.GetLangText("awaitingReviveMessage") .. "\n")
+    tes3mp.SendMessage(pid, Lang.GetLangText("awaitingReviveMessage") .. "\n")
     local downedPlayerName = Players[pid].accountName
     local exemptPids = { pid }
-    local downBroadcastMessage = ReviveLang.GetLangText("awaitingReviveOtherMessage", { name = downedPlayerName })
+    local downBroadcastMessage = Lang.GetLangText("awaitingReviveOtherMessage", { name = downedPlayerName })
     SaintRevive.SendMessageToAllOnServer(downBroadcastMessage, exemptPids)
-    tes3mp.SendMessage(pid, ReviveLang.GetLangText("bleedingOutMessage", { seconds = secondsLeft }) .. "\n")
+    tes3mp.SendMessage(pid, Lang.GetLangText("bleedingOutMessage", { seconds = secondsLeft }) .. "\n")
 
 
     local timerId = tes3mp.CreateTimerEx("BleedoutTick", time.seconds(1), "ii", pid, ScriptConfig.bleedoutTime)
@@ -191,7 +191,7 @@ function SaintRevive.DownPlayer(pid, timeRemaining)
 
     SaintRevive.CreateReviveMarker(pid)
 
-    tes3mp.SendMessage(pid, ReviveLang.GetLangText("giveInPrompt") .. "\n")
+    tes3mp.SendMessage(pid, Lang.GetLangText("giveInPrompt") .. "\n")
 end
 
 ---@param pid number
@@ -394,7 +394,7 @@ function SaintRevive.OnServerPostInit()
     if RecordStores[ScriptConfig.objectType].data.permanentRecords[ScriptConfig.recordRefId] == nil then
         local data = {
             model = ScriptConfig.model,
-            name = ReviveLang.GetLangText("reviveMarkerName"),
+            name = Lang.GetLangText("reviveMarkerName"),
             script = "nopickup"
         }
 
@@ -420,13 +420,13 @@ function SaintRevive.OnPlayerDeath(pid)
     local message
     if tes3mp.DoesPlayerHavePlayerKiller(pid) and tes3mp.GetPlayerKillerPid(pid) ~= pid then
         local killerPid = tes3mp.GetPlayerKillerPid(pid)
-        message = ReviveLang.GetLangText("defaultKilledByPlayer",
+        message = Lang.GetLangText("defaultKilledByPlayer",
             { name = logicHandler.GetChatName(pid), killer = logicHandler.GetChatName(killerPid) })
     elseif tes3mp.GetPlayerKillerName(pid) ~= "" then
-        message = ReviveLang.GetLangText("defaultKilledByOther",
+        message = Lang.GetLangText("defaultKilledByOther",
             { name = logicHandler.GetChatName(pid), killer = tes3mp.GetPlayerKillerName(pid) })
     else
-        message = ReviveLang.GetLangText("defaultSuicide", { name = logicHandler.GetChatName(pid) })
+        message = Lang.GetLangText("defaultSuicide", { name = logicHandler.GetChatName(pid) })
     end
 
     tes3mp.SendMessage(pid, message .. "\n", true)
@@ -436,7 +436,7 @@ function SaintRevive.OnPlayerDeath(pid)
         SaintRevive.TrySetPlayerDowned(pid)
         return true
     else
-        tes3mp.SendMessage(pid, ReviveLang.GetLangText("defaultPermanentDeath") .. "\n", false)
+        tes3mp.SendMessage(pid, Lang.GetLangText("defaultPermanentDeath") .. "\n", false)
         return false
     end
 end

@@ -5,11 +5,7 @@
 --- out.
 -------------------------------------------------------------------------------
 
-local customEventHooks = require('customEventHooks')
-local time             = require('time')
-local SaintLogger      = require('custom.saint.common.logger.main')
-
-local logger = SaintLogger:GetLogger('SaintEnchantmentRegeneration')
+local time = require('time')
 
 local SaintEnchantmentRegeneration = {}
 
@@ -42,11 +38,5 @@ SaintEnchantmentRegeneration.RegenerateEnchantedItems = function(player)
     player:LoadInventory()
     player:LoadEquipment()
 end
-
-customEventHooks.registerHandler("OnPlayerFinishLogin", SaintEnchantmentRegeneration.OnPlayerFinishLoginHandler)
-customEventHooks.registerHandler("OnServerPostInit", function(eventStatus)
-    logger:Info("Starting SaintEnchantmentRegeneration...")
-    return eventStatus
-end)
 
 return SaintEnchantmentRegeneration

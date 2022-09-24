@@ -34,5 +34,9 @@
         "time",
         "updateTimerId",
     ],
-    "Lua.runtime.version": "LuaJIT"
+    "Lua.runtime.version": "LuaJIT",
+    "Lua.runtime.path": [
+        "scripts/?.lua"
+    ],
+    "Lua.runtime.pathStrict": true
 }

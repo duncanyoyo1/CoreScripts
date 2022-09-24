@@ -33,12 +33,6 @@ Internal.ResetCellReImpl = function(cellDescription)
     end)
 end
 
-Internal.SendCellReset = function(pid, cellDescription)
-    tes3mp.ClearCellsToReset()
-    tes3mp.AddCellToReset(cellDescription)
-    tes3mp.SendCellReset(pid, false) --- all players are already getting sent the reset where this is called
-end
-
 ---@param cellDescription string cell name
 ---@return table result A partial of cell.data
 Internal.CaptureCellChanges = function(cellDescription)
