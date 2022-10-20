@@ -6,6 +6,7 @@
 local classy = require('classy')
 
 ---@class Logger
+---@overload fun(loggerName: string): Logger
 local Logger = classy('Logger')
 
 ---@param loggerName string
@@ -62,6 +63,7 @@ end
 
 ---@class LoggerFactory
 ---@field CreatedLoggers table<string, Logger>
+---@overload fun(): LoggerFactory
 local LoggerFactory = classy('LoggerFactory')
 
 function LoggerFactory:__init()
@@ -98,6 +100,4 @@ function LoggerFactory:GetLogger(name)
     return logger
 end
 
----@type LoggerFactory
-local factory = LoggerFactory()
-return factory
+return LoggerFactory()

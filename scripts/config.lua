@@ -486,6 +486,8 @@ config.worldKeyOrder = { "general", "time", "topics", "kills", "journal", "custo
 
 ----- SAINT ADDITION -----
 config.shareKills = false
+
+config.pathToDlls = tes3mp.GetDataPath() .. '\\..\\lib\\'
 --------------------------
 
 return config

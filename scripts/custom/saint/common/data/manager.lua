@@ -7,6 +7,7 @@ local SaintLogger = require('custom.saint.common.logger.main')
 local logger = SaintLogger:CreateLogger('SaintScriptSave')
 
 ---@class SaintScriptSave
+---@overload fun(saveFilePath: string): SaintScriptSave
 local SaintScriptSave = classy('SaintScriptSave')
 
 ---@param saveFilePath string Path to file you want to store changes to
@@ -35,5 +36,6 @@ end
 function SaintScriptSave:Save()
     jsonInterface.quicksave(self.saveFilePath, self.data)
 end
+
 
 return SaintScriptSave

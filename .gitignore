@@ -2,3 +2,4 @@ data/*
 !data/requiredDataFiles.json
 lib/*
 !/lib/lua
+**/node_modules/**

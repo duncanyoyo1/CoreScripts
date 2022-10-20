@@ -2,19 +2,14 @@ local classy = require('classy')
 local ffi = require('ffi')
 
 ---@class BinaryStringReader
+---@overload fun(binaryData: string): BinaryStringReader
 local BinaryStringReader = classy('BinaryStringReader')
 
+---@param binaryData string
 function BinaryStringReader:__init(binaryData)
     self.binaryString = binaryData
     self.length = #binaryData
     self.index = 1
-end
-
----NOTE: Not supported in LuaJIT
-function BinaryStringReader:__gc()
-    if self.index < self.length then
-        error('All data not read!')
-    end
 end
 
 ---@param byteCount integer

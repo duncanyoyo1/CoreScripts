@@ -1,3 +1,3 @@
-local events = require('custom.saint.enchantmentregen.events')
+require('custom.saint.enchantmentregen.events')
 
 return require('custom.saint.enchantmentregen.api')

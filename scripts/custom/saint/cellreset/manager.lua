@@ -103,7 +103,7 @@ end
 
 ---Cycle through the current cell resets
 SaintCellResetManager.ProcessCellResets = function()
-    logger:Info('Resetting prioritized cells (if any)...')
+    logger:Verbose('Resetting prioritized cells (if any)...')
     local _, cellNotaries = Internal.ResetPrioritizedCells()
     ---NOTE: Perhaps break into new function
     for cellDescription, notories in pairs(cellNotaries) do
@@ -116,7 +116,7 @@ SaintCellResetManager.ProcessCellResets = function()
     local sliceAmount = math.floor(count / Config.SliceAmount)
     local nextIndex = math.min(Internal.CurrentResetIndex + sliceAmount, count)
 
-    logger:Info('Resetting regular cells...')
+    logger:Verbose('Resetting regular cells...')
     Internal.ResetCellSlice(Internal.CellNames, Internal.CurrentResetIndex, nextIndex)
 
     if nextIndex > count then

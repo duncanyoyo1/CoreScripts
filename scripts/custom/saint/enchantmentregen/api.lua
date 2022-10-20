@@ -35,6 +35,8 @@ SaintEnchantmentRegeneration.RegenerateEnchantedItems = function(player)
             item.charge = math.min(item.enchantmentCharge, newCharge)
         end
     end
+    --- Hack for re-equiping things
+    ---TODO: Possible bug w/ this not loading condition
     player:LoadInventory()
     player:LoadEquipment()
 end

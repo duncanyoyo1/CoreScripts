@@ -6,3 +6,17 @@ These are the scripts used to implement most of the essential server logic in TE
 
 * TES3MP version: 0.8.1
 
+## Dependencies
+
+* [Pollnet](https://github.com/probable-basilisk/pollnet/releases)
+* [NodeJs](https://nodejs.org/en/)
+
+## Setup
+
+1. Download deps
+2. npm i in server/
+
+## Running the server
+
+1. Start http server
+2. start tes3mp

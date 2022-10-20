@@ -36,7 +36,8 @@
     ],
     "Lua.runtime.version": "LuaJIT",
     "Lua.runtime.path": [
-        "scripts/?.lua"
+        "scripts/?.lua",
+        "lib/lua/?.lua"
     ],
     "Lua.runtime.pathStrict": true
 }

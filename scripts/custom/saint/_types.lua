@@ -69,8 +69,8 @@ tes3mp = tes3mp
 ---@field CopyReceivedActorListToStore fun()
 ---@field CopyReceivedObjectListToStore fun()
 ---@field CopyReceivedWorldstateToStore fun()
----@field CreateTimer fun(functionName: string, seconds: number): number
----@field CreateTimerEx fun(functionName: string, seconds: number, argTypes: string, ...): number
+---@field CreateTimer fun(functionName: string, milliseconds: number): number
+---@field CreateTimerEx fun(functionName: string, milliseconds: number, argTypes: string, ...): number
 ---@field CustomMessageBox fun(pid: number, id: number, label: string, buttons: string)
 ---@field DoesActorHavePlayerKiller fun(index: integer): boolean
 ---@field DoesActorHavePosition fun(index: integer): boolean
