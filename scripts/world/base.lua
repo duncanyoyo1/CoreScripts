@@ -1,6 +1,7 @@
 local stateHelper = require("stateHelper")
 
 ---@class BaseWorld
+---@overload fun(): BaseWorld
 local BaseWorld = class("BaseWorld")
 
 -- Keep this here because it's required in mathematical operations

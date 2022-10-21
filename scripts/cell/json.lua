@@ -4,6 +4,7 @@ tableHelper = require("tableHelper")
 local BaseCell = require("cell.base")
 
 ---@class JsonCell : BaseCell
+---@overload fun(cellDescription: string): JsonCell
 local Cell = class("Cell", BaseCell)
 
 ---@param cellDescription string

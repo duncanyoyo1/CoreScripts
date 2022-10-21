@@ -9,6 +9,8 @@ local tableHelper = require("tableHelper")
 ---@field displayedMenuButtons unknown[]|nil
 ---@field ipAddress unknown
 ---@field confiscationTargetName unknown
+---@field storedConsoleCommand unknown
+---@overload fun(pid: any, playerName: string): BasePlayer
 local BasePlayer = class("BasePlayer")
 
 ---@class Item
@@ -18,6 +20,8 @@ local BasePlayer = class("BasePlayer")
 ---@field charge string
 ---@field soul string
 
+---@param pid any
+---@param playerName string
 function BasePlayer:__init(pid, playerName)
     self.dbPid = nil
 

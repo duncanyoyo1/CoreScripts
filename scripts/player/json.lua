@@ -4,6 +4,7 @@ local tableHelper = require("tableHelper")
 local BasePlayer = require("player.base")
 
 ---@class JsonPlayer : BasePlayer
+---@overload fun(pid: any, playerName: string): JsonPlayer
 local Player = class("Player", BasePlayer)
 
 function Player:__init(pid, playerName)

@@ -6,6 +6,7 @@ inventoryHelper = require("inventoryHelper")
 packetBuilder = require("packetBuilder")
 
 ---@class BaseCell
+---@overload fun(cellDescription: string): BaseCell
 local BaseCell = class("BaseCell")
 
 ---@param cellDescription string

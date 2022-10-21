@@ -2,6 +2,7 @@ Database = require("database")
 local BaseCell = require("cell.base")
 
 ---@class SqlCell : BaseCell
+---@overload fun(cellDescription: string): SqlCell
 local Cell = class("Cell", BaseCell)
 
 ---@param cellDescription string

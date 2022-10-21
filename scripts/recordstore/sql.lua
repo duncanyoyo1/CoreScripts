@@ -2,6 +2,7 @@ local Database = require("database")
 local BaseRecordStore = require("recordstore.base")
 
 ---@class SqlRecordStore : BaseRecordStore
+---@overload fun(storeType: string): SqlRecordStore
 local RecordStore = class("RecordStore", BaseRecordStore)
 
 function RecordStore:__init()

@@ -2,8 +2,11 @@ local Database = require("database")
 local BasePlayer = require("player.base")
 
 ---@class SqlPlayer : BasePlayer
+---@overload fun(pid: any, playerName: string): SqlPlayer
 local Player = class("Player", BasePlayer)
 
+---@param pid any
+---@param playerName string
 function Player:__init(pid, playerName)
     BasePlayer.__init(self, pid, playerName)
 

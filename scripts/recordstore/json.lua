@@ -3,8 +3,10 @@ local tableHelper = require("tableHelper")
 local BaseRecordStore = require("recordstore.base")
 
 ---@class JsonRecordStore : BaseRecordStore
+---@overload fun(storeType: string): JsonRecordStore
 local RecordStore = class("RecordStore", BaseRecordStore)
 
+---@param storeType string
 function RecordStore:__init(storeType)
     BaseRecordStore.__init(self, storeType)
 

@@ -1,4 +1,5 @@
 ---@class BaseRecordStore
+---@overload fun(storeType: string): BaseRecordStore
 local BaseRecordStore = class("BaseRecordStore")
 
 BaseRecordStore.defaultData = 

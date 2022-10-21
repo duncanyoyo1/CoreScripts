@@ -3,6 +3,7 @@ local tableHelper = require("tableHelper")
 local BaseWorld = require("world.base")
 
 ---@class JsonWorld : BaseWorld
+---@overload fun(): JsonWorld
 local World = class("World", BaseWorld)
 
 function World:__init()
