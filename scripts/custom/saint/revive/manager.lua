@@ -6,10 +6,10 @@
 --- customization that I don't need or have a desire to complexify this.
 --- Ref: https://github.com/Atkana/tes3mp-scripts/blob/master/0.7/kanaRevive/kanaRevive.lua
 -------------------------------------------------------------------------------
-local tableHelper    = require('tableHelper')
 local Tes3mpConfig   = require('config')
 local contentFixer   = require('contentFixer')
 local logicHandler   = require('logicHandler')
+local tableHelper    = require('tableHelper')
 local SaintUtilities = require('custom.saint.common.utilities.main')
 local SaintLogger    = require('custom.saint.common.logger.main')
 local ScriptConfig   = require('custom.saint.revive.config')

@@ -13,10 +13,11 @@ These are the scripts used to implement most of the essential server logic in TE
 
 ## Setup
 
-1. Download deps
-2. npm i in server/
+1. Download Pollnet and place the `pollnet.dll` (or whatever your platform uses) into the `lib/` folder.
+2. `npm i` in `server/`
 
 ## Running the server
 
-1. Start http server
-2. start tes3mp
+1. Start http server using `npm start` in from the `server/` folder. (You can also do `npm i --prefix ./server` from `./`)
+2. Start the tes3mp server
+
