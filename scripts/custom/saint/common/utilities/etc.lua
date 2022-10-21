@@ -11,8 +11,8 @@ local SaintUtilities = {}
 ---Load a cell temporarily if not loaded, and clean up for you
 ---@generic T
 ---@param cellDescription string Cell name
----@param callback fun(cell: BaseCell): T Callback with cell that was loaded passed in
----@return T ... results of the above function
+---@param callback fun(cell: BaseCell): ... Callback with cell that was loaded passed in
+---@return ... results of the above function
 SaintUtilities.TempLoadCellCallback = function(cellDescription, callback)
     local tempLoad = false
     if LoadedCells[cellDescription] == nil then
@@ -24,6 +24,26 @@ SaintUtilities.TempLoadCellCallback = function(cellDescription, callback)
         logicHandler.UnloadCell(cellDescription)
     end
     return unpack(result)
+end
+
+SaintUtilities.GetCurrentFolder = function()
+    local cmd = 'pwd'
+    if tes3mp.GetOperatingSystemType() == "Windows" then
+        cmd = 'cd'
+    end
+    local pfile = io.popen(cmd)
+    if pfile == nil then
+        return 'UNKOWN PATH'
+    end
+    ---@type string
+    local cwd = nil
+    for line in pfile:lines() do
+        if not cwd then
+            cwd = line
+        end
+    end
+    pfile:close()
+    return cwd
 end
 
 ---Lovingly stolen from SO

@@ -1,9 +1,15 @@
+local time = require('time')
+
 local serverAddress = 'localhost:4550'
-local pollInterval = 50
-local reconnectInterval = 1000
+local pollInterval = time.seconds(1/20)
+local reconnectInterval = time.seconds(10)
+local bootstrap = true
+local installNodeDepencencies = true
 
 return {
     serverAddress = serverAddress,
     pollInterval = pollInterval,
     reconnectInterval = reconnectInterval,
+    bootstrap = bootstrap,
+    installNodeDepencencies = installNodeDepencencies,
 }

@@ -41,13 +41,14 @@ function SocketMessenger:Tick()
             return
         end
         for _, handler in pairs(handlers) do
-            handler(data)
+            print(data)
+            handler(cjson.decode(data))
         end
     end
 end
 
 ---@param key string
----@param data table|string
+---@param data table
 function SocketMessenger:SendMessage(key, data)
     local encodedData = cjson.encode(data)
     local constructedMessage = key .. Delimiter .. encodedData .. Delimiter
