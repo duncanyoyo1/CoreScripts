@@ -22,9 +22,9 @@ const server = createServer(socket => {
         const messages = parseMessage(data);
         for (const message of messages) {
             switch (message.type) {
+                // TODO: This is not a scalable design
                 case ReceivingGreetingKey: GreetingMessageHandler(message.data);
                 // Add other message handlers here
-                // TODO: This is not a scalable design
             }
         }
     });
