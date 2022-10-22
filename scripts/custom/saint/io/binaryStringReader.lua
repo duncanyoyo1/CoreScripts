@@ -59,5 +59,4 @@ function BinaryStringReader:HasData()
     return self.index <= self.length
 end
 
-local BinaryStringReaderConstructor = BinaryStringReader ---@type fun(str: string): BinaryStringReader
-return BinaryStringReaderConstructor
+return BinaryStringReader

@@ -1,11 +1,10 @@
 local customEventHooks = require('customEventHooks')
 local SaintRevive      = require('custom.saint.revive.manager')
 
----NOTE: Break logic ENTIRELY into its own function
 customEventHooks.registerValidator("OnPlayerDeath", function(eventStatus, pid)
     local didRevive = SaintRevive.OnPlayerDeath(pid)
-    local doDefault = not didRevive
-    return customEventHooks.makeEventStatus(false, doDefault)
+    local didDie = not didRevive
+    return customEventHooks.makeEventStatus(false, didDie)
 end)
 
 customEventHooks.registerValidator("OnPlayerDisconnect", function(eventStatus, pid)
@@ -27,5 +26,3 @@ customEventHooks.registerHandler("OnServerPostInit", function(eventStatus)
     SaintRevive.OnServerPostInit()
     return eventStatus
 end)
-
-

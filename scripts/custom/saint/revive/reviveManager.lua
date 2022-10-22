@@ -6,31 +6,24 @@
 --- customization that I don't need or have a desire to complexify this.
 --- Ref: https://github.com/Atkana/tes3mp-scripts/blob/master/0.7/kanaRevive/kanaRevive.lua
 -------------------------------------------------------------------------------
-local Tes3mpConfig   = require('config')
-local contentFixer   = require('contentFixer')
-local logicHandler   = require('logicHandler')
-local tableHelper    = require('tableHelper')
-local SaintUtilities = require('custom.saint.common.utilities.main')
-local SaintLogger    = require('custom.saint.common.logger.main')
-local ScriptConfig   = require('custom.saint.revive.config')
-local Lang           = require('custom.saint.revive.lang')
+local Tes3mpConfig    = require('config')
+local contentFixer    = require('contentFixer')
+local logicHandler    = require('logicHandler')
+local tableHelper     = require('tableHelper')
+local SaintLogger     = require('custom.saint.common.logger.main')
+local ScriptConfig    = require('custom.saint.revive.config')
+local Lang            = require('custom.saint.revive.lang')
+local MarkerManager   = require('custom.saint.revive.markerManager')
+local ReviveUtilities = require('custom.saint.revive.utilities')
 
 local logger = SaintLogger:CreateLogger('SaintRevive')
 
 ---@class SaintRevive
----@field pidMarkerLookup table<number, string>
----@field reviveMarkers table<string, MarkerData>
 local SaintRevive = {
-    reviveMarkers = {},
-    pidMarkerLookup = {},
+    markerManager = MarkerManager(),
 }
 
 ---- Intermediate Types -------------------------
-
----@class MarkerData
----@field playerName string
----@field cellDescription string
----@field pid number
 
 ---@class ActivatedObjectsContainer
 ---@field uniqueIndex string
@@ -44,91 +37,17 @@ local SaintRevive = {
 --- Meat and Potatoes
 -------------------------------------------------------------------------------
 
----@param pidForMarker number
-function SaintRevive.CreateReviveMarker(pidForMarker)
-    logger:Info("Creating revive marker for player PID '" .. pidForMarker .. "'")
-    local playerName = Players[pidForMarker].accountName
-    local cellDescription = Players[pidForMarker].data.location.cell
-    local location = {
-        posX = tes3mp.GetPosX(pidForMarker),
-        posY = tes3mp.GetPosY(pidForMarker),
-        posZ = tes3mp.GetPosZ(pidForMarker) + 10,
-        rotX = 0,
-        rotY = 0,
-        rotZ = tes3mp.GetRotZ(pidForMarker)
-    }
-    local objectData = {
-        refId = ScriptConfig.recordRefId,
-        count = 1,
-        charge = -1,
-        enchantmentCharge = -1,
-        soul = "",
-        scale = 1
-    }
-
-    SaintUtilities.TempLoadCellCallback(cellDescription, function(cell)
-        local uniqueIndex = logicHandler.CreateObjectAtLocation(cellDescription, location, objectData, "place")
-
-        SaintRevive.reviveMarkers[uniqueIndex] = {
-            playerName = playerName,
-            cellDescription = cellDescription,
-            pid = pidForMarker
-        }
-        SaintRevive.pidMarkerLookup[pidForMarker] = uniqueIndex
-
-        --Saint Note: These next few lines may need to be brought into another function
-
-        -- Delete the marker for the downed player, and anyone who was in the cell
-        for _, pid in pairs(cell.visitors) do
-            logicHandler.DeleteObjectForPlayer(pid, cellDescription, uniqueIndex)
-        end
-    end)
-end
-
----@param uniqueIndex string
----@param cellDescription string|nil
-function SaintRevive.RemoveReviveMarker(uniqueIndex, cellDescription)
-    if uniqueIndex then
-        -- The OnObjectActivate call for this function provides a cell description in case the revive marker is from an old session
-        -- Use that if provided, otherwise it's safe to get it from looking up its information
-
-        --Saint Note: I don't like the above or this logic, but whatever
-        local reviveMarker = SaintRevive.reviveMarkers[uniqueIndex]
-        cellDescription = cellDescription or reviveMarker.cellDescription
-
-        SaintUtilities.TempLoadCellCallback(cellDescription, function(cell)
-            logicHandler.DeleteObjectForEveryone(cellDescription, uniqueIndex)
-            cell:DeleteObjectData(uniqueIndex)
-        end)
-
-        if reviveMarker then
-            SaintRevive.pidMarkerLookup[reviveMarker.pid] = nil
-        end
-
-        SaintRevive.reviveMarkers[uniqueIndex] = nil
-    else
-        local safeValue = tostring(uniqueIndex)
-        logger:Warn("Attempted to clean up a revive marker with no index! Index: " .. safeValue)
-    end
-end
-
 ---@param downedPid number
 ---@param reviverPid number
 function SaintRevive.OnPlayerRevive(downedPid, reviverPid)
-    local newHealth, newMagicka, newFatigue = SaintRevive.CalculateRevivedPlayerStats(downedPid)
-    -- Inform players about the revival
+    local newHealth, newMagicka, newFatigue = ReviveUtilities.CalculateRevivedPlayerStats(downedPid)
     local exemptPids = { downedPid, reviverPid }
     local downedPlayerName = Players[downedPid].accountName
     local reviverPlayerName = Players[reviverPid].accountName
-    local broadcastMessage = Lang.GetLangText("revivedOtherMessage",
-        { receive = downedPlayerName, give = reviverPlayerName })
+    local broadcastMessage = Lang.GetLangText("revivedOtherMessage", { receive = downedPlayerName, give = reviverPlayerName })
 
-    -- ...Inform the player being revived
     tes3mp.SendMessage(downedPid, Lang.GetLangText("revivedReceiveMessage", { name = reviverPlayerName }) .. "\n")
-
-    -- ...Inform the reviver
     tes3mp.SendMessage(reviverPid, Lang.GetLangText("revivedGiveMessage", { name = downedPlayerName }) .. "\n")
-
     SaintRevive.SendMessageToAllOnServer(broadcastMessage, exemptPids)
 
     SaintRevive._SetPlayerDowned(downedPid, false)
@@ -139,7 +58,7 @@ function SaintRevive.OnPlayerRevive(downedPid, reviverPid)
     tes3mp.SetFatigueCurrent(downedPid, newFatigue)
     tes3mp.SendStatsDynamic(downedPid)
 
-    SaintRevive.RemoveReviveMarker(SaintRevive.pidMarkerLookup[downedPid])
+    SaintRevive.markerManager:RemoveMarkerFromPid(downedPid)
 end
 
 ---@param pid number
@@ -158,7 +77,7 @@ function SaintRevive.OnPlayerBleedout(pid)
 
     OnDeathTimeExpiration(pid, pname)
 
-    SaintRevive.RemoveReviveMarker(SaintRevive.pidMarkerLookup[pid])
+    SaintRevive.markerManager:RemoveMarkerFromPid(pid)
 end
 
 ---@param pid number
@@ -189,50 +108,9 @@ function SaintRevive.DownPlayer(pid, timeRemaining)
     tes3mp.StartTimer(timerId)
     logger:Info("Creating timer with ID: '" .. timerId .. "' for player PID '" .. pid .. "'")
 
-    SaintRevive.CreateReviveMarker(pid)
+    SaintRevive.markerManager:CreateMarkerAtPidPositiom(pid)
 
     tes3mp.SendMessage(pid, Lang.GetLangText("giveInPrompt") .. "\n")
-end
-
----@param pid number
----@return number NewHealth
----@return number NewMagicka
----@return number NewFatigue
-function SaintRevive.CalculateRevivedPlayerStats(pid)
-    local healthBase = tes3mp.GetHealthBase(pid)
-    local fatigueCurrent = tes3mp.GetFatigueCurrent(pid)
-    local fatigueBase = tes3mp.GetFatigueBase(pid)
-    local magickaCurrent = tes3mp.GetMagickaCurrent(pid)
-    local magickaBase = tes3mp.GetMagickaBase(pid)
-
-    local newHealth, newMagicka, newFatigue
-
-    if ScriptConfig.health < 1.0 then
-        newHealth = math.floor((healthBase * ScriptConfig.health) + 0.5)
-    else
-        newHealth = ScriptConfig.health
-    end
-
-    if ScriptConfig.magicka == "preserve" then
-        newMagicka = magickaCurrent
-    elseif ScriptConfig.magicka < 1.0 then
-        newMagicka = math.floor((magickaBase * ScriptConfig.magicka) + 0.5)
-    else
-        newMagicka = ScriptConfig.magicka ---@type number
-    end
-
-    if ScriptConfig.fatigue == "preserve" then
-        newFatigue = fatigueCurrent
-    elseif ScriptConfig.fatigue < 1.0 then
-        newFatigue = math.floor((fatigueBase * ScriptConfig.fatigue) + 0.5)
-    else
-        newFatigue = ScriptConfig.fatigue ---@type number
-    end
-
-    newHealth = math.max(math.min(newHealth, healthBase), 1) -- gotta be one if we are ressing
-    newMagicka = math.max(math.min(newMagicka, magickaBase), 0)
-    newFatigue = math.max(math.min(newFatigue, fatigueBase), 0)
-    return newHealth, newMagicka, newFatigue
 end
 
 function SaintRevive.TrySetPlayerDowned(pid)
@@ -378,12 +256,12 @@ function SaintRevive.OnObjectActivate(pid, cellDescription, objects, players)
     for _, objectContainer in pairs(objects) do
         local uniqueIndex = objectContainer.uniqueIndex
         if objectContainer.refId == ScriptConfig.recordRefId then
-            if SaintRevive.reviveMarkers[uniqueIndex] and
-                SaintRevive._GetPlayerDowned(SaintRevive.reviveMarkers[uniqueIndex].pid) then
-                SaintRevive.OnPlayerRevive(SaintRevive.reviveMarkers[uniqueIndex].pid, pid)
+            local reviveMarker = SaintRevive.markerManager:GetMarker(uniqueIndex)
+            if reviveMarker and SaintRevive._GetPlayerDowned(reviveMarker.pid) then
+                SaintRevive.OnPlayerRevive(reviveMarker.pid, pid)
             else
                 --OnPlayerRevive already removes the marker, this is a weird situation
-                SaintRevive.RemoveReviveMarker(uniqueIndex, cellDescription)
+                SaintRevive.markerManager:RemoveMarkerIfExists(uniqueIndex)
             end
             return
         end
@@ -410,7 +288,7 @@ end
 ---@param pid number
 function SaintRevive.OnPlayerDisconnect(pid)
     if SaintRevive._GetPlayerDowned(pid) then
-        SaintRevive.RemoveReviveMarker(SaintRevive.pidMarkerLookup[pid])
+        SaintRevive.markerManager:RemoveMarkerFromPid(pid)
     end
 end
 

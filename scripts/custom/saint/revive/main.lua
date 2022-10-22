@@ -1,4 +1,3 @@
 require('custom.saint.revive.commands')
 require('custom.saint.revive.events')
-
-return require('custom.saint.revive.manager')
+require('custom.saint.revive.reviveManager')
