@@ -16,7 +16,7 @@ local Lang            = require('custom.saint.revive.lang')
 local MarkerManager   = require('custom.saint.revive.markerManager')
 local ReviveUtilities = require('custom.saint.revive.utilities')
 
-local logger = SaintLogger:CreateLogger('SaintRevive')
+local logger = SaintLogger:GetLogger('SaintRevive')
 
 ---@class SaintRevive
 local SaintRevive = {

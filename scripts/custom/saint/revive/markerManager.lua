@@ -3,7 +3,7 @@ local SaintUtilities = require('custom.saint.common.utilities.main')
 local SaintLogger    = require('custom.saint.common.logger.main')
 local ScriptConfig   = require('custom.saint.revive.config')
 
-local logger = SaintLogger:CreateLogger('SaintRevive')
+local logger = SaintLogger:GetLogger('SaintRevive')
 
 ---@class MarkerData
 ---@field playerName string

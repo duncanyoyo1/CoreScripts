@@ -1,5 +1,5 @@
 local customEventHooks = require('customEventHooks')
-local SaintRevive      = require('custom.saint.revive.manager')
+local SaintRevive      = require('custom.saint.revive.reviveManager')
 
 customEventHooks.registerValidator("OnPlayerDeath", function(eventStatus, pid)
     local didRevive = SaintRevive.OnPlayerDeath(pid)
