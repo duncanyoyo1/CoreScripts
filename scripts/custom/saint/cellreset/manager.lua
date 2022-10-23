@@ -119,7 +119,7 @@ SaintCellResetManager.ProcessCellResets = function()
     logger:Verbose('Resetting regular cells...')
     Internal.ResetCellSlice(Internal.CellNames, Internal.CurrentResetIndex, nextIndex)
 
-    if nextIndex > count then
+    if nextIndex >= count then
         Internal.CurrentResetIndex = 1
     else
         Internal.CurrentResetIndex = nextIndex
