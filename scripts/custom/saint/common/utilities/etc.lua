@@ -11,8 +11,8 @@ local SaintUtilities = {}
 ---Load a cell temporarily if not loaded, and clean up for you
 ---@generic T
 ---@param cellDescription string Cell name
----@param callback fun(cell: BaseCell): ... Callback with cell that was loaded passed in
----@return ... results of the above function
+---@param callback fun(cell: BaseCell): T Callback with cell that was loaded passed in
+---@return T
 SaintUtilities.TempLoadCellCallback = function(cellDescription, callback)
     local tempLoad = false
     if LoadedCells[cellDescription] == nil then

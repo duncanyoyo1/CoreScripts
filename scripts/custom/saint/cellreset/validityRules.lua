@@ -7,7 +7,7 @@ local Internal = {}
 ---@param cellDescription string cell name
 ---@param blacklist table hack to get black list into black list check. Could add it as custom var on cell
 ValidityRules.IsCellResetValid = function(cellDescription, blacklist)
-    if Internal.IsCellStale(cellDescription) then
+    if Internal.IsCellFresh(cellDescription) then
         return false, 'Not enough time has passed'
     end
 
@@ -26,12 +26,12 @@ ValidityRules.IsCellSafeToReset = function(cellDescription)
     return Internal.DoesCellContainVisitors(cellDescription)
 end
 
-Internal.IsCellStale = function(cellDescription)
+Internal.IsCellFresh = function(cellDescription)
     return SaintUtilities.TempLoadCellCallback(cellDescription, function(cell)
         local nowTime = os.time()
         local creationTime = cell.data.entry.creationTime
         local timeDiference = nowTime - creationTime
-        return timeDiference > Config.ResetTime
+        return timeDiference < Config.ResetTime
     end)
 end
 
