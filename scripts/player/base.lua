@@ -15,9 +15,9 @@ local BasePlayer = class("BasePlayer")
 
 ---@class Item
 ---@field refId string
----@field enchantmentCharge string
----@field count string
----@field charge string
+---@field enchantmentCharge number
+---@field count integer
+---@field charge number this is often the condition
 ---@field soul string
 
 ---@param pid any

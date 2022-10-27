@@ -30,9 +30,9 @@ SaintEnchantmentRegeneration.RegenerateEnchantedItems = function(player)
         local lastLogin = player.data.timestamps.lastDisconnect
         local now = os.time()
         local daysSinceLastLogin = time.toDays(now - lastLogin)
-        if item.enchantmentCharge > 0 and item.charge > 0 then
+        if item.enchantmentCharge > 0 then
             local newCharge = item.enchantmentCharge + daysSinceLastLogin * scriptConfig.rechargeRate
-            item.charge = math.min(item.enchantmentCharge, newCharge)
+            item.enchantmentCharge = newCharge
         end
     end
     --- Hack for re-equiping things
