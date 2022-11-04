@@ -21,6 +21,7 @@ SaintEnchantmentRegeneration.OnPlayerFinishLoginHandler = function(eventStatus, 
     end
 
     SaintEnchantmentRegeneration.RegenerateEnchantedItems(Players[pid])
+    return eventStatus
 end
 
 ---@param player BasePlayer
@@ -36,7 +37,6 @@ SaintEnchantmentRegeneration.RegenerateEnchantedItems = function(player)
         end
     end
     --- Hack for re-equiping things
-    ---TODO: Possible bug w/ this not loading condition
     player:LoadInventory()
     player:LoadEquipment()
 end
