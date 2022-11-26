@@ -13,7 +13,7 @@ customEventHooks.registerHandler("OnWorldKillCount", function(eventStatus, pid)
     for _, allyName in pairs(allies) do
         local allyPlayer = logicHandler.GetPlayerByName(allyName)
         if allyPlayer ~= nil and allyPlayer:IsLoggedIn() then
-            logger:Verbose("Updating player '" .. allyName .. " with new kill")
+            logger:Verbose("Updating player '" .. allyName .. " with new kill(s)")
             allyPlayer:SaveKills()
             allyPlayer:LoadKills()
         end

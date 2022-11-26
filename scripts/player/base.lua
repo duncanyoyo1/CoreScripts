@@ -110,7 +110,7 @@ function BasePlayer:__init(pid, playerName)
         mapExplored = {},
         ipAddresses = {},
         recordLinks = {},
-        alliedPlayers = {},
+        alliedPlayers = {}, ---@type string[] Names of allies
         destinationOverrides = {},
         customVariables = {},
         ----- SAINT ADDITION -----
