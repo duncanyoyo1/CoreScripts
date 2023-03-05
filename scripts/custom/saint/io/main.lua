@@ -1,1 +1,1 @@
-return require('custom.saint.io.binaryStringReader')
+return require('custom.saint.io.BinaryStringReader')

@@ -1,6 +1,6 @@
-local ParseRecord        = require('custom.saint.record.parser.primitive.ParseRecord')
-local BinaryStringReader = require('custom.io.BinaryStringReader')
+local BinaryStringReader = require('custom.saint.io.main')
 local BaseFieldsParser   = require('custom.saint.record.parser.BaseFieldsParser')
+local ParseRecord        = require('custom.saint.record.parser.primitive.ParseRecord')
 
 ---@param binaryReader BinaryStringReader
 ---@param funcMap FuncMap

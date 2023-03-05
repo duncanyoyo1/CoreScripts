@@ -3,7 +3,6 @@ local Size               = require('custom.saint.record.parser.primitive.Size')
 local BaseRecordParser   = require('custom.saint.record.parser.BaseRecordParser')
 local BaseFieldsParser   = require('custom.saint.record.parser.BaseFieldsParser')
 local ParseField         = require('custom.saint.record.parser.primitive.ParseField')
-local BinaryStringReader = require('custom.io.BinaryStringReader')
 
 ---@param binaryReader BinaryStringReader
 local ParseNAME = function(binaryReader)

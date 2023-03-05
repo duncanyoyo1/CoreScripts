@@ -4,7 +4,7 @@ local Types = require('custom.saint.record.parser.primitive.Types')
 ---@param binaryReader BinaryStringReader
 return function(binaryReader)
     local recordName = binaryReader:Read(Size.INTEGER)
-    local recordDataSize = binaryReader:Read(Size.INTEGER, Types.UINT32)
+    local recordDataSize = binaryReader:Read(Size.INTEGER, Types.UINT32) ---@type integer
     local recordUnused = binaryReader:Read(Size.INTEGER, Types.UINT32)
     local recordFlags = binaryReader:Read(Size.INTEGER, Types.UINT32)
     local recordData = binaryReader:Read(recordDataSize)

@@ -1,7 +1,7 @@
-local ParseField         = require('custom.saint.record.parser.primitive.ParseField')
-local BinaryStringReader = require('custom.io.BinaryStringReader')
-local Size               = require('custom.saint.record.parser.primitive.Size')
+local BinaryStringReader = require('custom.saint.io.main')
 local DELEFieldParser    = require('custom.saint.record.parser.primitive.DELEFieldParser')
+local ParseField         = require('custom.saint.record.parser.primitive.ParseField')
+local Size               = require('custom.saint.record.parser.primitive.Size')
 
 ---@param binaryReader BinaryStringReader
 ---@param funcMap FuncMap
@@ -15,7 +15,7 @@ return function(binaryReader, funcMap, compositeType, arrayType, context)
         local singularFunc = funcMap[fieldName]
         local compositeFunc = compositeType[fieldName]
         local arrayFieldName = arrayType[fieldName]
-        local data
+        local data ---@type any
 
         -- IDK bout this, but this should PROBABLY be true
         if fields[fieldName] ~= nil and not arrayFieldName then

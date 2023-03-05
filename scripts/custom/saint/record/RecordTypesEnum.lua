@@ -46,12 +46,6 @@ local RECORD_TYPES = {
     MASTER             = 'MAST',
 }
 
-local RECORD_TYPES_LOOKUP = {}
-for k, v in pairs(RECORD_TYPES) do
-    RECORD_TYPES_LOOKUP[v] = k
-end
-
 return {
     RECORD_TYPES = RECORD_TYPES,
-    RECORD_TYPES_LOOKUP = RECORD_TYPES_LOOKUP
 }
