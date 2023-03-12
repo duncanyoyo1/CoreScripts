@@ -10,9 +10,11 @@ local classy = require('classy')
 local Logger = classy('Logger')
 
 ---@param loggerName string
-function Logger:__init(loggerName)
+---@param minLevel integer defaults to -1
+function Logger:__init(loggerName, minLevel)
     self.name = loggerName
     self._previousLogLevel = -1
+    self._minLevel = minLevel or -1
 end
 
 ---@param enumValue number
@@ -29,6 +31,10 @@ end
 ---@param logLevel number log level
 ---@param message string Will be concatted to a string
 function Logger:Log(logLevel, message)
+    if logLevel < self._minLevel then
+        return
+    end
+
     tes3mp.LogMessage(
         logLevel,
         string.format("[%s - %s] %s", self.name, GetEnumerationToString(logLevel), message)
@@ -71,6 +77,7 @@ function LoggerFactory:__init()
     self.__InternalLogger = Logger("__SaintLogger_Internal_Logger__") ---@type Logger
 end
 
+---@private
 function LoggerFactory:__LogLoggers()
     for loggerName, _ in pairs(self.CreatedLoggers) do
         self.__InternalLogger:Info(loggerName)

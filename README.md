@@ -9,12 +9,13 @@ These are the scripts used to implement most of the essential server logic in TE
 ## Dependencies
 
 * [Pollnet](https://github.com/probable-basilisk/pollnet/releases)
+* [Effil](https://github.com/effil/effil/releases)
 * [NodeJs](https://nodejs.org/en/)
 
 ## Setup
 
 1. Download Pollnet and place the `pollnet.dll` (or whatever your platform uses) into the `lib/` folder.
-2. `npm i` in `server/`
+2. Download Effil (luajit version) and place the `effil.dll` (or whatever your platform uses) into the `lib/` folder. (Note: This is not required, but is a performance boost.)
 
 ## Running the server
 

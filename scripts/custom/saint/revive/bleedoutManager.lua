@@ -4,7 +4,8 @@ local SaintTicks = require('custom.saint.common.ticks.main')
 local ScriptConfig = require('custom.saint.revive.config')
 
 ---@class BleedoutManager
----@field bleeders any[]
+---@field private bleeders any[]
+---@field private timerRef TimerRef
 ---@overload fun(): BleedoutManager
 local BleedoutManager = classy('BleedoutManager')
 

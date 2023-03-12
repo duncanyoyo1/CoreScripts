@@ -1,7 +1,7 @@
-local SaintLogger = require('custom.saint.common.logger.main')
+local SaintLogger    = require('custom.saint.common.logger.main')
 local SaintUtilities = require('custom.saint.common.utilities.main')
 
-local logger = SaintLogger:GetLogger('SaintServerMessenger')
+local logger         = SaintLogger:GetLogger('SaintServerMessenger')
 
 local function InstallDepencencies()
     local start = SaintUtilities.GetCurrentFolder()

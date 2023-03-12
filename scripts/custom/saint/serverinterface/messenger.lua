@@ -1,25 +1,29 @@
-local pollnet = require('pollnet')
-local cjson = require('cjson')
-local classy = require('classy')
+require('utils')
+local pollnet         = require('pollnet')
+local cjson           = require('cjson')
+local classy          = require('classy')
 
-local SaintLogger = require('custom.saint.common.logger.main')
+local SaintLogger     = require('custom.saint.common.logger.main')
 
-local logger = SaintLogger:GetLogger('SaintServerMessenger')
+local logger          = SaintLogger:GetLogger('SaintServerMessenger')
 
-local Delimiter = '^'
+local Delimiter       = '^'
 
 ---@class SocketMessenger
 ---@overload fun(address: string): SocketMessenger
 local SocketMessenger = classy('SocketMessenger')
 
+---@private
 ---@param address string
 function SocketMessenger:__init(address)
+    ---@private
     self.address = address
+    ---@private
     self.handlers = {}
 end
 
 function SocketMessenger:Tick()
-    if not self.socket then return end
+    if not self:IsConnected() then return end
 
     local ok, msg = self.socket:poll()
 
@@ -55,7 +59,9 @@ function SocketMessenger:SendMessage(key, data)
     self.socket:send(constructedMessage)
 end
 
+---@private
 ---@param datum string
+---@return string MessageType, string Data
 function SocketMessenger:ParseMessage(datum)
     local i, j = string.find(datum, '%^')
     if not i or not j then

@@ -11,8 +11,8 @@ local logger = SaintLogger:GetLogger('SaintRevive')
 ---@field pid number
 
 ---@class MarkerManager
----@field reviveMarkers table<string, MarkerData>
----@field pidMarkerLookup table<number, string>
+---@field private reviveMarkers table<string, MarkerData>
+---@field private pidMarkerLookup table<number, string>
 ---@overload fun(): MarkerManager
 local MarkerManager = classy('MarkerManager')
 

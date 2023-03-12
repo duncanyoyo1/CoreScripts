@@ -73,13 +73,15 @@ end
 
 --- Reset cell, no checks
 ---@param cellDescription string cell name for cell to be affected
-SaintCellReset.ResetCell = function(cellDescription)
-    SaintCellReset.ResetCells({ cellDescription })
+---@param pids string[]? optional list of pids to reset cells for
+SaintCellReset.ResetCell = function(cellDescription, pids)
+    SaintCellReset.ResetCells({ cellDescription }, pids)
 end
 
 --- Reset multiple cells Note: This is somewhat of a reimpl of logicHandler.ResetCell
 ---@param cellDescriptions string[] list of cell names
-SaintCellReset.ResetCells = function(cellDescriptions)
+---@param pids number[]? optional list of players to reset cells for
+SaintCellReset.ResetCells = function(cellDescriptions, pids)
     local cellChanges = {}
     tes3mp.ClearCellsToReset()
 
@@ -90,8 +92,14 @@ SaintCellReset.ResetCells = function(cellDescriptions)
         logger:Info("Resetting cell '" .. cellDescription .. "'")
     end
 
-    for pid, _ in pairs(Players) do
-        tes3mp.SendCellReset(pid, false)
+    if pids then
+        for _, pid in pairs(pids) do
+            tes3mp.SendCellReset(pid, false)
+        end
+    else
+        for pid, _ in pairs(Players) do
+            tes3mp.SendCellReset(pid, false)
+        end
     end
 
     for cellDescription, changes in pairs(cellChanges) do

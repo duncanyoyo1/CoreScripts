@@ -5,10 +5,14 @@ local ffi = require('ffi')
 ---@overload fun(binaryData: string): BinaryStringReader
 local BinaryStringReader = classy('BinaryStringReader')
 
+---@private
 ---@param binaryData string
 function BinaryStringReader:__init(binaryData)
+    ---@private
     self.binaryString = binaryData
+    ---@private
     self.length = #binaryData
+    ---@private
     self.index = 1
 end
 
@@ -32,6 +36,7 @@ function BinaryStringReader:Peak(byteCount)
     return nil
 end
 
+---@private
 ---@param byteCount integer
 ---@param increment boolean
 ---@return string

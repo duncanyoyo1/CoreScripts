@@ -5,7 +5,7 @@ local SaintLogger      = require('custom.saint.common.logger.main')
 local logger = SaintLogger:GetLogger('SaintPartyKills')
 
 customEventHooks.registerHandler("OnWorldKillCount", function(eventStatus, pid)
-    if not eventStatus.validCustomHandlers then return end
+    if not eventStatus.validCustomHandlers then return eventStatus end
 
     local player = Players[pid]
     local allies = player.data.alliedPlayers
@@ -18,6 +18,8 @@ customEventHooks.registerHandler("OnWorldKillCount", function(eventStatus, pid)
             allyPlayer:LoadKills()
         end
     end
+
+    return eventStatus
 end)
 
 customEventHooks.registerHandler("OnServerPostInit", function()

@@ -131,6 +131,7 @@ end
 --- Getters and Setters
 -------------------------------------------------------------------------------
 
+---@private
 ---@param pid number
 ---@param value number
 function SaintRevive._SetPlayerBleedoutTicks(pid, value)
@@ -142,6 +143,8 @@ function SaintRevive._SetPlayerBleedoutTicks(pid, value)
     player.data.customVariables.bleedoutTicks = value
 end
 
+---@private
+---@param pid number
 function SaintRevive._GetPlayerBleedoutTicks(pid)
     local player = Players[pid]
     if not player then
@@ -151,12 +154,14 @@ function SaintRevive._GetPlayerBleedoutTicks(pid)
     return player.data.customVariables.bleedoutTicks
 end
 
+---@private
 ---@param pid number
 function SaintRevive._GetPlayerDowned(pid)
     local player = Players[pid]
     return player and player.data.customVariables.isDowned or false
 end
 
+---@private
 ---@param pid number
 ---@param value boolean|nil
 function SaintRevive._SetPlayerDowned(pid, value)
@@ -168,6 +173,7 @@ function SaintRevive._SetPlayerDowned(pid, value)
     player.data.customVariables.isDowned = value
 end
 
+---@private
 ---@param pid number
 ---@param value boolean|nil
 function SaintRevive._SetPlayerLoggedOutDowned(pid, value)
@@ -179,6 +185,7 @@ function SaintRevive._SetPlayerLoggedOutDowned(pid, value)
     player.data.customVariables.loggedOutDowned = value
 end
 
+---@private
 ---@param pid number
 function SaintRevive._GetPlayerLoggedOutDowned(pid)
     local player = Players[pid]
@@ -189,6 +196,7 @@ function SaintRevive._GetPlayerLoggedOutDowned(pid)
     return player.data.customVariables.loggedOutDowned
 end
 
+---@private
 ---@param pid number
 ---@param timerId number
 function SaintRevive._SetBleedoutTimerId(pid, timerId)
@@ -200,6 +208,8 @@ function SaintRevive._SetBleedoutTimerId(pid, timerId)
     player.data.customVariables.bleedoutTimerId = timerId
 end
 
+---@private
+---@param pid number
 function SaintRevive._GetBleedoutTimerId(pid)
     local player = Players[pid]
     if not player then

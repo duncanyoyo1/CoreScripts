@@ -659,6 +659,7 @@ tes3mp = tes3mp
 ---@field SetRecordText fun(text: string)
 ---@field SetRecordType fun(type: number)
 ---@field SetRecordValue fun(value: number)
+---@field SetRecordVampireState fun(value: boolean)
 ---@field SetRecordWeight fun(weight: number)
 ---@field SetReputation fun(pid: number, value: number)
 ---@field SetResetStats fun(pid: number, resetStats: boolean)
